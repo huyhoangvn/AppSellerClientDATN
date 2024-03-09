@@ -8,5 +8,3 @@ export interface Mon{
     hinhAnh: string
     trangThai: boolean
 }
-
-export default Mon;

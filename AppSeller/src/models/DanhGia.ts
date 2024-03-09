@@ -5,5 +5,3 @@ export interface DanhGia{
     danhGia: string
     trangThai: boolean
 }
-
-export default DanhGia;

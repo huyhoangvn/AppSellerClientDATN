@@ -6,5 +6,3 @@ export interface MonDat{
     soLuong: number
     trangThai: boolean
 }
-
-export default MonDat;

@@ -9,5 +9,3 @@ export interface NhanVien{
     phanQuyen: number
     trangThai: boolean
 }
-
-export default NhanVien;

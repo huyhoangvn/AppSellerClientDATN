@@ -14,5 +14,3 @@ export interface HoaDon{
     trangThaiMua: number
     trangThai: boolean
 }
-
-export default HoaDon;

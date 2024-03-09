@@ -3,5 +3,3 @@ export interface KhuyenMai{
     tenLM:string
     trangThai: boolean
 }
-
-export default KhuyenMai;

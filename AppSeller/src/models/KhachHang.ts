@@ -5,6 +5,4 @@ export interface KhachHang{
     hinhAnh:string
     trangThai:boolean
 }
-
-export default KhachHang;
   

@@ -3,5 +3,3 @@ export interface DangNhap{
     taiKhoan: string
     matKhau: string
 }
-
-export default DangNhap;

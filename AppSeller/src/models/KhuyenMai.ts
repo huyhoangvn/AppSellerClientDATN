@@ -8,5 +8,3 @@ export interface KhuyenMai{
     donToiThieu: number
     trangThai: boolean
 }
-
-export default KhuyenMai;

@@ -1,5 +1,5 @@
 export interface CuaHang{
-    id:string
+    _id:string
     tenCH:string
     email:string
     sdt: string
@@ -7,7 +7,5 @@ export interface CuaHang{
     thoiGianMo: string
     thoiGianDong: string
     hinhAnh: string
-    trangThai: number
+    trangThai: boolean
 }
-
-export default CuaHang;
