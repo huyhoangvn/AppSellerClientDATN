@@ -1,118 +1,77 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { createStackNavigator, StackNavigationProp} from '@react-navigation/stack';
+import { NavigationContainer, NavigationProp } from '@react-navigation/native';
+import { MenuProvider } from 'react-native-popup-menu';
+import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import SplashScreen from './src/screen/SplashScreen';
+import HomeScreen from './src/screen/HomeScreen';
+import LoginScreen from './src/screen/LoginScreen';
+import RegisterUserScreen from './src/screen/register/RegisteUserScreen';
+import RegisterStoreScreen from './src/screen/register/RegisterStoreScreen';
+import DetailCuaHangScreen from './src/screen/cuahang/DetailCuaHangScreen';
+import EditCuaHangScreen from './src/screen/cuahang/EditCuaHangScreen';
+import AddNhanVienBanScreen from './src/screen/nhanvien/AddNhanVienBanScreen';
+import DetailNhanVienScreen from './src/screen/nhanvien/DetailNhanVienScreen';
+import EditNhanVienBanScreen from './src/screen/nhanvien/EditNhanVienBanScreen';
+import DetailMonScreen from './src/screen/mon/DetailMonScreen';
+import AddMonScreen from './src/screen/mon/AddMonScreen';
+import DetailHoaDonScreen from './src/screen/hoadon/DetailHoaDonScreen';
+import HeaderRightComponent from './src/component/options-menu/HeaderRightComponent';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+const Stack = createStackNavigator();
+interface AppProps {}
+const App: React.FC<AppProps> = () => {
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <MenuProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SplasScreen" screenOptions={{headerTitleAlign: 'left'}}>
+          <Stack.Screen name="SplashScreen" component={SplashScreen} options={{headerShown: false}}/>
+          {/* Đăng nhập và đăng ký */}
+          <Stack.Screen name="LoginScreen" component={LoginScreen} options={{headerShown: false}}/>
+          <Stack.Screen name="RegisterUserScreen" component={RegisterUserScreen} options={{headerShown: false}}/>
+          <Stack.Screen name="RegisterStoreScreen" component={RegisterStoreScreen} options={{headerShown: false}}/>
+          {/* Trang chủ với nav bar */}
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={({ navigation }) => ({
+              title: 'Food Center',
+              headerRight: () => <HeaderRightComponent navigation={navigation} />,
+            })}
+          />
+          {/* Trang cửa hàng */}
+          <Stack.Screen name="DetailCuaHangScreen" component={DetailCuaHangScreen}  options={{ title: 'Chi tiết cửa hàng'}}/>
+          <Stack.Screen name="EditCuaHangScreen" component={EditCuaHangScreen}  options={{ title: 'Sửa thông tin cửa hàng'}}/>
+
+          {/* Trang quản lý nhân viên */}
+          <Stack.Screen name="AddNhanVienBanScreen" component={AddNhanVienBanScreen}  options={{ title: 'Thêm nhân viên'}}/>
+          <Stack.Screen name="DetailNhanVienScreen" component={DetailNhanVienScreen}  options={{ title: 'Thông tin nhân viên'}}/>
+          <Stack.Screen name="EditNhanVienBanScreen" component={EditNhanVienBanScreen}  options={{ title: 'Sửa nhân viên'}}/>
+          {/* Trang quản lý món */}
+          <Stack.Screen name="DetailMonScreen" component={DetailMonScreen}  options={{ title: 'Chi tiết món'}}/>
+          <Stack.Screen name="AddMonScreen" component={AddMonScreen}  options={{ title: 'Thêm món'}}/>
+
+          {/* Trang quản lý hóa đơn */}
+          <Stack.Screen name="DetailHoaDonScreen" component={DetailHoaDonScreen}  options={{ title: 'Chi tiết hóa đơn'}}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </MenuProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  touchableOpacity: {
+    marginLeft: 15,
+    marginRight: 15,
+  }
 });
 
 export default App;
