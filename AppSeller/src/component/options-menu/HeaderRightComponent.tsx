@@ -16,12 +16,16 @@ const HeaderRightComponent: React.FC<NavProps> = ({ navigation }) =>  {
     };
 
     const handleOptionClick = (screenName: string) => {
-    setShowOptionsMenu(false); // Close the menu when an option is clicked
-    navigation.navigate(screenName);
+        setShowOptionsMenu(false); // Close the menu when an option is clicked
+        navigation.navigate(screenName);
     };
 
     const logout = () => {
-    // handle logout
+        setShowOptionsMenu(false); // Close the menu when an option is clicked
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'LoginScreen' }],
+          });
     };
     
     return (

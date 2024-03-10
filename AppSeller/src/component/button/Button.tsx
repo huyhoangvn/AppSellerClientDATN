@@ -4,7 +4,7 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 interface ButtonProps {
   color?: string;
   text: string;
-  onPress: () => void;
+  onPress: (...args: any[]) => void;
 }
 
 const Button: React.FC<ButtonProps> = ({ color = 'orange', text, onPress }) => {
