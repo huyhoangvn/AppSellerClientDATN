@@ -14,6 +14,7 @@ import Button from '../component/button/Button'
 import PasswordEditText from '../component/edittext/PasswordEditText'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import login from '../api/NhanVienApi'
 
 const LoginScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [email, setEmail] = useState('');
@@ -28,10 +29,13 @@ const LoginScreen: React.FC<NavProps> = ({ navigation }) =>  {
   };
 
   const handleLogin = () => {
-    // Test
-    console.log('Email:', email);
-    console.log('Password:', password);
-    
+    //Fetch api
+    login(email, password)
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'HomeScreen' }],
+    });
   };
 
   return (
