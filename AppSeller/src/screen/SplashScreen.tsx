@@ -7,7 +7,7 @@ const SplashScreen: React.FC<NavProps> = ({ navigation }) => {
     setTimeout(() => {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'HomeScreen' }],
+        routes: [{ name: 'LoginScreen' }],
       });
     }, 3000);
   }, []);

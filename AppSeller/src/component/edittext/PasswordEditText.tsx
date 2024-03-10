@@ -1,31 +1,36 @@
-import React from 'react';
-import { TextInput, View, StyleSheet, Text } from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons
 
-interface EditTextProps {
+interface EditTextPasswordProps {
   label?: string;
   placeholder: string;
   textColor?: string;
   borderColor?: string;
   value?: string;
-  inputType: 'default' | 'numeric' | 'email-address' | 'phone-pad';
   icon?: IconProp;
-  iconColor?: string; // New prop for icon color
+  iconColor?: string;
   onChangeText?: (text: string) => void;
 }
 
-const EditText: React.FC<EditTextProps> = ({
+const EditTextPassword: React.FC<EditTextPasswordProps> = ({
   label,
   placeholder,
   textColor = 'black',
   borderColor = 'gray',
   value = '',
-  inputType,
   icon,
-  iconColor = 'black', // Default icon color
+  iconColor = 'black',
   onChangeText,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <View style={[styles.container, { borderColor }]}>
       {icon && <FontAwesomeIcon icon={icon} style={[styles.icon, { color: iconColor } as any]} />}
@@ -33,17 +38,19 @@ const EditText: React.FC<EditTextProps> = ({
         placeholder={placeholder}
         placeholderTextColor="#808080"
         style={[styles.input, { color: textColor }]}
-        keyboardType={inputType}
+        secureTextEntry={!showPassword}
         value={value}
         onChangeText={onChangeText}
       />
+      <TouchableOpacity onPress={toggleShowPassword}>
+        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={[styles.icon, { color: iconColor } as any]} />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
@@ -51,7 +58,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
     paddingVertical: 0,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   input: {
     flex: 1,
@@ -65,5 +72,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditText;
-
+export default EditTextPassword;
