@@ -1,66 +1,189 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {
+  Dimensions,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  Alert,
+  Image,
+  Pressable,
 } from 'react-native';
 import NavProps from '../models/props/NavProps';
-import EditText from '../component/edittext/EditText'
-import Button from '../component/button/Button'
-import PasswordEditText from '../component/edittext/PasswordEditText'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import login from '../api/NhanVienApi'
 
-const LoginScreen: React.FC<NavProps> = ({ navigation }) =>  {
-  const [email, setEmail] = useState('');
+import {faLock, faUser} from '@fortawesome/free-solid-svg-icons';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import EditTextComponent from '../component/EditTextComponent';
+import ButtonComponent from '../component/ButtonComponent';
+import {appColors} from '../constants/appColors';
+import {Text} from 'react-native-svg';
+import {text} from '@fortawesome/fontawesome-svg-core';
+import TextComponent from '../component/TextComponent';
+import AppPath from '../component/appPath';
+import {Facebook, Google, Logo} from '../assest/svgs';
+import authenticationAPI from '../apis/authApi';
+import NhanVienApi from '../api/NhanVienApi';
+// import authenticationAPI from '../apis/authApi';
+
+const {height, width} = Dimensions.get('window');
+
+const LoginScreen: React.FC<NavProps> = ({navigation}) => {
+  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleEmailChange = (text: string) => {
-    setEmail(text);
+  const [isChecked, setChecked] = useState(false);
+ 
+  const handleUserNameChange = (text: string) => {
+      setUserName(text)
   };
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
   };
 
-  const handleLogin = () => {
-    //Fetch api
-    login(email, password)
 
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'HomeScreen' }],
-    });
+
+  // const handleLogin = async () => {
+    
+  //   try {
+  //     // await NhanVienApi(userName,password)
+  //       const res = await authenticationAPI.HandleAuthentication(
+  //         '/nhanvien/auth',
+  //         {taiKhoan:userName, matKhau:password},
+  //         'post'
+  //       )
+        
+  //         if(res.index != null){
+  //           navigation.navigate('HomeScreen')
+  //         }else{
+  //           Alert.alert('Thông báo', 'Tài khoản hoặc mật khẩu không chính xác.');
+  //           console.log(errorData)
+  //         }
+         
+       
+  //   }catch(err){
+  //     console.log(err);
+  //   }
+  // };
+
+  const handleLogin = async () => {
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        '/nhanvien/auth',
+        { taiKhoan: userName, matKhau: password },
+        'post'
+      );
+      if (res.index != null) {
+        navigation.navigate('HomeScreen');
+      }
+    } catch (err:any) {
+      console.log(err);
+      const errorObject = JSON.parse(err.message);
+      const errorMessage = errorObject.error.msg;
+      Alert.alert('Thông báo', errorMessage);
+    }
   };
+  
 
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
-          <Text style={styles.title}>Đăng nhập</Text>
-          <EditText
-            label="Email"
-            placeholder="Email"
-            inputType="email-address"
-            value={email}
-            iconColor='gray'
-            onChangeText={handleEmailChange}
-            icon={faEnvelope}
-          />
-          <PasswordEditText
-            label="Email"
-            placeholder="Password"
-            value={password}
-            iconColor='gray'
-            onChangeText={handlePasswordChange}
-            icon={faLock}
-          />
-          <Button text="Đăng nhập" onPress={handleLogin} />
+          <View style={styles.header}>
+            <Logo/>
+          </View>
+          <View style={styles.main}>
+            <EditTextComponent
+              label="userName"
+              placeholder="Nhập tài khoản"
+              value={userName}
+              iconColor="gray"
+              onChangeText={handleUserNameChange}
+              icon={faUser}
+            />
+
+            <EditTextComponent
+              label="pass"
+              placeholder="Nhập mật khẩu"
+              value={password}
+              iconColor="gray"
+              onChangeText={handlePasswordChange}
+              icon={faLock}
+            />
+            <View style={styles.viewButton}>
+              <BouncyCheckbox
+                size={20}
+                fillColor={appColors.primary}
+                unfillColor="#FFFFFF"
+                text="Nhớ mật khẩu"
+                // iconStyle={{ borderColor: "red" }}
+                innerIconStyle={{borderWidth: 1.5}}
+                textStyle={{
+                  textDecorationLine: 'none',
+                  color: appColors.primary,
+                  fontSize: 14,
+                  marginLeft: -10,
+                  fontWeight: 'bold',
+                }}
+                // isChecked={true}
+                onPress={(isChecked: boolean) => {
+                  setChecked(isChecked);
+                }}
+                style={{paddingLeft: 15}}
+              />
+              <ButtonComponent
+                type="link"
+                text="Quên mật khẩu ?"
+                onPress={() => navigation.navigate('SignUpScreen')}
+                textStyles={{fontWeight: 'bold'}} // Cập nhật style ở đây
+              />
+            </View>
+            <ButtonComponent
+              type="primary"
+              text="Đăng nhập"
+              textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+              onPress={handleLogin}
+            />
+          </View>
+          <View style={styles.footer}>
+            <AppPath />
+            <View>
+              <ButtonComponent
+                type="primary"
+                // onPress={handleLoginWithGoogle}
+                color={appColors.white}
+                textColor={appColors.text}
+                text="Login with Google"
+                iconFlex="left"
+                icon={<Google />}
+                styles={{borderWidth: 1}}
+                textStyles = {{color: 'black', fontWeight: 'bold'}}
+              />
+
+              <ButtonComponent
+                type="primary"
+                color={appColors.white}
+                textColor={appColors.text}
+                text="Login with Facebook"
+                // textFont={fontFamilies.regular}
+                iconFlex="left"
+                icon={<Facebook />}
+                styles={{backgroundColor: '#4285F4'}}
+                textStyles = {{color: appColors.white, fontWeight: 'bold'}}
+              />
+            </View>
+            
+            <View style = {styles.signOut}>
+              <TextComponent text='Bạn chưa có tài khoản?  ' styles = {{color: '#C2BEBE', fontSize: 18}}/>
+              <ButtonComponent
+               type='link' text='Đăng ký'
+               textStyles = {{ fontSize: 18, textDecorationLine: 'underline', fontWeight: 'bold'}}
+               />
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -69,19 +192,41 @@ const LoginScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor: appColors.white,
+    height: hp(100),
+  },
+  header: {
+    height: hp(25),
     justifyContent: 'center',
-    alignItems: 'center',
+    alignSelf: 'center',
+
+    
   },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
+
+  main: {
+    height: hp(30),
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+   
   },
-  title: {
-    flex: 1,
-    fontSize: 24,
-    fontWeight: 'bold',
-    margin: 10,
+  viewButton: {
+    paddingRight: 15,
+    paddingBottom: 10,
+    paddingTop: 5,
+    width: wp(100),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  footer: {
+    height: hp(30),
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  signOut: {
+    flexDirection: 'row',
+    justifyContent: 'center'
+
   }
 });
 
