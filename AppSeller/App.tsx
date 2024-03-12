@@ -27,7 +27,7 @@ const App: React.FC<AppProps> = () => {
   return (
     <MenuProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="SplasScreen" screenOptions={{headerTitleAlign: 'left'}}>
+        <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{headerTitleAlign: 'left'}}>
           <Stack.Screen name="SplashScreen" component={SplashScreen} options={{headerShown: false}}/>
           {/* Đăng nhập và đăng ký */}
           <Stack.Screen name="LoginScreen" component={LoginScreen} options={{headerShown: false}}/>
