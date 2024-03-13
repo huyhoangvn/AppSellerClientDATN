@@ -46,46 +46,47 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
 
 
 
-  // const handleLogin = async () => {
-    
-  //   try {
-  //     // await NhanVienApi(userName,password)
-  //       const res = await authenticationAPI.HandleAuthentication(
-  //         '/nhanvien/auth',
-  //         {taiKhoan:userName, matKhau:password},
-  //         'post'
-  //       )
-        
-  //         if(res.index != null){
-  //           navigation.navigate('HomeScreen')
-  //         }else{
-  //           Alert.alert('Thông báo', 'Tài khoản hoặc mật khẩu không chính xác.');
-  //           console.log(errorData)
-  //         }
-         
-       
-  //   }catch(err){
-  //     console.log(err);
-  //   }
-  // };
-
   const handleLogin = async () => {
     try {
-      const res = await authenticationAPI.HandleAuthentication(
-        '/nhanvien/auth',
-        { taiKhoan: userName, matKhau: password },
-        'post'
-      );
-      if (res.index != null) {
-        navigation.navigate('HomeScreen');
-      }
-    } catch (err:any) {
+        const res = await authenticationAPI.HandleAuthentication(
+          '/nhanvien/auth',
+          {taiKhoan:userName, matKhau:password},
+          'post'
+        )
+        // const token = res.headers.authorization;
+        // console.log(token)
+          if(res.index != null){
+            navigation.navigate('HomeScreen')
+          }else{
+            Alert.alert('Thông báo', res.msg);
+
+          }
+    }catch(err){
       console.log(err);
-      const errorObject = JSON.parse(err.message);
-      const errorMessage = errorObject.error.msg;
-      Alert.alert('Thông báo', errorMessage);
     }
   };
+
+  // const handleLogin = async () => {
+  //   try {
+  //     console.log('Login')
+  //     const res = await authenticationAPI.HandleAuthentication(
+  //       '/nhanvien/auth',
+  //       { taiKhoan: userName, matKhau: password },
+  //       'post'
+  //     );
+  //     console.log(res);
+  //     if (res.index != null) {
+  //       navigation.navigate('HomeScreen');
+  //     }else{
+  //       res.index.msg
+  //     }
+  //   } catch (err:any) {
+  //     console.log(err);
+  //     const errorObject = JSON.parse(err.message);
+  //     const errorMessage = errorObject.error.msg;
+  //     Alert.alert('Thông báo', errorMessage);
+  //   }
+  // };
   
 
   return (
