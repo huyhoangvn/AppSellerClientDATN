@@ -25,34 +25,29 @@ axiosClient.interceptors.request.use(async (config: any) => {
 });
 
 // axiosClient.interceptors.response.use(
-//   (res: AxiosResponse) => {
-//     try {
-//       if (res.data && res.status === 200) {
-//         return res.data;
-//       }
-//       throw new Error('Error');
-//     } catch (error) {
-//       console.log('Error api:', JSON.stringify(error));
-//       throw new Error('Error');
+//   res => {
+//     if (res.data && res.status === 200 && res.headers && res.headers.authorization) {
+//       const token = res.headers.authorization;
+//       console.log('Token:', token);
+//       return res.data;
+      
 //     }
+//     throw new Error('Error');
 //   },
-//   (error: any) => {
-//     if (error.response) {
-//       // Trường hợp có phản hồi từ server
-//       const errorData = error.response.data;
-//       return errorData || 'Đã xảy ra lỗi';
-//       // console.log(errorMessage);
-//     } else {
-//       // Trường hợp không có phản hồi từ server
-//       console.log('Error api:', JSON.stringify(error));
-//     }
-//   }
+//   error => {
+//     console.log(`Error api ${JSON.stringify(error)}`);
+//     throw new Error(error.response);
+//   },
 // );
+
+
 
 axiosClient.interceptors.response.use(
   (res: AxiosResponse) => {
     try {
       if (res.data && res.status === 200) {
+        const token = res.headers.authorization;
+        console.log('Token:', token);
         return res.data;
       }
       throw new Error('Error');
@@ -63,11 +58,9 @@ axiosClient.interceptors.response.use(
   },
   (error: any) => {
     if (error.response) {
-      // Trường hợp có phản hồi từ server
       const errorData = error.response.data;
       throw new Error(JSON.stringify({ error: errorData, message: 'Đã xảy ra lỗi' }));
     } else {
-      // Trường hợp không có phản hồi từ server
       console.log('Error api:', JSON.stringify(error));
       throw new Error('Error');
     }
