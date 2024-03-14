@@ -1,6 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import NavProps from '../../models/props/NavProps';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const RegisterStoreScreen: React.FC<NavProps> = ({ navigation }) =>  {
   return (
