@@ -33,7 +33,7 @@ const App: React.FC<AppProps> = () => {
         <MenuProvider>
           <NavigationContainer>
             <Stack.Navigator
-              initialRouteName="RegisterStoreScreen"
+              initialRouteName="LoginScreen"
               screenOptions={{headerTitleAlign: 'left'}}>
               <Stack.Screen
                 name="SplashScreen"
