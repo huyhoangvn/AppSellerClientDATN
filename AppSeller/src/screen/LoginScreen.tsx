@@ -33,22 +33,29 @@ import {useDispatch} from 'react-redux';
 import {deleteData, getData, saveData} from '../utils/storageUtils';
 import {deleteToken, setToken} from '../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AlertComponent from '../component/AlertComponent';
 // import authenticationAPI from '../apis/authApi';
 
 const {height, width} = Dimensions.get('window');
 
 const LoginScreen: React.FC<NavProps> = ({navigation}) => {
-var status: boolean | null | undefined;
-const dispatch = useDispatch();
-const [userName, setUserName] = useState('');
-const [password, setPassword] = useState('');
-const [isRemember, setIsRemember] = useState<boolean>();
-const [rememberedChecked, setRememberedChecked] = useState<boolean>(true);
+  var status: boolean | null | undefined;
+  const dispatch = useDispatch();
+  const [showAlert, setShowAlert] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRemember, setIsRemember] = useState<boolean>();
 
-// console.log()
-console.log("aaaa", isRemember);
+  // console.log()
 
+  const handleShowAlert = () => {
+    setShowAlert(true);
+  };
 
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
 
   const handleUserNameChange = (text: string) => {
     setUserName(text);
@@ -58,44 +65,40 @@ console.log("aaaa", isRemember);
     setPassword(text);
   };
 
-
-
   const rememBer = async () => {
-
     if (isRemember == true) {
-      await saveData({ taiKhoan: userName, matKhau: password, isChecked: true});
-    } else{
+      await saveData({taiKhoan: userName, matKhau: password, isChecked: true});
+    } else {
       await deleteData('taiKhoan');
       await deleteData('matKhau');
-      await saveData({isChecked: false})
+      await saveData({isChecked: false});
     }
   };
 
   const getRemembered = async () => {
-  try {
-    const storedData = await getData();
-    console.log(storedData);
-    const storedUserName = storedData?.taiKhoan || '';
-    const storedPassword = storedData?.matKhau || ''; 
-    const storedChecked = storedData?.isChecked || false; // Sử dụng false nếu giá trị storedData?.isChecked là null hoặc undefined
+    try {
+      const storedData = await getData();
+      const storedUserName = storedData?.taiKhoan || '';
+      const storedPassword = storedData?.matKhau || '';
+      const storedChecked = storedData?.isChecked || false; // Sử dụng false nếu giá trị storedData?.isChecked là null hoặc undefined
 
-    setUserName(storedUserName);
-    setPassword(storedPassword);
-  
-    // Cập nhật trạng thái của checkbox
-    if (storedChecked === true) {
       setUserName(storedUserName);
       setPassword(storedPassword);
-      setIsRemember(storedChecked)
-    } else {
-      setUserName('');
-      setPassword('');
+
+      // Cập nhật trạng thái của checkbox
+      if (storedChecked === true) {
+        setUserName(storedUserName);
+        setPassword(storedPassword);
+        setIsRemember(storedChecked);
+      } else {
+        setUserName('');
+        setPassword('');
+      }
+    } catch (error) {
+      console.error('Error retrieving remember me state:', error);
     }
-  } catch (error) {
-    console.error('Error retrieving remember me state:', error);
-  }
-};
- 
+  };
+
   const handleLogin = async () => {
     try {
       const res = await authenticationAPI.HandleAuthentication(
@@ -105,14 +108,14 @@ console.log("aaaa", isRemember);
       );
       console.log(res);
       if (res.success === true) {
-        console.log(res.index)
         navigation.navigate('HomeScreen');
         const storedData = await getData();
         const token = storedData?.token;
         dispatch(setToken(token));
-        rememBer()
+        rememBer();
       } else {
-        Alert.alert('Thông báo', res.msg);
+        setMsg(res.msg)
+        handleShowAlert()
       }
     } catch (err) {
       console.log(err);
@@ -122,45 +125,41 @@ console.log("aaaa", isRemember);
   useEffect(() => {
     getRemembered();
     // setRememberedChecked(true);
-  },[]);
-
+  }, []);
 
   // const handelCheked = async (status:boolean) =>{
   //   rememBer()
   // }
-  
-  
 
-  // const handleGet = async () => {
-  //   try {
-  //     const res = await authenticationAPI.HandleAuthentication(
-  //       '/nhanvien/nhanvienquanly',
-  //       'get',
-  //     );
+  const handleGet = async () => {
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        '/nhanvien/nhanvienquanly',
+        'get',
+      );
 
-  //     console.log(res.data);
-  //     // dispatch(addAuth(res.index));
-  //     // navigation.navigate('HomeScreen')
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+      console.log(res.data);
+      // dispatch(addAuth(res.index));
+      // navigation.navigate('HomeScreen')
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  // const rmToken = () => {
-  //   dispatch(deleteToken(undefined));
-  // };
+  const rmToken = () => {
+    dispatch(deleteToken(undefined));
+  };
 
-  
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.header}>
-            <Logo />
+            <Logo style = {{    alignSelf: 'center'}}/>
           </View>
           <View style={styles.main}>
             <EditTextComponent
-              label="userName"
+              label="text"
               placeholder="Nhập tài khoản"
               value={userName}
               iconColor="gray"
@@ -177,21 +176,29 @@ console.log("aaaa", isRemember);
               icon={faLock}
             />
             <View style={styles.viewButton}>
-              <View style = {{flexDirection: 'row'}}>
-              <Switch
-              style = {{paddingLeft:10}}
-              trackColor={{true: appColors.primary}}
-              thumbColor={appColors.white}
-              value={isRemember}
-              onChange={() => {setIsRemember(!isRemember)}}
-            />
-            <TextComponent
-                styles = {{alignSelf: 'center', paddingLeft: 10, color: appColors.primary,fontSize: 14, fontWeight:'bold' }}
-                text="Nhớ mật khẩu"
-              />
+              <View style={{flexDirection: 'row'}}>
+                <Switch
+                  style={{paddingLeft: 10}}
+                  trackColor={{true: appColors.primary}}
+                  thumbColor={appColors.white}
+                  value={isRemember}
+                  onChange={() => {
+                    setIsRemember(!isRemember);
+                  }}
+                />
+                <TextComponent
+                  styles={{
+                    alignSelf: 'center',
+                    paddingLeft: 10,
+                    color: appColors.primary,
+                    fontWeight: 'bold',
+                  }}
+                  text="Nhớ mật khẩu"
+                  size={14}
+                />
               </View>
-          
-            {/* <BouncyCheckbox
+
+              {/* <BouncyCheckbox
                 size={20}
                 fillColor={appColors.primary}
                 unfillColor="#FFFFFF"
@@ -228,8 +235,11 @@ console.log("aaaa", isRemember);
               onPress={handleLogin}
             />
           </View>
+          <View style = {{height: hp(7)}}>
+          <AppPath />
+          </View>
           <View style={styles.footer}>
-            <AppPath />
+           
             <View>
               <ButtonComponent
                 type="primary"
@@ -244,7 +254,7 @@ console.log("aaaa", isRemember);
                 // onPress={}
               />
 
-              <ButtonComponent
+              {/* <ButtonComponent
                 type="primary"
                 color={appColors.white}
                 textColor={appColors.text}
@@ -254,8 +264,10 @@ console.log("aaaa", isRemember);
                 icon={<Facebook />}
                 styles={{backgroundColor: '#4285F4'}}
                 textStyles={{color: appColors.white, fontWeight: 'bold'}}
-              />
+                onPress={handleGet}
+              /> */}
             </View>
+
 
             <View style={styles.signOut}>
               <TextComponent
@@ -270,6 +282,12 @@ console.log("aaaa", isRemember);
                   textDecorationLine: 'underline',
                   fontWeight: 'bold',
                 }}
+                onPress={() =>  {navigation.navigate('RegisterStoreScreen')}}
+              />
+              <AlertComponent
+                visible={showAlert}
+                message={msg}
+                onClose={handleCloseAlert}
               />
             </View>
           </View>
@@ -285,15 +303,14 @@ const styles = StyleSheet.create({
     height: hp(100),
   },
   header: {
-    height: hp(25),
+    height: hp(30),
     padding: 20,
     // backgroundColor: 'black',
     justifyContent: 'center',
-    alignSelf: 'center',
   },
 
   main: {
-    height: hp(30),
+    height: hp(40),
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
@@ -308,9 +325,8 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    height: hp(30),
+    height: hp(23),
     flexDirection: 'column',
-    justifyContent: 'space-between',
   },
   signOut: {
     flexDirection: 'row',

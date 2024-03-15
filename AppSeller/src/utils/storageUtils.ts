@@ -9,6 +9,11 @@ interface data {
     matKhau?: string
     age?: number;
     token?: string
+
+    nameStore?: string
+    phoneStore?: string
+    addressStore?: string
+    mailStore?: string
 }
 
 // Lưu dữ liệu vào AsyncStorage

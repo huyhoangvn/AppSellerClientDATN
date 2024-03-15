@@ -2,6 +2,8 @@ export interface NhanVien{
     id?: string
     idCH?: string
     tenNV?: string
+    taiKhoan?: string
+    matKhau?: string
     gioiTinh?: number
     hinhAnh?: string
     diaChi?: string
