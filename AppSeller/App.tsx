@@ -23,6 +23,7 @@ import DetailHoaDonScreen from './src/screen/hoadon/DetailHoaDonScreen';
 import HeaderRightComponent from './src/component/options-menu/HeaderRightComponent';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
+import VerificationScreen from './src/screen/register/VerificationScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -54,6 +55,11 @@ const App: React.FC<AppProps> = () => {
               <Stack.Screen
                 name="RegisterStoreScreen"
                 component={RegisterStoreScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="VerificationScreen"
+                component={VerificationScreen}
                 options={{headerShown: false}}
               />
               {/* Trang chủ với nav bar */}
