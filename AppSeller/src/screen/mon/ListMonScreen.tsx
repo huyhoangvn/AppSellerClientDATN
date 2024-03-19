@@ -20,17 +20,18 @@ interface ListItem {
   hinhAnh: string;
   trangThai: boolean;
   title: String;
+  danhGia: number;
 }
 ;
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
 const data: ListItem[] = [
-  { id: '1', tenMon: 'Gà rán FIVESTAR - 422 Cát Quế', tenLM:"Đồ chiên", giaTien: 59000, hinhAnh: 'https://cdn.tgdd.vn/Files/2017/03/22/963765/cach-lam-ga-ran-thom-ngon-8_760x450.jpg', trangThai: true , title:"Tất cả"},
-  { id: '2', tenMon: 'Hamburger', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả" },
-  { id: '3', tenMon: 'Bánh mì  - 422 Huế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://cdn1.tuoitre.vn/zoom/600_315/471584752817336320/2023/2/20/viet-populaire-copy-e1659353432539-1024x681-16594235658881650374369-1676888750526893807756-41-0-423-730-crop-16768887676751617090180.jpg', trangThai: 'Hoạt động', title:"Tất cả"  },
-  { id: '4', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên",  giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-  { id: '5', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-  { id: '6', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
+  { id: '1', tenMon: 'Gà rán FIVESTAR - 422 Cát Quế', tenLM:"Đồ chiên", giaTien: 59000, hinhAnh: 'https://cdn.tgdd.vn/Files/2017/03/22/963765/cach-lam-ga-ran-thom-ngon-8_760x450.jpg', trangThai: true , title:"Tất cả", danhGia: 8},
+  { id: '2', tenMon: 'Hamburger', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả", danhGia: 8 },
+  { id: '3', tenMon: 'Bánh mì  - 422 Huế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://cdn1.tuoitre.vn/zoom/600_315/471584752817336320/2023/2/20/viet-populaire-copy-e1659353432539-1024x681-16594235658881650374369-1676888750526893807756-41-0-423-730-crop-16768887676751617090180.jpg', trangThai: 'Hoạt động', title:"Tất cả", danhGia: 8  },
+  { id: '4', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên",  giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả", danhGia: 8  },
+  { id: '5', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả", danhGia: 8  },
+  { id: '6', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả", danhGia: 8  },
 ];
 
 const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {

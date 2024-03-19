@@ -14,7 +14,7 @@ interface DetailProps {
   giaTien: number;
   hinhAnh: string;
   trangThai: boolean;
-  danhGia: string;
+  danhGia: number;
 }
 
 const DetailMonScreen: React.FC<NavProps> = ({ navigation }) => {
