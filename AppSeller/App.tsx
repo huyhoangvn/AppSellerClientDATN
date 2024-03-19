@@ -19,6 +19,7 @@ import DetailMonScreen from './src/screen/mon/DetailMonScreen';
 import AddMonScreen from './src/screen/mon/AddMonScreen';
 import DetailHoaDonScreen from './src/screen/hoadon/DetailHoaDonScreen';
 import HeaderRightComponent from './src/component/options-menu/HeaderRightComponent';
+import EditMonScreen from './src/screen/mon/EditMonScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -53,6 +54,7 @@ const App: React.FC<AppProps> = () => {
           {/* Trang quản lý món */}
           <Stack.Screen name="DetailMonScreen" component={DetailMonScreen}  options={{ title: 'Chi tiết món'}}/>
           <Stack.Screen name="AddMonScreen" component={AddMonScreen}  options={{ title: 'Thêm món'}}/>
+          <Stack.Screen name="EditMonScreen" component={EditMonScreen}  options={{ title: 'Sửa thông tin món'}}/>
 
           {/* Trang quản lý hóa đơn */}
           <Stack.Screen name="DetailHoaDonScreen" component={DetailHoaDonScreen}  options={{ title: 'Chi tiết hóa đơn'}}/>
