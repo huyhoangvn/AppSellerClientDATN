@@ -37,7 +37,8 @@ const EditTextComponent = (props: Props) => {
         secureTextEntry={label === 'pass' ? !showPassword : false}  
         value={value}
         onChangeText={onChangeText}
-      />
+        keyboardType={label === 'number' ? 'numeric' : 'default'}
+        />
       {label === 'pass' && (
         <TouchableOpacity onPress={toggleShowPassword}>
           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={[styles.icon, { color: iconColor } as any]} />

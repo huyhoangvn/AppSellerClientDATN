@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {
   Dimensions,
@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   Pressable,
+  Switch,
 } from 'react-native';
 import NavProps from '../models/props/NavProps';
 
@@ -27,77 +28,138 @@ import AppPath from '../component/appPath';
 import {Facebook, Google, Logo} from '../assest/svgs';
 import authenticationAPI from '../apis/authApi';
 import NhanVienApi from '../api/NhanVienApi';
+import {useDispatch} from 'react-redux';
+// import { addAuth, addToken } from '../redux/reducers/authReducers';
+import {deleteData, getData, saveData} from '../utils/storageUtils';
+import {deleteToken, setToken} from '../redux/reducers/authReducers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AlertComponent from '../component/AlertComponent';
 // import authenticationAPI from '../apis/authApi';
 
 const {height, width} = Dimensions.get('window');
 
 const LoginScreen: React.FC<NavProps> = ({navigation}) => {
+  var status: boolean | null | undefined;
+  const dispatch = useDispatch();
+  const [showAlert, setShowAlert] = useState(false);
+  const [msg, setMsg] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [isChecked, setChecked] = useState(false);
- 
+  const [isRemember, setIsRemember] = useState<boolean>();
+
+  // console.log()
+
+  const handleShowAlert = () => {
+    setShowAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
+
   const handleUserNameChange = (text: string) => {
-      setUserName(text)
+    setUserName(text);
   };
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
   };
 
+  const rememBer = async () => {
+    if (isRemember == true) {
+      await saveData({taiKhoan: userName, matKhau: password, isChecked: true});
+    } else {
+      await deleteData('taiKhoan');
+      await deleteData('matKhau');
+      await saveData({isChecked: false});
+    }
+  };
 
+  const getRemembered = async () => {
+    try {
+      const storedData = await getData();
+      const storedUserName = storedData?.taiKhoan || '';
+      const storedPassword = storedData?.matKhau || '';
+      const storedChecked = storedData?.isChecked || false; // Sử dụng false nếu giá trị storedData?.isChecked là null hoặc undefined
 
-  // const handleLogin = async () => {
-    
-  //   try {
-  //     // await NhanVienApi(userName,password)
-  //       const res = await authenticationAPI.HandleAuthentication(
-  //         '/nhanvien/auth',
-  //         {taiKhoan:userName, matKhau:password},
-  //         'post'
-  //       )
-        
-  //         if(res.index != null){
-  //           navigation.navigate('HomeScreen')
-  //         }else{
-  //           Alert.alert('Thông báo', 'Tài khoản hoặc mật khẩu không chính xác.');
-  //           console.log(errorData)
-  //         }
-         
-       
-  //   }catch(err){
-  //     console.log(err);
-  //   }
-  // };
+      setUserName(storedUserName);
+      setPassword(storedPassword);
+
+      // Cập nhật trạng thái của checkbox
+      if (storedChecked === true) {
+        setUserName(storedUserName);
+        setPassword(storedPassword);
+        setIsRemember(storedChecked);
+      } else {
+        setUserName('');
+        setPassword('');
+      }
+    } catch (error) {
+      console.error('Error retrieving remember me state:', error);
+    }
+  };
 
   const handleLogin = async () => {
     try {
       const res = await authenticationAPI.HandleAuthentication(
         '/nhanvien/auth',
-        { taiKhoan: userName, matKhau: password },
-        'post'
+        {taiKhoan: userName, matKhau: password},
+        'post',
       );
-      if (res.index != null) {
+      console.log(res);
+      if (res.success === true) {
         navigation.navigate('HomeScreen');
+        const storedData = await getData();
+        const token = storedData?.token;
+        dispatch(setToken(token));
+        rememBer();
+      } else {
+        setMsg(res.msg)
+        handleShowAlert()
       }
-    } catch (err:any) {
+    } catch (err) {
       console.log(err);
-      const errorObject = JSON.parse(err.message);
-      const errorMessage = errorObject.error.msg;
-      Alert.alert('Thông báo', errorMessage);
     }
   };
-  
+
+  useEffect(() => {
+    getRemembered();
+    // setRememberedChecked(true);
+  }, []);
+
+  // const handelCheked = async (status:boolean) =>{
+  //   rememBer()
+  // }
+
+  const handleGet = async () => {
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        '/nhanvien/nhanvienquanly',
+        'get',
+      );
+
+      console.log(res.data);
+      // dispatch(addAuth(res.index));
+      // navigation.navigate('HomeScreen')
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const rmToken = () => {
+    dispatch(deleteToken(undefined));
+  };
 
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.header}>
-            <Logo/>
+            <Logo style = {{    alignSelf: 'center'}}/>
           </View>
           <View style={styles.main}>
             <EditTextComponent
-              label="userName"
+              label="text"
               placeholder="Nhập tài khoản"
               value={userName}
               iconColor="gray"
@@ -114,13 +176,34 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
               icon={faLock}
             />
             <View style={styles.viewButton}>
-              <BouncyCheckbox
+              <View style={{flexDirection: 'row'}}>
+                <Switch
+                  style={{paddingLeft: 10}}
+                  trackColor={{true: appColors.primary}}
+                  thumbColor={appColors.white}
+                  value={isRemember}
+                  onChange={() => {
+                    setIsRemember(!isRemember);
+                  }}
+                />
+                <TextComponent
+                  styles={{
+                    alignSelf: 'center',
+                    paddingLeft: 10,
+                    color: appColors.primary,
+                    fontWeight: 'bold',
+                  }}
+                  text="Nhớ mật khẩu"
+                  size={14}
+                />
+              </View>
+
+              {/* <BouncyCheckbox
                 size={20}
                 fillColor={appColors.primary}
                 unfillColor="#FFFFFF"
                 text="Nhớ mật khẩu"
-                // iconStyle={{ borderColor: "red" }}
-                innerIconStyle={{borderWidth: 1.5}}
+                innerIconStyle={{ borderWidth: 1.5 }}
                 textStyle={{
                   textDecorationLine: 'none',
                   color: appColors.primary,
@@ -128,12 +211,16 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                   marginLeft: -10,
                   fontWeight: 'bold',
                 }}
-                // isChecked={true}
+                isChecked={isChecked}
                 onPress={(isChecked: boolean) => {
                   setChecked(isChecked);
+                 
+                         rememBer();
+                    // rememBer();
                 }}
-                style={{paddingLeft: 15}}
-              />
+                // onPress={handelCheked}
+                style={{ paddingLeft: 15 }}
+              /> */}
               <ButtonComponent
                 type="link"
                 text="Quên mật khẩu ?"
@@ -148,8 +235,11 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
               onPress={handleLogin}
             />
           </View>
+          <View style = {{height: hp(7)}}>
+          <AppPath />
+          </View>
           <View style={styles.footer}>
-            <AppPath />
+           
             <View>
               <ButtonComponent
                 type="primary"
@@ -160,10 +250,11 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                 iconFlex="left"
                 icon={<Google />}
                 styles={{borderWidth: 1}}
-                textStyles = {{color: 'black', fontWeight: 'bold'}}
+                textStyles={{color: 'black', fontWeight: 'bold'}}
+                // onPress={}
               />
 
-              <ButtonComponent
+              {/* <ButtonComponent
                 type="primary"
                 color={appColors.white}
                 textColor={appColors.text}
@@ -172,16 +263,32 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                 iconFlex="left"
                 icon={<Facebook />}
                 styles={{backgroundColor: '#4285F4'}}
-                textStyles = {{color: appColors.white, fontWeight: 'bold'}}
-              />
+                textStyles={{color: appColors.white, fontWeight: 'bold'}}
+                onPress={handleGet}
+              /> */}
             </View>
-            
-            <View style = {styles.signOut}>
-              <TextComponent text='Bạn chưa có tài khoản?  ' styles = {{color: '#C2BEBE', fontSize: 18}}/>
+
+
+            <View style={styles.signOut}>
+              <TextComponent
+                text="Bạn chưa có tài khoản?  "
+                styles={{color: '#C2BEBE', fontSize: 18}}
+              />
               <ButtonComponent
-               type='link' text='Đăng ký'
-               textStyles = {{ fontSize: 18, textDecorationLine: 'underline', fontWeight: 'bold'}}
-               />
+                type="link"
+                text="Đăng ký"
+                textStyles={{
+                  fontSize: 18,
+                  textDecorationLine: 'underline',
+                  fontWeight: 'bold',
+                }}
+                onPress={() =>  {navigation.navigate('RegisterStoreScreen')}}
+              />
+              <AlertComponent
+                visible={showAlert}
+                message={msg}
+                onClose={handleCloseAlert}
+              />
             </View>
           </View>
         </View>
@@ -196,18 +303,16 @@ const styles = StyleSheet.create({
     height: hp(100),
   },
   header: {
-    height: hp(25),
+    height: hp(30),
+    padding: 20,
+    // backgroundColor: 'black',
     justifyContent: 'center',
-    alignSelf: 'center',
-
-    
   },
 
   main: {
-    height: hp(30),
+    height: hp(40),
     flexDirection: 'column',
     justifyContent: 'space-between',
-   
   },
   viewButton: {
     paddingRight: 15,
@@ -216,18 +321,17 @@ const styles = StyleSheet.create({
     width: wp(100),
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   footer: {
-    height: hp(30),
+    height: hp(23),
     flexDirection: 'column',
-    justifyContent: 'space-between'
   },
   signOut: {
     flexDirection: 'row',
-    justifyContent: 'center'
-
-  }
+    justifyContent: 'center',
+  },
 });
 
 export default LoginScreen;
