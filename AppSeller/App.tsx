@@ -23,6 +23,7 @@ import DetailHoaDonScreen from './src/screen/hoadon/DetailHoaDonScreen';
 import HeaderRightComponent from './src/component/options-menu/HeaderRightComponent';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
+import EditMonScreen from './src/screen/mon/EditMonScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -106,6 +107,7 @@ const App: React.FC<AppProps> = () => {
                 component={AddMonScreen}
                 options={{title: 'Thêm món'}}
               />
+              <Stack.Screen name="EditMonScreen" component={EditMonScreen}  options={{ title: 'Sửa thông tin món'}}/>
 
               {/* Trang quản lý hóa đơn */}
               <Stack.Screen
