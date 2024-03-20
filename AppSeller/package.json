@@ -30,6 +30,7 @@
     "react-native-gesture-handler": "^2.15.0",
     "react-native-modest-checkbox": "^3.3.0",
     "react-native-pager-view": "^6.2.3",
+    "react-native-paper": "^5.12.3",
     "react-native-popup-menu": "^0.16.1",
     "react-native-reanimated": "^3.8.0",
     "react-native-redash": "^18.1.3",

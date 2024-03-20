@@ -24,6 +24,8 @@ import HeaderRightComponent from './src/component/options-menu/HeaderRightCompon
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
 import EditMonScreen from './src/screen/mon/EditMonScreen';
+import ListNhanVienScreen from './src/screen/nhanvien/ListNhanVienScreen';
+import UpdatePasswordScreen from './src/screen/nhanvien/UpdatePasswordScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -34,7 +36,7 @@ const App: React.FC<AppProps> = () => {
         <MenuProvider>
           <NavigationContainer>
             <Stack.Navigator
-              initialRouteName="LoginScreen"
+              initialRouteName="DetailNhanVienScreen"
               screenOptions={{headerTitleAlign: 'left'}}>
               <Stack.Screen
                 name="SplashScreen"
@@ -87,6 +89,11 @@ const App: React.FC<AppProps> = () => {
                 options={{title: 'Thêm nhân viên'}}
               />
               <Stack.Screen
+                name="ListNhanVienScreen"
+                component={ListNhanVienScreen}
+                options={{title: 'Danh sách nhân viên'}}
+              />
+              <Stack.Screen
                 name="DetailNhanVienScreen"
                 component={DetailNhanVienScreen}
                 options={{title: 'Thông tin nhân viên'}}
@@ -95,6 +102,11 @@ const App: React.FC<AppProps> = () => {
                 name="EditNhanVienBanScreen"
                 component={EditNhanVienBanScreen}
                 options={{title: 'Sửa nhân viên'}}
+              />
+              <Stack.Screen
+                name="UpdatePasswordScreen"
+                component={UpdatePasswordScreen}
+                options={{title: 'Đổi mật khẩu'}}
               />
               {/* Trang quản lý món */}
               <Stack.Screen
