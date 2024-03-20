@@ -20,8 +20,7 @@ interface ListItem {
   hinhAnh: string;
   trangThai: boolean;
   title: String;
-}
-;
+};
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
 const data: ListItem[] = [
@@ -99,7 +98,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   return (
 
     <View style={styles.container}>
-          <ScrollView>
+    <ScrollView>
 
       <View style={styles.containerHeader}>
         <EditTextComponent
@@ -154,7 +153,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
          />
         </TouchableOpacity>
        
-        </View>
+      </View>
       
           
       </ScrollView>

@@ -25,7 +25,9 @@ const DetailMonScreen: React.FC<NavProps> = ({ navigation }) => {
   const handleEditMon = (param1: string, param2: string) => {
     navigation.navigate('EditMonScreen', { param1: param1, param2: param2 });
   };
-  
+  const handleEvaluateScreen = (param1: string, param2: string) => {
+    navigation.navigate('EvaluateScreen', { param1: param1, param2: param2 });
+  };
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
@@ -52,6 +54,8 @@ const DetailMonScreen: React.FC<NavProps> = ({ navigation }) => {
           type="primary"
           text="Đánh giá"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
+          onPress={handleEvaluateScreen}
+
         />
       </View>
     </View>
