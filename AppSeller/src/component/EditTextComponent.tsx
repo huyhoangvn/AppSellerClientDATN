@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, View, StyleSheet, TouchableOpacity, TextStyle, StyleProp } from 'react-native';
+import { TextInput, View, StyleSheet, TouchableOpacity, TextStyle, StyleProp, ViewStyle } from 'react-native';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -12,13 +12,16 @@ interface Props {
   borderColor?: string;
   value?: string;
   icon?: IconProp;
+  stylesEdit?: StyleProp<ViewStyle>;
+  stylesContainer?: StyleProp<ViewStyle>;
+  iconRight?: IconProp;
   iconColor?: string;
   textStyles?: StyleProp<TextStyle>;
-  onChangeText: (text: string) => void;
+  onChangeText?: (text: string) => void;
 }
 
 const EditTextComponent = (props: Props) => {
-  const { label, placeholder, textColor, borderColor, value, icon, iconColor, textStyles, onChangeText } = props;
+  const { label, placeholder, textColor, borderColor, value, icon, iconColor, textStyles,iconRight, onChangeText,stylesEdit,stylesContainer } = props;
   const [showPassword, setShowPassword] = useState(false);
 
   const toggleShowPassword = () => {
@@ -28,12 +31,12 @@ const EditTextComponent = (props: Props) => {
   };
 
   return (
-    <View style={[styles.container, { borderColor }]}>
+    <View style={[styles.container, { borderColor },stylesContainer]}>
       {icon && <FontAwesomeIcon icon={icon} fa-thin style={[styles.icon, { color: iconColor } as any]} />}
       <TextInput
         placeholder={placeholder}
         placeholderTextColor="#808080"
-        style={[textStyles, styles.input, { color: textColor }]}
+        style={[textStyles, styles.input, { color: textColor },stylesEdit,]}
         secureTextEntry={label === 'pass' ? !showPassword : false}  
         value={value}
         onChangeText={onChangeText}
@@ -43,7 +46,13 @@ const EditTextComponent = (props: Props) => {
         <TouchableOpacity onPress={toggleShowPassword}>
           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={[styles.icon, { color: iconColor } as any]} />
         </TouchableOpacity>
-      )}
+      )}{
+        label === 'iconRight' && (
+          <TouchableOpacity onPress={toggleShowPassword}>
+      {iconRight && <FontAwesomeIcon icon={iconRight} fa-thin style={[styles.icon, { color: iconColor } as any]} />}
+        </TouchableOpacity>
+        )
+      }
     </View>
   );
 };
@@ -68,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: appColors.editTextColor,
   },
   icon: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     width: 24,
     height: 24,
   },
