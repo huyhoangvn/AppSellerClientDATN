@@ -18,10 +18,10 @@ const AddMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);
   return (
     <View style={styles.container}>
-    <Image
+    {/* <Image
       style={[styles.userLogo]} 
       source={require('../../assest/logo.png')}
-    />
+    /> */}
     <View style={styles.inputContainer}>
       <EditTextComponent
         label="text"

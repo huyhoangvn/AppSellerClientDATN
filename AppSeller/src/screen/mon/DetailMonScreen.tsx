@@ -29,7 +29,7 @@ const DetailMonScreen: React.FC<NavProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
-        <Image source={{ uri: hinhAnh }} style={styles.image} />
+        {/* <Image source={{ uri: hinhAnh }} style={styles.image} /> */}
       </View>
        <View style={styles.infoContainer}>
           <Text style={styles.name}>Tên món: {tenMon}</Text>
