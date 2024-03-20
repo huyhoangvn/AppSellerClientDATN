@@ -24,6 +24,7 @@ import HeaderRightComponent from './src/component/options-menu/HeaderRightCompon
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
 import EditMonScreen from './src/screen/mon/EditMonScreen';
+import EvaluateScreen from './src/screen/danhGia/EvaluateScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -114,6 +115,12 @@ const App: React.FC<AppProps> = () => {
                 name="DetailHoaDonScreen"
                 component={DetailHoaDonScreen}
                 options={{title: 'Chi tiết hóa đơn'}}
+              />
+                {/* Trang quản lý đánh giá */}
+                <Stack.Screen
+                name="EvaluateScreen"
+                component={EvaluateScreen}
+                options={{title: 'Đánh giá '}}
               />
             </Stack.Navigator>
           </NavigationContainer>
