@@ -4,6 +4,7 @@ export interface CuaHang{
     email?:string
     sdt?: string
     diaChi?: string
+    thoiGianTao?: Date
     thoiGianMo?: string
     thoiGianDong?: string
     hinhAnh?: string
