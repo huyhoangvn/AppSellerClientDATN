@@ -24,6 +24,9 @@ import HeaderRightComponent from './src/component/options-menu/HeaderRightCompon
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
 import EditMonScreen from './src/screen/mon/EditMonScreen';
+import ListNhanVienScreen from './src/screen/nhanvien/ListNhanVienScreen';
+import UpdatePasswordScreen from './src/screen/nhanvien/UpdatePasswordScreen';
+import EvaluateScreen from './src/screen/danhGia/EvaluateScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -34,7 +37,7 @@ const App: React.FC<AppProps> = () => {
         <MenuProvider>
           <NavigationContainer>
             <Stack.Navigator
-              initialRouteName="LoginScreen"
+              initialRouteName="DetailNhanVienScreen"
               screenOptions={{headerTitleAlign: 'left'}}>
               <Stack.Screen
                 name="SplashScreen"
@@ -87,6 +90,11 @@ const App: React.FC<AppProps> = () => {
                 options={{title: 'Thêm nhân viên'}}
               />
               <Stack.Screen
+                name="ListNhanVienScreen"
+                component={ListNhanVienScreen}
+                options={{title: 'Danh sách nhân viên'}}
+              />
+              <Stack.Screen
                 name="DetailNhanVienScreen"
                 component={DetailNhanVienScreen}
                 options={{title: 'Thông tin nhân viên'}}
@@ -95,6 +103,11 @@ const App: React.FC<AppProps> = () => {
                 name="EditNhanVienBanScreen"
                 component={EditNhanVienBanScreen}
                 options={{title: 'Sửa nhân viên'}}
+              />
+              <Stack.Screen
+                name="UpdatePasswordScreen"
+                component={UpdatePasswordScreen}
+                options={{title: 'Đổi mật khẩu'}}
               />
               {/* Trang quản lý món */}
               <Stack.Screen
@@ -114,6 +127,12 @@ const App: React.FC<AppProps> = () => {
                 name="DetailHoaDonScreen"
                 component={DetailHoaDonScreen}
                 options={{title: 'Chi tiết hóa đơn'}}
+              />
+                {/* Trang quản lý đánh giá */}
+                <Stack.Screen
+                name="EvaluateScreen"
+                component={EvaluateScreen}
+                options={{title: 'Đánh giá '}}
               />
             </Stack.Navigator>
           </NavigationContainer>
