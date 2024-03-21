@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
   header: {
     height: hp(15),
     justifyContent: 'center',
+    alignItems: 'center'
   },
   main: {
     height: hp(70),

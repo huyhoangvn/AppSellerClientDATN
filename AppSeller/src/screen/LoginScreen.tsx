@@ -30,10 +30,17 @@ import authenticationAPI from '../apis/authApi';
 import NhanVienApi from '../api/NhanVienApi';
 import {useDispatch} from 'react-redux';
 // import { addAuth, addToken } from '../redux/reducers/authReducers';
-import {deleteData, getData, saveData} from '../utils/storageUtils';
+import {
+  deleteData,
+  getData,
+  getToken,
+  saveData,
+  updateData,
+} from '../utils/storageUtils';
 import {deleteToken, setToken} from '../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AlertComponent from '../component/AlertComponent';
+import LoadingComponent from '../component/LoadingComponent';
 // import authenticationAPI from '../apis/authApi';
 
 const {height, width} = Dimensions.get('window');
@@ -45,7 +52,8 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   const [msg, setMsg] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [isRemember, setIsRemember] = useState<boolean>();
+  const [loading, setLoading] = useState<boolean>();
+  const [isRemember, setIsRemember] = useState(false);
 
   // console.log()
 
@@ -65,15 +73,38 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
     setPassword(text);
   };
 
-  const rememBer = async () => {
-    if (isRemember == true) {
-      await saveData({taiKhoan: userName, matKhau: password, isChecked: true});
+  const rememBer = async (
+    idUser: string,
+    idStore: string,
+    name: string,
+    position: any,
+  ) => {
+    if (isRemember === true) {
+      await saveData({
+        taiKhoan: userName,
+        matKhau: password,
+        isChecked: true,
+        idUser: idUser,
+        idStore: idStore,
+        position: position,
+        nameUser: name,
+      });
     } else {
+      console.log(idStore)
+
+      await saveData({
+        idUser: idUser,
+        idStore: idStore,
+        position: position,
+        nameUser: name,
+        isChecked: false,
+      });
       await deleteData('taiKhoan');
       await deleteData('matKhau');
-      await saveData({isChecked: false});
     }
   };
+
+ 
 
   const getRemembered = async () => {
     try {
@@ -89,10 +120,11 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
       if (storedChecked === true) {
         setUserName(storedUserName);
         setPassword(storedPassword);
-        setIsRemember(storedChecked);
+        setIsRemember(true);
       } else {
         setUserName('');
         setPassword('');
+        setIsRemember(false);
       }
     } catch (error) {
       console.error('Error retrieving remember me state:', error);
@@ -101,24 +133,27 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
 
   const handleLogin = async () => {
     try {
+      setLoading(true); // Bắt đầu hiển thị loading
+
       const res = await authenticationAPI.HandleAuthentication(
         '/nhanvien/auth',
         {taiKhoan: userName, matKhau: password},
         'post',
       );
-      console.log(res);
+
       if (res.success === true) {
-        navigation.navigate('HomeScreen');
-        const storedData = await getData();
-        const token = storedData?.token;
+        const token = await getToken();
         dispatch(setToken(token));
-        rememBer();
+        rememBer(res.index.id, res.index.idCH, res.index.tenNV, res.index.phanQuyen); // Truyền các đối số cần thiết vào hàm rememBer
+        navigation.navigate('HomeScreen');
       } else {
-        setMsg(res.msg)
-        handleShowAlert()
+        setMsg(res.msg);
+        handleShowAlert();
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,16 +181,12 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
     }
   };
 
-  const rmToken = () => {
-    dispatch(deleteToken(undefined));
-  };
-
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.header}>
-            <Logo style = {{    alignSelf: 'center'}}/>
+            <Logo style={{alignSelf: 'center'}} />
           </View>
           <View style={styles.main}>
             <EditTextComponent
@@ -235,11 +266,10 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
               onPress={handleLogin}
             />
           </View>
-          <View style = {{height: hp(7)}}>
-          <AppPath />
+          <View style={{height: hp(7)}}>
+            <AppPath />
           </View>
           <View style={styles.footer}>
-           
             <View>
               <ButtonComponent
                 type="primary"
@@ -268,7 +298,6 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
               /> */}
             </View>
 
-
             <View style={styles.signOut}>
               <TextComponent
                 text="Bạn chưa có tài khoản?  "
@@ -282,13 +311,16 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                   textDecorationLine: 'underline',
                   fontWeight: 'bold',
                 }}
-                onPress={() =>  {navigation.navigate('RegisterStoreScreen')}}
+                onPress={() => {
+                  navigation.navigate('RegisterStoreScreen');
+                }}
               />
               <AlertComponent
                 visible={showAlert}
                 message={msg}
                 onClose={handleCloseAlert}
               />
+              <LoadingComponent visible={loading ?? false} />
             </View>
           </View>
         </View>
