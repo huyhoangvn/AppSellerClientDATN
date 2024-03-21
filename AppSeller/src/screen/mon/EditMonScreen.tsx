@@ -11,10 +11,7 @@ import CheckBox from 'expo-checkbox';
 import DropdownPicker from '../../component/drowpdown/DropdownPicker';
 const EditMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const route = useRoute(); // Using useRoute hook to get route object
-  const handleAddMon = (param1: string, param2: string) => {
-    navigation.navigate("AddMonScreen", { param1: param1, param2: param2 }); // chuyển đến màn hình chi tiết món 
-  };
-  const { param1, param2 } = route.params as { param1: string; param2: string };
+ 
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);

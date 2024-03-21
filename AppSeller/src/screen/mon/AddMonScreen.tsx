@@ -12,7 +12,6 @@ import DropdownPicker from '../../component/drowpdown/DropdownPicker';
 
 const AddMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const route = useRoute(); // Using useRoute hook to get route object
-  const { param1, param2 } = route.params as { param1: string; param2: string };
 
   const [toggleCheckBox1, setToggleCheckBox1] = useState(false);
   const [toggleCheckBox2, setToggleCheckBox2] = useState(false);
