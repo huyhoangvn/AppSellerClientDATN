@@ -1,5 +1,5 @@
 export interface NhanVien{
-    id?: string
+    _id?: string
     idCH?: string
     tenNV?: string
     taiKhoan?: string
