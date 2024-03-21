@@ -92,10 +92,12 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     },
   ];
 
-  const handleSelectItem = (item: string | null) => {
-    setSelectedItem(item);
-    console.log('Selected item: ', item);
-  };
+    
+ const handleSelectItem = (item:any) => {
+  console.log("Selected item label: ", item.label);
+};
+
+
 
   const renderItem = ({item}: {item: NhanVien}) => {
     return (
@@ -136,14 +138,16 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             items={items} // Danh sách các mục
             defaultValue="item1" // Giá trị mặc định
             containerStyle={{width: wp(55), borderRadius: 100}}
-            onChangeItem={item => handleSelectItem(item)}
-          />
+            onChangeItem={handleSelectItem}
+            placeholder="Chức vụ"
+            />
           <DropDownComponent
             label="Select Item" // Nhãn cho DropDownComponent
             value={selectedItem} // Giá trị được chọn
             items={items} // Danh sách các mục
             defaultValue="item1"
             containerStyle={{width: wp(35)}}
+            placeholder='Trạng thái'
             onChangeItem={item => handleSelectItem(item)}
           />
         </View>

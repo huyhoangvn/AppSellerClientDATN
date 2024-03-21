@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { View, Text, StyleProp, ViewStyle } from 'react-native';
+import {View, Text, StyleProp, ViewStyle} from 'react-native';
 
 interface Props {
   label?: string;
   value?: string;
+  placeholder?: string;
   containerStyle: StyleProp<ViewStyle>;
-  items?: { label: string; value: string }[];
+  items?: {label: string; value: string}[];
   defaultValue?: string;
-  onChangeItem: (item: string | null) => void; // Chỉnh sửa kiểu của tham số thành string | null
+  onChangeItem: (item: string | null) => void; // Change the type of the parameter to string | null
 }
 
 const DropDownComponent = (props: Props) => {
-  const { value, items, defaultValue, onChangeItem,containerStyle, ...otherProps } = props;
+  const {
+    value,
+    items,
+    defaultValue,
+    onChangeItem,
+    containerStyle,
+    placeholder,
+    ...otherProps
+  } = props;
   const [open, setOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string | null>(value || defaultValue || null);
+  // const [selectedValue, setSelectedValue] = useState<string | null>(
+  //   value || defaultValue || null,
+  // );
+  const [selectedValue, setSelectedValue] = useState(
+   ''
+  );
 
-  const handleValueChange = (value: any) => { // Đảm bảo kiểu dữ liệu đúng cho value
-    setSelectedValue(value);
-    onChangeItem(value);
-  };
+
+  const handel = (value: any) => {
+      onChangeItem(value);
+  }
 
   return (
     <DropDownPicker
@@ -27,12 +41,13 @@ const DropDownComponent = (props: Props) => {
       value={selectedValue}
       items={items || []}
       setOpen={setOpen}
-      setValue={(value) => handleValueChange(value)} 
+      setValue={setSelectedValue}
+      multiple={false}
       zIndex={9999}
-      style={{ backgroundColor: '#fafafa' , borderRadius: 30, }}
+      style={{backgroundColor: '#fafafa', borderRadius: 30}}
       containerStyle={[containerStyle]}
-      onChangeValue={(value) => setSelectedValue(value)}
-      
+      onSelectItem={(value) => handel(value)}
+      placeholder={placeholder}
       {...otherProps}
     />
   );
