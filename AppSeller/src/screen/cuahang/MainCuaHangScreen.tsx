@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet,Image,KeyboardAvoidingView,ScrollView, Platform } from 'react-native';
 import TextComponent from '../../component/TextComponent';
 import {faShop,faPhone,faLocationDot,faEnvelope, faTimes, faTimeline, faTimesCircle, faTimesSquare, faClock, faPlane, faMessage} from '@fortawesome/free-solid-svg-icons';
-import { useSelector, useDispatch } from 'react-redux';
-import { dataStore, getDataStore } from '../../redux/reducers/authReducers'; // Import selector để lấy dữ liệu từ store
-import { getData } from '../../utils/storageUtils'; // Import hàm lấy dữ liệu từ AsyncStorage
 import NavProps from '../../models/props/NavProps';
 import {
   widthPercentageToDP as wp,
@@ -13,26 +10,7 @@ import {
 
 
 const MainCuaHangScreen: React.FC<NavProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const storeData = useSelector(getDataStore); // Lấy dữ liệu cửa hàng từ store
   const [imageUri, setImageUri] = useState<string | null>(null);
-
-  const { tenCH, sdt, diaChi, email,thoiGianMo,thoiGianDong } = storeData; // Trích xuất thông tin cửa hàng từ dữ liệu lấy được từ store
-
-  useEffect(() => {
-    // Gọi hàm lấy dữ liệu từ AsyncStorage khi màn hình được tải
-    fetchDataFromAsyncStorage();
-  }, []);
-
-  const fetchDataFromAsyncStorage = async () => {
-    // Gọi hàm lấy dữ liệu từ AsyncStorage
-    const dataFromAsyncStorage = await getData();
-    if (dataFromAsyncStorage) {
-      // Nếu có dữ liệu từ AsyncStorage, cập nhật store
-      dispatch(dataStore(dataFromAsyncStorage));
-    }
-  };
-
   return (
      <ScrollView style={styles.container} >
      <View style={styles.header}>
