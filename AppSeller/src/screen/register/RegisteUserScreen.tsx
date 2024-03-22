@@ -106,6 +106,10 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
       }
     } catch (err) {
       console.log(err);
+      setTimeout(() => {
+        setMsg('Lỗi server');
+        handleShowAlert();
+      }, 1000);
     }
   };
   
@@ -144,6 +148,11 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
       }, 1000);
     } catch (err) {
       console.log(err);
+      setTimeout(() => {
+        setMsg('Lỗi server');
+        handleShowAlert();
+        setIsLoading(false);
+      }, 1000);
     }
   };
  
@@ -190,7 +199,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
           
 
           <EditTextComponent
-            label="text"
+            label="number"
             placeholder="Số điện thoại"
             value={phone}
             iconColor="gray"
