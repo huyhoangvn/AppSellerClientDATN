@@ -16,12 +16,15 @@ import {
 import {appColors} from '../../constants/appColors';
 import ButtonComponent from '../../component/ButtonComponent';
 import EditTextComponent from '../../component/EditTextComponent';
-const DetailNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+const DetailNhanVienScreen: React.FC<NavProps> = ({navigation,route} : any) => {
+  const {item , position} = route.params;
 
-  const hahandelUpdate = () => {};
+  const hahandelUpdate = () => {
+    navigation.navigate('EditNhanVienBanScreen', {item});
+  };
+  const hahandelUpdatePass = () => {
+    navigation.navigate('UpdatePasswordScreen');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -35,60 +38,61 @@ const DetailNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
       <View style={styles.main}>
         <View style = {styles.viewText}>
           <Text>Tên</Text>
-          <Text style = {styles.textPrimary}>Nguyễn huy hoàng</Text>
+          <Text style = {styles.textPrimary}>{item.tenNV}</Text>
         </View>
 
         <View style = {styles.viewText}>
           <Text>Giới tính</Text>
-          <Text style = {styles.textPrimary}>Nam</Text>
+          <Text style = {styles.textPrimary}>{item.gioiTinh == 2 ? 'nam' : 'nữ'}</Text>
 
         </View>
 
         <View style = {styles.viewText}>
           <Text>Email</Text>
-          <Text style = {styles.textPrimary}>abc@gmail.com</Text>
+          <Text style = {styles.textPrimary}>{item.taiKhoan}</Text>
 
         </View>
 
         <View style = {styles.viewText}>
           <Text>Số điện thoại</Text>
-          <Text style = {styles.textPrimary}>1234567890</Text>
+          <Text style = {styles.textPrimary}>{item.sdt}</Text>
 
         </View>
         
         <View style = {styles.viewText}>
           <Text>Địa chỉ</Text>
           <Text style={[styles.textPrimary, styles.wrapText, styles.addressText]}>
-    Nội dung của địa chỉ dài, nếu quá dài sẽ tự động xuống dòng
+          {item.diaChi}
   </Text>
         </View>
 
         <View style = {styles.viewText}>
           <Text>Vai trò</Text>
-          <Text style = {styles.textPrimary}>Quản lý</Text>
+          <Text style = {styles.textPrimary}>{item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}</Text>
 
         </View>
 
         <View style = {styles.viewText}>
           <Text>Trạng thái</Text>
-          <Text style = {styles.textPrimary}>Hoạt động</Text>
+          <Text style = {styles.textPrimary}>{item.trangThai === true ? 'Hoạt động' : 'Không hoạt động'}</Text>
 
         </View>
       
         
       </View>
       <View style = {styles.footer}>
-      <ButtonComponent
+        {position === 0 ? (  <ButtonComponent
           type="primary"
           text="Sửa nhân viên"
           textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
           onPress={hahandelUpdate}
-        />
+        />) : null}
+    
         <ButtonComponent
           type="primary"
           text="Đổi mật khẩu"
           textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-          onPress={hahandelUpdate}
+          onPress={hahandelUpdatePass}
         />
       </View>
     </View>
@@ -128,7 +132,8 @@ const styles = StyleSheet.create({
     fontWeight:'bold'
   },
   wrapText:{
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    textAlign: 'right'
   },
   addressText: {
     width: '70%', // Chiếm 50% chiều rộng của View cha

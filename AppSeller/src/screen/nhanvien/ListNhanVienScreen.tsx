@@ -28,6 +28,7 @@ import authenticationAPI from '../../apis/authApi';
 import {getData} from '../../utils/storageUtils';
 import TabComponent from '../../component/TabComponent';
 import LoadingComponent from '../../component/LoadingComponent';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -68,7 +69,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     setPosition(storedPosison);
   };
 
-  console.log(position);
 
   const getListUser = async (
     name: any,
@@ -97,6 +97,11 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
       setLoading(false);
     }
   };
+  const handelDetail = (item: any) => {
+    console.log(item)
+    navigation.navigate('DetailNhanVienScreen', {item: item, position: position});
+  };
+
 
   useEffect(() => {
     getListUser('', '', '', 2);
@@ -104,8 +109,18 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     // setRememberedChecked(true);
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      getListUser('', '', '', 2);
+      return () => {
+        // Cleanup logic nếu cần (không bắt buộc)
+      };
+    }, [])
+  );
+
   const renderItem = ({item}: {item: NhanVien}) => {
     return (
+      <TouchableOpacity onPress={ () => handelDetail(item)}>
       <View style={styles.item}>
         <Image source={{uri: item.hinhAnh}} style={{width: 65, height: 65}} />
         <View style={{paddingHorizontal: 10}}>
@@ -118,6 +133,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
           </Text>
         </View>
       </View>
+      </TouchableOpacity>
     );
   };
   return (
@@ -181,7 +197,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
           {data.length <= 2 && data.length !== 0 ? (
             <Text>xem thêm</Text>
           ) : (
-            <Text></Text>
+            null
           )}
         </TouchableOpacity>
         {position === 0 ? (

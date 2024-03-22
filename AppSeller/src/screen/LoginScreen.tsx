@@ -93,13 +93,13 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
       console.log(idStore)
 
       await saveData({
+        taiKhoan: userName,
         idUser: idUser,
         idStore: idStore,
         position: position,
         nameUser: name,
         isChecked: false,
       });
-      await deleteData('taiKhoan');
       await deleteData('matKhau');
     }
   };
@@ -134,7 +134,6 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   const handleLogin = async () => {
     try {
       setLoading(true); // Bắt đầu hiển thị loading
-
       const res = await authenticationAPI.HandleAuthentication(
         '/nhanvien/auth',
         {taiKhoan: userName, matKhau: password},
