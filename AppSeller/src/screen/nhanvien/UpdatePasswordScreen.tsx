@@ -16,12 +16,12 @@ import {
 import {appColors} from '../../constants/appColors';
 import EditTextComponent from '../../component/EditTextComponent';
 import ButtonComponent from '../../component/ButtonComponent';
-import { getData } from '../../utils/storageUtils';
+import {getData} from '../../utils/storageUtils';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import authenticationAPI from '../../apis/authApi';
 const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
-  const [id, setId] = useState('')
+  const [id, setId] = useState('');
   const [oldPass, setOldPass] = useState('');
   const [userName, setUserName] = useState('');
   const [newPass, setNewPass] = useState('');
@@ -39,9 +39,6 @@ const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
     setShowAlert(false);
   };
   const validateInputs = () => {
-   
-   
-
     if (!newPass.trim()) {
       return 'Vui lòng nhập mật khẩu';
     }
@@ -50,20 +47,18 @@ const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
       return 'Mật khẩu nhập lại không khớp với mật khẩu ban đầu';
     }
 
-
     return null;
   };
-  
 
-  const getUser =async () =>{
+  const getUser = async () => {
     const user = await getData();
-    setUserName(user?.taiKhoan || '')
-    setId(user?.idUser || '')
-  }
+    setUserName(user?.taiKhoan || '');
+    setId(user?.idUser || '');
+  };
 
   useEffect(() => {
-    getUser()
-  },[])
+    getUser();
+  }, []);
 
   const save = async () => {
     setLoading(true);
@@ -86,10 +81,12 @@ const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
       }
     } catch (err) {
       console.log(err);
+      setMsg('Request timeout. Please try again later.'); // Set error message
+      handleShowAlert();
     } finally {
       setLoading(false);
     }
-  }
+  };
   const handelSave = () => {
     const errorMessage = validateInputs();
     if (errorMessage) {
@@ -97,8 +94,7 @@ const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
       handleShowAlert();
       return;
     }
-    save()
-    
+    save();
   };
   return (
     <View style={styles.container}>
@@ -146,11 +142,11 @@ const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
         />
       </View>
       <AlertComponent
-                visible={showAlert}
-                message={msg}
-                onClose={handleCloseAlert}
-              />
-              <LoadingComponent visible={loading ?? false} />
+        visible={showAlert}
+        message={msg}
+        onClose={handleCloseAlert}
+      />
+      <LoadingComponent visible={loading ?? false} />
     </View>
   );
 };

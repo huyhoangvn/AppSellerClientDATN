@@ -28,13 +28,17 @@ import authenticationAPI from '../../apis/authApi';
 import {getData} from '../../utils/storageUtils';
 import TabComponent from '../../component/TabComponent';
 import LoadingComponent from '../../component/LoadingComponent';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
+import AlertComponent from '../../component/AlertComponent';
 
 const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<NhanVien[]>([]);
   const [position, setPosition] = useState<any>();
+  const [showAlert, setShowAlert] = useState(false);
+  const [msg, setMsg] = useState('');
+
   const itemsPosition = [
     {label: 'Quản lý', value: 0},
     {label: 'Nhân viên', value: 1},
@@ -43,6 +47,14 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     {label: 'Hoạt động', value: true},
     {label: 'Không hoạt động', value: false},
   ];
+
+  const handleShowAlert = () => {
+    setShowAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
 
   const handleSelectItemPosition = (item: any) => {
     console.log('Selected item label: ', item.value);
@@ -69,7 +81,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     setPosition(storedPosison);
   };
 
-
   const getListUser = async (
     name: any,
     phanQuyen: any,
@@ -93,15 +104,19 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
       }
     } catch (err) {
       console.log(err);
+      setMsg('Request timeout. Please try again later.'); // Set error message
+      handleShowAlert();
     } finally {
       setLoading(false);
     }
   };
   const handelDetail = (item: any) => {
-    console.log(item)
-    navigation.navigate('DetailNhanVienScreen', {item: item, position: position});
+    console.log(item);
+    navigation.navigate('DetailNhanVienScreen', {
+      item: item,
+      position: position,
+    });
   };
-
 
   useEffect(() => {
     getListUser('', '', '', 2);
@@ -115,24 +130,26 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
       return () => {
         // Cleanup logic nếu cần (không bắt buộc)
       };
-    }, [])
+    }, []),
   );
 
   const renderItem = ({item}: {item: NhanVien}) => {
     return (
-      <TouchableOpacity onPress={ () => handelDetail(item)}>
-      <View style={styles.item}>
-        <Image source={{uri: item.hinhAnh}} style={{width: 65, height: 65}} />
-        <View style={{paddingHorizontal: 10}}>
-          <Text style={{fontWeight: 'bold', color: 'black'}}>{item.tenNV}</Text>
-          <Text style={{color: 'black'}}>
-            Chức vụ: {item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}{' '}
-          </Text>
-          <Text style={{color: item.trangThai ? 'green' : 'red'}}>
-            {item.trangThai ? 'Hoạt động' : 'Không hoạt động'}
-          </Text>
+      <TouchableOpacity onPress={() => handelDetail(item)}>
+        <View style={styles.item}>
+          <Image source={{uri: item.hinhAnh}} style={{width: 65, height: 65}} />
+          <View style={{paddingHorizontal: 10}}>
+            <Text style={{fontWeight: 'bold', color: 'black'}}>
+              {item.tenNV}
+            </Text>
+            <Text style={{color: 'black'}}>
+              Chức vụ: {item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}{' '}
+            </Text>
+            <Text style={{color: item.trangThai ? 'green' : 'red'}}>
+              {item.trangThai ? 'Hoạt động' : 'Không hoạt động'}
+            </Text>
+          </View>
         </View>
-      </View>
       </TouchableOpacity>
     );
   };
@@ -194,11 +211,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
         <TouchableOpacity
           style={{position: 'absolute', alignSelf: 'center'}}
           onPress={handelGetAll}>
-          {data.length <= 2 && data.length !== 0 ? (
-            <Text>xem thêm</Text>
-          ) : (
-            null
-          )}
+          {data.length <= 2 && data.length !== 0 ? <Text>xem thêm</Text> : null}
         </TouchableOpacity>
         {position === 0 ? (
           <FloatButtonComponent
@@ -210,6 +223,11 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
         ) : null}
       </View>
       <LoadingComponent visible={loading} />
+      <AlertComponent
+        visible={showAlert}
+        message={msg}
+        onClose={handleCloseAlert}
+      />
     </View>
   );
 };

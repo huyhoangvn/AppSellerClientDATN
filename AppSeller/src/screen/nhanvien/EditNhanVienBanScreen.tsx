@@ -57,6 +57,8 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
       }
     } catch (err) {
       console.log(err);
+      setMsg('Request timeout. Please try again later.'); // Set error message
+      handleShowAlert();
     } finally {
       setLoading(false);
     }
