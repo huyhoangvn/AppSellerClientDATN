@@ -99,6 +99,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
 
       if (res.success === true) {
         setMsg(res.msg)
+        handleShowAlert();
       } else {
         setMsg(res.msg)
         handleShowAlert();
