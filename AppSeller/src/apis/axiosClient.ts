@@ -3,8 +3,9 @@ import queryString from 'query-string';
 import {appInfo} from '../constants/appInfos';
 import { AxiosResponse } from '../constants/axiosResponse';
 import { useDispatch, useSelector } from 'react-redux';
-import { getData, saveData } from '../utils/storageUtils';
+import { getData, saveData, saveToken } from '../utils/storageUtils';
 import store from '../redux/store';
+import { setToken } from '../redux/reducers/authReducers';
 // import { CustomAxiosResponse } from '../constants/appApiResponse';
 // import { CustomAxiosResponse } from '../constants/appApiResponse';
 
@@ -44,18 +45,45 @@ axiosClient.interceptors.request.use(async (config) => {
 
 
 
+// axiosClient.interceptors.response.use(
+//   async (res: AxiosResponse) => {
+   
+//     try {
+    
+//     // Gọi hàm để lưu dữ liệu vào AsyncStorage
+//       if (res.data && res.status === 200) {
+//         const token = res.headers.authorization;
+//         await saveToken( token ); // Lưu token vào AsyncStorage
+//         return res.data;
+//       }
+//       throw new Error('Error');
+//     } catch (error) {
+//       console.log('Error api:', error);
+//       throw new Error('Error');
+//     }
+//   },
+//   (error: any) => {
+//     if (error.response) {
+//       const errorData = error.response.data;
+//       throw new Error(JSON.stringify({ error: errorData, message: 'Đã xảy ra lỗi' }));
+//     } else {
+//       console.log('Error api:', JSON.stringify(error));
+//       throw new Error('Error');
+//     }
+//   }
+// );
+
+
+
 axiosClient.interceptors.response.use(
   async (res: AxiosResponse) => {
-   
     try {
-    
-    // Gọi hàm để lưu dữ liệu vào AsyncStorage
-      if (res.data && res.status === 200) {
+      // Kiểm tra nếu có token và phản hồi thành công (status === 200)
+      if (res.headers.authorization && res.status === 200) {
         const token = res.headers.authorization;
-        await saveData({ token }); // Lưu token vào AsyncStorage
-        return res.data;
+        await saveToken(token); // Lưu token vào AsyncStorage
       }
-      throw new Error('Error');
+      return res.data;
     } catch (error) {
       console.log('Error api:', error);
       throw new Error('Error');
@@ -71,6 +99,8 @@ axiosClient.interceptors.response.use(
     }
   }
 );
+
+
 
 
 

@@ -3,7 +3,11 @@ import { View, Text, StyleSheet, TextInput, FlatList, Image, Button } from 'reac
 import NavProps from '../../models/props/NavProps';
 import { Mon } from '../../models/Mon';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faSearch, faAdd, } from '@fortawesome/free-solid-svg-icons';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import { faMagnifyingGlass, faSearch, faAdd, } from '@fortawesome/free-solid-svg-icons';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import EditTextComponent from '../../component/EditTextComponent';
 import DropdownPicker from '../../component/drowpdown/DropdownPicker';
@@ -12,6 +16,11 @@ import ButtonComponent from '../../component/ButtonComponent';
 import { TextBold } from 'iconsax-react-native';
 import TextComponent from '../../component/TextComponent';
 import AddMonScreen from '../../screen/mon/AddMonScreen';
+import {appColors} from '../../constants/appColors';
+import DropDownComponent from '../../component/DropDownComponent';
+import FloatButtonComponent from '../../component/FloatButtonComponent';
+import LoadingComponent from '../../component/LoadingComponent';
+
 interface ListItem {
   id: string;
   tenMon: string;
@@ -23,146 +32,206 @@ interface ListItem {
 };
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
-const data: ListItem[] = [
-  { id: '1', tenMon: 'Gà rán FIVESTAR - 422 Cát Quế', tenLM:"Đồ chiên", giaTien: 59000, hinhAnh: 'https://cdn.tgdd.vn/Files/2017/03/22/963765/cach-lam-ga-ran-thom-ngon-8_760x450.jpg', trangThai: true , title:"Tất cả"},
-  { id: '2', tenMon: 'Hamburger', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả" },
-  { id: '3', tenMon: 'Bánh mì  - 422 Huế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://cdn1.tuoitre.vn/zoom/600_315/471584752817336320/2023/2/20/viet-populaire-copy-e1659353432539-1024x681-16594235658881650374369-1676888750526893807756-41-0-423-730-crop-16768887676751617090180.jpg', trangThai: 'Hoạt động', title:"Tất cả"  },
-  { id: '4', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên",  giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-  { id: '5', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-  { id: '6', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-];
+// const data: ListItem[] = [
+//   { id: '1', tenMon: 'Gà rán FIVESTAR - 422 Cát Quế', tenLM:"Đồ chiên", giaTien: 59000, hinhAnh: 'https://cdn.tgdd.vn/Files/2017/03/22/963765/cach-lam-ga-ran-thom-ngon-8_760x450.jpg', trangThai: true , title:"Tất cả"},
+//   { id: '2', tenMon: 'Hamburger', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả" },
+//   { id: '3', tenMon: 'Bánh mì  - 422 Huế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://cdn1.tuoitre.vn/zoom/600_315/471584752817336320/2023/2/20/viet-populaire-copy-e1659353432539-1024x681-16594235658881650374369-1676888750526893807756-41-0-423-730-crop-16768887676751617090180.jpg', trangThai: 'Hoạt động', title:"Tất cả"  },
+//   { id: '4', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên",  giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
+//   { id: '5', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
+//   { id: '6', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
+// ];
 
 const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
-  const [search, setSearch] = useState('');
-  const [mon, setMon] = useState(''); // State to store fetched data
-  // const [data, setData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Mon[]>([]);
+  const [position, setPosition] = useState<any>();
 
-  const handleSearchChange = (text: string) => {
-    setSearch(text);
-  };
+  const itemsPosition = [
+    {label: '1000', value: 0},
+    {label: '2000', value: 1},
+    {label: '3000', value: 2},
+  ];
+  const itemsStatus = [
+    {label: 'Hoạt động', value: true},
+    {label: 'Không hoạt động', value: false},
+  ];
+  
   const handleAddMon = (param1: string, param2: string) => {
     navigation.navigate("AddMonScreen", { param1: param1, param2: param2 });
   };
-
+  const acstionSearch = (item: string) => {
+    getListMon(item, '', '', '');
+  };
   const handleDetail = ( item: ListItem ) => {
     navigation.navigate("DetailMonScreen", { item });
   };
+
+  const handleSelectItemPosition = (item: any) => {
+    console.log('Selected item label: ', item.value);
+    getListMon('', item.value, '', '');
+  };
+  const handleSelectItemStatus = (item: any) => {
+    console.log('Selected item label: ', item.value);
+    getListMon('', '', item.value, '');
+  };
+
+  const handelGetAll = () => {
+    getListMon('', '', '', '');
+  };
+
+  const getListMon = async (
+  tenMon: any,
+  giaTienMin: any,
+  giaTienMax: any,
+  trangThai: any,
+  ) => {
+   
+    setLoading(true);
+
+    try {
+      const res = await authenticationAPI.HandleAuthentication (
+        `/nhanvien/mon?tenMon=${tenMon}&trangThai=${trangThai}&giaTienMin=${giaTienMin}$giaTienMax=${giaTienMax}`,
+        'get',
+      )
+      console.log(res.list);
+      setData(res.list)
+      // setData(res.list.KetQuaLoaiMon);
+      if (res.success === true) {
+        if (res.index.length !== 0) {
+          setData(res.index);
+        } else {
+          setData([]);
+        }
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    finally {
+      setLoading(false);
+    }
+  
+}
+
  
-  // useEffect(() => {
-  //   // Update the document title using the browser API
-  //   handleMon();
-  // }, []); 
-  //  const handleMon = async () =>{
-  //   setLoading(true);
+  useEffect(() => {
+    // Update the document title using the browser API
+    getListMon('', '', '', 2);
+  }, []); 
 
-  //   try {
-  //     const res = await authenticationAPI.HandleAuthentication (
-  //       '/nhanvien/mon',
-  //       'get',
-  //     )
-  //     console.log(res.list);
-  //     setData(res.list)
-  //     // setData(res.list.KetQuaLoaiMon);
+  // const renderTitleItem = ({ item }: { item: string }) => (
+  //   <View style={styles.titleItemContainer}>
+  //     <Text>{item}</Text>
+  //   </View>
+  // );
 
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   finally {
-  //     setLoading(false);
-  //   }
-  // }
-  const renderTitleItem = ({ item }: { item: string }) => (
-    <View style={styles.titleItemContainer}>
-      <Text>{item}</Text>
-    </View>
-  );
+  const renderItem = ({ item }: { item: ListItem }) => {  
+    return (
 
-  const renderItem = ({ item }: { item: ListItem }) => (   
     <TouchableOpacity onPress={() => handleDetail(item)}>
     <View style={styles.itemContainer}>
-        <Image source={{ uri: item.hinhAnh }} style={styles.image} />
+        <Image source={{ uri: item.hinhAnh }} style={styles.image} 
+        />
         <View style={styles.infoContainer}>
           <Text style={styles.name}>Tên món: {item.tenMon}</Text>
           <Text style={styles.type}>Loại món: {item.tenLM}</Text>
           <Text style={styles.price}>Gía tiền: {item.giaTien}đ</Text>
-          <Text style={[styles.status, item.trangThai ? styles.activeStatus : styles.inactiveStatus]}>
-           {item.trangThai ? 'Hoạt động' : 'Khóa'}
-          </Text>       
+          <Text style={{color: item.trangThai ? 'green' : 'red'}}>
+            {item.trangThai ? 'Hoạt động' : 'Khóa'}
+          </Text>    
        </View>
       </View>
     </TouchableOpacity>
-  );
+    );
+    };
 
   return (
 
-    <View style={styles.container}>
-    <ScrollView>
-
-      <View style={styles.containerHeader}>
-        <EditTextComponent
-          label="text"
-          placeholder="Nhập tên món"
-          value={search}
-          iconColor="#5a9223"
-          onChangeText={handleSearchChange}
-        />
-         <TouchableOpacity  style={styles.searchButton}>
-             <FontAwesomeIcon icon={faSearch} size={20} style={{color:"#5a9223", }} />
-         </TouchableOpacity>
-      </View>
-
-      <View style={styles.dropdownContainer}>
-        <DropdownPicker
-          label='Khoảng giá tiền'
-          values={[]}
-          onSelect={(val: string) => console.log(val)}
-          selected={undefined}
-        />
-        <DropdownPicker
-          label='Trạng thái'
-          values={[]}
-          onSelect={(val: string) => console.log(val)}
-          selected={undefined}
-        />
-      </View>
+  <View style={styles.container}>
+     <View style={styles.main}>
+         <EditTextComponent
+          label="iconRight"
+          placeholder="Nhập tên nhân viên"
+          iconRight={faMagnifyingGlass}
+          stylesEdit={{backgroundColor: 'white'}}
+          onChangeText={(text: string) => acstionSearch(text)}
+          stylesContainer={{
+            backgroundColor: appColors.white,
+            borderColor: 'black',
+            borderWidth: 1,
+            elevation: 0,
+          }}
+          iconColor={appColors.primary}
+        /> 
+        <View style={styles.viewDropDow}>
+          <DropDownComponent
+            label="Select Item" // Nhãn cho DropDownComponent
+            value={selectedItem} // Giá trị được chọn
+            items={itemsPosition.map(item => ({
+              label: item.label,
+              value: item.value.toString(),
+            }))} // Danh sách các mục
+            defaultValue="item1" // Giá trị mặc định
+            containerStyle={{width: wp(55), borderRadius: 100}}
+            onChangeItem={item => handleSelectItemPosition(item)}
+            placeholder="Khoảng giá tiền"
+          />
+          <DropDownComponent
+            label="Select Item" // Nhãn cho DropDownComponent
+            value={selectedItem} // Giá trị được chọn
+            items={itemsStatus.map(item => ({
+              label: item.label,
+              value: item.value.toString(),
+            }))} // Danh sách các mục
+            defaultValue="item1"
+            containerStyle={{width: wp(35)}}
+            placeholder="Trạng thái"
+            onChangeItem={item => handleSelectItemStatus(item)}
+          />
+        </View>
+     </View>
+     
       
-      <FlatList
+      {/* <FlatList
         data={titles}
         renderItem={renderTitleItem}
         keyExtractor={(item, index) => index.toString()}
         horizontal
-        />
+        /> */}
  
   
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        style={{ width: '100%' }}
-        // refreshing={loading}
-        // onRefresh={handleMon}
-      />
-      
-      <View style={styles.centeredTextContainer}>
-        <TouchableOpacity>
-        <TextComponent 
-          text='Xem thêm ...'
-          styles={styles.textXemThem}
-         />
+  <View style={styles.footer}>
+        {data.length === 0 ? (
+          <Text style={{textAlign: 'center', fontSize: 20}}>
+            không tìm thấy nhân viên
+          </Text>
+        ) : (
+          <FlatList
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={item => item._id || ''}></FlatList>
+        )}
+        <TouchableOpacity
+          style={{position: 'absolute', alignSelf: 'center'}}
+          onPress={handelGetAll}>
+          {data.length <= 2 && data.length !== 0 ? (
+            <Text>xem thêm</Text>
+          ) : (
+            <Text></Text>
+          )}
         </TouchableOpacity>
-       
+        {position === 0 ? (
+          <FloatButtonComponent
+            icon={faAdd}
+            size={25}
+            stylesNew={{alignSelf: 'flex-end', position: 'absolute'}}
+            onPress={() => navigation.navigate('AddNhanVienBanScreen')}
+          />
+        ) : null}
       </View>
-      
-          
-      </ScrollView>
-      <TouchableOpacity style={styles.addButton}
-       onPress={handleAddMon}
-      >
-         <FontAwesomeIcon icon={faAdd} size={24} color="white" />
-
-      </TouchableOpacity>  
+      <LoadingComponent visible={loading} />
     </View>
 
   );
@@ -233,39 +302,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 3, 
   },
-  activeStatus: {
-    color: 'green', // Color for 'Khóa'
 
+  main: {
+    height: hp(18),
+    justifyContent: 'space-between',
   },
-  inactiveStatus: {
-    color: 'red', // Color for 'Hoạt động'
-
-  },
-  titleItemContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 20,
-    marginRight: 10,
-    marginHorizontal: 10,
-  },
-  searchButton: {
-    position: 'absolute',
-    right: 20, 
-    alignContent: 'center',
-    top: -10, 
-  },
-  centeredTextContainer: {
-    flex: 1,
+  footer: {
     justifyContent: 'center',
-    alignItems: 'center',
-
+    height: hp(65),
+    padding: 10,
   },
-  textXemThem:{
-    color: '#5a9223',
-
-  }
+  viewDropDow: {
+    padding: 10,
+    flexDirection: 'row',
+    width: wp(100),
+    justifyContent: 'space-between',
+  },
+  item: {
+    padding: 10,
+    borderColor: 'black',
+    borderWidth: 0.5,
+    marginTop: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+  },
+ 
 });
 
 export default ListMonScreen;

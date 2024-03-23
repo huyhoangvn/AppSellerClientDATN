@@ -3,7 +3,7 @@ import { NhanVien } from "../../models/NhanVien";
 import { CuaHang } from "../../models/CuaHang";
 
 const initialState: NhanVien = {
-    id: '',
+    _id: '',
     idCH: '',
     tenNV: '',
     gioiTinh: 0,
