@@ -32,27 +32,26 @@ const EditTextComponent = (props: Props) => {
 
   return (
     <View style={[styles.container, { borderColor },stylesContainer]}>
-      {icon && <FontAwesomeIcon icon={icon} fa-thin style={[styles.icon, { color: iconColor } as any]} />}
+      {icon && <FontAwesomeIcon icon={icon} style={[styles.icon, { color: iconColor }]} />}
       <TextInput
         placeholder={placeholder}
         placeholderTextColor="#808080"
-        style={[textStyles, styles.input, { color: textColor },stylesEdit,]}
+        style={[textStyles, styles.input, { color: textColor },stylesEdit]}
         secureTextEntry={label === 'pass' ? !showPassword : false}  
         value={value}
         onChangeText={onChangeText}
         keyboardType={label === 'number' ? 'numeric' : 'default'}
-        />
+      />
+      {iconRight && (
+        <TouchableOpacity onPress={toggleShowPassword}>
+          <FontAwesomeIcon icon={iconRight} style={[styles.icon, { color: iconColor }]} />
+        </TouchableOpacity>
+      )}
       {label === 'pass' && (
         <TouchableOpacity onPress={toggleShowPassword}>
-          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={[styles.icon, { color: iconColor } as any]} />
+          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={[styles.icon, { color: iconColor }]} />
         </TouchableOpacity>
-      )}{
-        label === 'iconRight' && (
-          <TouchableOpacity onPress={toggleShowPassword}>
-      {iconRight && <FontAwesomeIcon icon={iconRight} fa-thin style={[styles.icon, { color: iconColor } as any]} />}
-        </TouchableOpacity>
-        )
-      }
+      )}
     </View>
   );
 };
@@ -82,6 +81,5 @@ const styles = StyleSheet.create({
     height: 24,
   },
 });
-
 
 export default EditTextComponent;

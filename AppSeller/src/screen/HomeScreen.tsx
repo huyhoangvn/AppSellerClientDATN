@@ -13,6 +13,7 @@ import ListMonScreen from "./mon/ListMonScreen"
 import ListHoaDonScreen from "./hoadon/ListHoaDonScreen"
 import ListNhanVienScreen from "./nhanvien/ListNhanVienScreen"
 import NavProps from '../models/props/NavProps';
+import HeaderRightComponent from '../component/options-menu/HeaderRightComponent';
 
 const Tab = createBottomTabNavigator();
 
