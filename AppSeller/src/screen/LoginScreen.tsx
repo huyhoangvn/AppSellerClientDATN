@@ -151,19 +151,20 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
       }
     } catch (err) {
       console.log(err);
+      setMsg('Request timeout. Please try again later.'); // Set error message
+      handleShowAlert(); // Show alert
     } finally {
       setLoading(false);
     }
   };
+
+  
 
   useEffect(() => {
     getRemembered();
     // setRememberedChecked(true);
   }, []);
 
-  // const handelCheked = async (status:boolean) =>{
-  //   rememBer()
-  // }
 
   const handleGet = async () => {
     try {

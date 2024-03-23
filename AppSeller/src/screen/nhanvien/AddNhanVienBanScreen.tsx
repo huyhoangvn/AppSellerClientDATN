@@ -99,6 +99,8 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
       }
     } catch (err) {
       console.log(err);
+      setMsg('Request timeout. Please try again later.'); // Set error message
+      handleShowAlert();
     } finally {
       setLoading(false);
     }
