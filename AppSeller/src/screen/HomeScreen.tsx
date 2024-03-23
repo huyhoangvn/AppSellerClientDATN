@@ -16,7 +16,8 @@ import NavProps from '../models/props/NavProps';
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen: React.FC<NavProps> = ({ navigation }) =>  {
+const HomeScreen: React.FC<NavProps> = ({ navigation,route }:any) =>  {
+  const idCH = route.params?.idCH; // Lấy idCH từ tham số định tuyến
 
   const renderTabScreenOptions = (label: string, icon: IconProp) => ({
     tabBarIcon: ({ color, size }: { color: string; size: number }) => (
@@ -39,6 +40,7 @@ const HomeScreen: React.FC<NavProps> = ({ navigation }) =>  {
         },}} initialRouteName='MainCuaHangScreen'>
       <Tab.Screen 
         name="MainThongKeScreen" 
+        initialParams={{ idCH }} 
         component={MainThongKeScreen} 
         options={renderTabScreenOptions('Thống kê', faChartLine)}
       />
@@ -49,6 +51,7 @@ const HomeScreen: React.FC<NavProps> = ({ navigation }) =>  {
       />
       <Tab.Screen 
         name="MainCuaHangScreen" 
+        initialParams={{ idCH }} 
         component={MainCuaHangScreen} 
         options={renderTabScreenOptions('Cửa hàng', faHome)}
       />
