@@ -43,6 +43,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPosition = [
     {label: 'Quản lý', value: 0},
     {label: 'Nhân viên', value: 1},
@@ -249,7 +250,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             )}
           />
         )}
-
         {position === 0 ? (
           <FloatButtonComponent
             icon={faAdd}

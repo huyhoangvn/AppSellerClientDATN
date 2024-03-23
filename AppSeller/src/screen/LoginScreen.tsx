@@ -144,7 +144,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
         const token = await getToken();
         dispatch(setToken(token));
         rememBer(res.index.id, res.index.idCH, res.index.tenNV, res.index.phanQuyen); // Truyền các đối số cần thiết vào hàm rememBer
-        navigation.navigate('HomeScreen');
+        navigation.navigate('HomeScreen',{idCH: res.index.idCH});
       } else {
         setMsg(res.msg);
         handleShowAlert();

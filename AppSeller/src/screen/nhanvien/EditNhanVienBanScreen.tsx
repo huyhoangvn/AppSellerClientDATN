@@ -20,6 +20,7 @@ import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
+
 const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const {item} = route.params;
   const [name, setName] = useState(item.tenNV);
