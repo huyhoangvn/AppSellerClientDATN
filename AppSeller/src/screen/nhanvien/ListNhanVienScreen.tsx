@@ -43,6 +43,8 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemPosition, setItemsPosition] = useState<any>();
+  const [itemStatus, setItemStatus] = useState<any>();
 
   const itemsPosition = [
     {label: 'Quản lý', value: 0},
@@ -62,20 +64,18 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleSelectItemPosition = (item: any) => {
-    const nextPage = currentPage + 1; // Tăng giá trị của currentPage lên 1
-    getListUser('', item.value, '', nextPage);
-    setCurrentPage(nextPage);
+    getListUser('', item.value, '', '');
+    setText('');
   };
   const handleSelectItemStatus = (item: any) => {
-    const nextPage = currentPage + 1; // Tăng giá trị của currentPage lên 1
-    getListUser('', '', item.value, nextPage);
-    setCurrentPage(nextPage);
+    getListUser('', '', item.value, '');
+    setText('');
   };
 
   const acstionSearch = async (item: string) => {
-    const nextPage = currentPage + 1; // Tăng giá trị của currentPage lên 1
-    await getListUser(item, '', '', nextPage);
-    setCurrentPage(nextPage);
+    await getListUser(item, '', '', '');
+    setText('');
+
   };
   const getPosison = async () => {
     const storedData = await getData();
@@ -109,9 +109,10 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             return [...prevData, ...newData];
           });
         } else {
-          setText('Hết dữ liệu');
-          setMsg('Đã đến cuói danh sách');
-          handleShowAlert();
+          setData([]);
+          // setText('Hết dữ liệu');
+          // setMsg('Đã đến cuói danh sách');
+          // handleShowAlert();
         }
       } else {
         // Xử lý khi có lỗi từ API
@@ -209,7 +210,9 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             }))} // Danh sách các mục
             defaultValue="item1" // Giá trị mặc định
             containerStyle={{width: wp(55), borderRadius: 100}}
-            onChangeItem={item => handleSelectItemPosition(item)}
+            onChangeItem={item => {
+              handleSelectItemPosition(item);
+            }}
             placeholder="Chức vụ"
           />
           <DropDownComponent
@@ -222,15 +225,30 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             defaultValue="item1"
             containerStyle={{width: wp(35)}}
             placeholder="Trạng thái"
-            onChangeItem={item => handleSelectItemStatus(item)}
+            onChangeItem={item => {
+              handleSelectItemStatus(item)
+            }}
           />
         </View>
       </View>
       <View style={styles.footer}>
         {data.length === 0 ? (
-          <Text style={{textAlign: 'center', fontSize: 20}}>
-            không tìm thấy nhân viên
-          </Text>
+          <View>
+            <Text style={{textAlign: 'center', fontSize: 20}}>
+              không tìm thấy nhân viên
+            </Text>
+            <TouchableOpacity onPress={() => {getListUser('', '', '', 1),setCurrentPage(1)}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  marginTop: 20,
+                  color: appColors.primary,
+                  textDecorationLine: 'underline',
+                }}>
+                Trở lại
+              </Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <FlatList
             data={data}
