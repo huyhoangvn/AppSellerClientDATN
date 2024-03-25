@@ -1,124 +1,158 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, Image, Button } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  FlatList,
+  Image,
+} from 'react-native';
 import NavProps from '../../models/props/NavProps';
-import { Mon } from '../../models/Mon';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import {faAdd, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { faMagnifyingGlass, faSearch, faAdd, } from '@fortawesome/free-solid-svg-icons';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import EditTextComponent from '../../component/EditTextComponent';
-import DropdownPicker from '../../component/drowpdown/DropdownPicker';
-import authenticationAPI from '../../apis/authApi';
-import ButtonComponent from '../../component/ButtonComponent';
-import { TextBold } from 'iconsax-react-native';
-import TextComponent from '../../component/TextComponent';
-import AddMonScreen from '../../screen/mon/AddMonScreen';
+import {faMagnifyingGlass, faUser} from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
+import {color} from '@rneui/themed/dist/config';
+import DropDownPicker from 'react-native-dropdown-picker';
 import DropDownComponent from '../../component/DropDownComponent';
+import TextComponent from '../../component/TextComponent';
 import FloatButtonComponent from '../../component/FloatButtonComponent';
+import {Mon} from '../../models/Mon';
+import authenticationAPI from '../../apis/authApi';
+import {getData} from '../../utils/storageUtils';
 import LoadingComponent from '../../component/LoadingComponent';
+import AlertComponent from '../../component/AlertComponent';
 
-interface ListItem {
-  id: string;
-  tenMon: string;
-  tenLM: string;
-  giaTien: number;
-  hinhAnh: string;
-  trangThai: boolean;
-  title: String;
-};
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
-// const data: ListItem[] = [
-//   { id: '1', tenMon: 'Gà rán FIVESTAR - 422 Cát Quế', tenLM:"Đồ chiên", giaTien: 59000, hinhAnh: 'https://cdn.tgdd.vn/Files/2017/03/22/963765/cach-lam-ga-ran-thom-ngon-8_760x450.jpg', trangThai: true , title:"Tất cả"},
-//   { id: '2', tenMon: 'Hamburger', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả" },
-//   { id: '3', tenMon: 'Bánh mì  - 422 Huế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://cdn1.tuoitre.vn/zoom/600_315/471584752817336320/2023/2/20/viet-populaire-copy-e1659353432539-1024x681-16594235658881650374369-1676888750526893807756-41-0-423-730-crop-16768887676751617090180.jpg', trangThai: 'Hoạt động', title:"Tất cả"  },
-//   { id: '4', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên",  giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-//   { id: '5', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-//   { id: '6', tenMon: 'Bánh tráng trộn - 422 Cát Quế ', tenLM:"Đồ chiên", giaTien: 60000, hinhAnh: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551783604684-AE2UE7DYUGV96DUT4G80/chup-anh-thuc-an-1.jpg', trangThai: true , title:"Tất cả"  },
-// ];
 
 const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
   const [data, setData] = useState<Mon[]>([]);
+  const [dataNew, setDataNew] = useState<Mon[]>([]);
   const [position, setPosition] = useState<any>();
+  const [text, setText] = useState('Xem thêm');
+  const [showAlert, setShowAlert] = useState(false);
+
+  const [msg, setMsg] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPosition = [
     {label: '1000', value: 0},
     {label: '2000', value: 1},
     {label: '3000', value: 2},
+    {label: '5000', value: 3},
+    {label: '20000', value: 4},
   ];
   const itemsStatus = [
-    {label: 'Hoạt động', value: true},
-    {label: 'Không hoạt động', value: false},
+    {label: 'Hoạt động', value: 1},
+    {label: 'Khóa', value: 0},
   ];
   
-  const handleAddMon = (param1: string, param2: string) => {
-    navigation.navigate("AddMonScreen", { param1: param1, param2: param2 });
-  };
+
   const acstionSearch = (item: string) => {
     getListMon(item, '', '', '');
   };
-  const handleDetail = ( item: ListItem ) => {
+  const handleDetail = ( item: Mon ) => {
     navigation.navigate("DetailMonScreen", { item });
   };
 
   const handleSelectItemPosition = (item: any) => {
-    console.log('Selected item label: ', item.value);
-    getListMon('', item.value, '', '');
+    const giaTienMin = item.value * 1000;
+
+    // Calculate the maximum price to the end of the range
+    let giaTienMax;
+    if (item.value < itemsPosition.length - 1) {
+      giaTienMax = (item.value + 1) * 1000 - 1; // Subtract 1 to stay within the current range
+    } else {
+      // If it's the last item, set the maximum price to infinity or any other maximum value
+      giaTienMax = Number.MAX_SAFE_INTEGER; // Or any other suitable maximum value
+    }
+    getListMon('', giaTienMin, giaTienMax, '');
   };
   const handleSelectItemStatus = (item: any) => {
     console.log('Selected item label: ', item.value);
-    getListMon('', '', item.value, '');
+    getListMon('', '', '', item.value );
   };
 
   const handelGetAll = () => {
     getListMon('', '', '', '');
   };
+  const getPosison = async () => {
+    const storedData = await getData();
+    console.log(storedData);
+    const storedPosison = storedData?.position;
 
+    setPosition(storedPosison);
+  };
   const getListMon = async (
   tenMon: any,
   giaTienMin: any,
   giaTienMax: any,
   trangThai: any,
+  
   ) => {
    
     setLoading(true);
 
     try {
       const res = await authenticationAPI.HandleAuthentication (
-        `/nhanvien/mon?tenMon=${tenMon}&trangThai=${trangThai}&giaTienMin=${giaTienMin}$giaTienMax=${giaTienMax}`,
+        `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}`,
         'get',
       )
-      console.log(res.list);
-      setData(res.list)
-      // setData(res.list.KetQuaLoaiMon);
       if (res.success === true) {
-        if (res.index.length !== 0) {
-          setData(res.index);
+        if (res.list.length !== 0 ) {
+          setData(res.list);
+        } else if (res.list.length !== 0 ) {
+          setData(prevData => {
+            const newData = res.list.filter(
+              (item: {_id: string | undefined}) =>
+                !prevData.find(oldItem => oldItem._id === item._id),
+            );
+            return [...prevData, ...newData];
+          });
         } else {
-          setData([]);
+          setText('Hết dữ liệu');
+          setMsg('Đã đến cuói danh sách');
         }
       } else {
+        // Xử lý khi có lỗi từ API
+        setMsg('Request failed. Please try again.');
       }
-    } catch (error) {
-      console.log(error);
-    }
-    finally {
+    } catch (err) {
+      console.log(err);
+      setMsg('Request timeout. Please try again later.');
+    } finally {
       setLoading(false);
     }
   
 }
+  const handleGetAll = async () => {
+    try {
+      setLoading(true);
+      await getListMon('', '', '', '');
+    } catch (error) {
+      console.error('Error loading next page:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
  
   useEffect(() => {
     // Update the document title using the browser API
     getListMon('', '', '', 2);
+    getPosison();
+
   }, []); 
 
   // const renderTitleItem = ({ item }: { item: string }) => (
@@ -127,21 +161,20 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   //   </View>
   // );
 
-  const renderItem = ({ item }: { item: ListItem }) => {  
+  const renderItem = ({ item }: { item: Mon }) => {  
     return (
 
-    <TouchableOpacity onPress={() => handleDetail(item)}>
-    <View style={styles.itemContainer}>
-        <Image source={{ uri: item.hinhAnh }} style={styles.image} 
-        />
-        <View style={styles.infoContainer}>
-          <Text style={styles.name}>Tên món: {item.tenMon}</Text>
-          <Text style={styles.type}>Loại món: {item.tenLM}</Text>
-          <Text style={styles.price}>Gía tiền: {item.giaTien}đ</Text>
-          <Text style={{color: item.trangThai ? 'green' : 'red'}}>
+      <TouchableOpacity onPress={() => handleDetail(item)}>
+      <View style={styles.item}>
+        <Image source={{ uri: item.hinhAnh }} style={{width: 65, height: 65}} />
+        <View style={{paddingHorizontal: 10}}>
+          <Text style={{fontWeight: 'bold', fontSize: 20, color: 'black'}}>Tên món: {item.tenMon}</Text>
+          <Text style={{fontSize: 16}}>Loại món: {item.tenLM}</Text>
+          <Text style={{fontSize: 16}}>Gía tiền: {item.giaTien}đ</Text>
+          <Text style={[{fontSize: 16}, {color: item.trangThai ? 'green' : 'red'}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
-       </View>
+        </View>
       </View>
     </TouchableOpacity>
     );
@@ -202,8 +235,8 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         /> */}
  
   
-  <View style={styles.footer}>
-        {data.length === 0 ? (
+   <View style={styles.footer}>
+   {data.length === 0 ? (
           <Text style={{textAlign: 'center', fontSize: 20}}>
             không tìm thấy nhân viên
           </Text>
@@ -211,23 +244,28 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           <FlatList
             data={data}
             renderItem={renderItem}
-            keyExtractor={item => item._id || ''}></FlatList>
+            keyExtractor={item => item._id || ''}
+            // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
+            // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
+            // onEndReachedThreshold={.1}
+            ListFooterComponent={() => (
+              <View style={{alignItems: 'center', paddingVertical: 10}}>
+                {/* {lastList === true && scroll !== true ? ( */}
+                <TouchableOpacity onPress={handleGetAll}>
+                  <Text style={{fontSize: 14}}>{text}</Text>
+                </TouchableOpacity>
+                {/* ) : null} */}
+              </View>
+            )}
+          />
         )}
-        <TouchableOpacity
-          style={{position: 'absolute', alignSelf: 'center'}}
-          onPress={handelGetAll}>
-          {data.length <= 2 && data.length !== 0 ? (
-            <Text>xem thêm</Text>
-          ) : (
-            <Text></Text>
-          )}
-        </TouchableOpacity>
+        
         {position === 0 ? (
           <FloatButtonComponent
             icon={faAdd}
             size={25}
             stylesNew={{alignSelf: 'flex-end', position: 'absolute'}}
-            onPress={() => navigation.navigate('AddNhanVienBanScreen')}
+            onPress={() => navigation.navigate('AddMonScreen')}
           />
         ) : null}
       </View>
@@ -239,77 +277,16 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: hp(100),
+    backgroundColor: appColors.white,
   },
-  containerHeader:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    borderRadius: 5,
-    marginTop: 10,
-    position: 'relative', // Add this line to make positioning easier
-  },
-  dropdownContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', 
-    width: 195,
-    marginBottom: 10,
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    marginHorizontal: 10,
-    marginTop: 10,
-    borderWidth: 0.5,
-    padding: 10,
-    borderRadius: 10,
-  },
-  image: {
-    width: '30%',
-    aspectRatio: 1, 
-    marginRight: 10,
-    borderRadius: 20,
-  },
-  infoContainer: {
-    width: '70%',
-  },
-  name: {
-    fontSize: 18,
-    color: '#000000',
-    fontWeight: 'bold',
-  },
-  price: {
-    fontSize: 16,
-    color: '#000000',
-  },
-  type: {
-    fontSize: 16,
-    color: '#000000',
-  },
-  status: {
-    fontSize: 16,
-    color: '#000000',
-  },
-  addButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: '#5a9223',
-    borderRadius: 30,
-    width: 60,
-    height: 60,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    elevation: 3, 
-  },
-
   main: {
     height: hp(18),
     justifyContent: 'space-between',
   },
   footer: {
-    justifyContent: 'center',
-    height: hp(65),
+    justifyContent: 'space-between',
+    height: hp(66),
     padding: 10,
   },
   viewDropDow: {

@@ -63,6 +63,7 @@ const ButtonComponent = (props: Props) => {
         {/* <Text style={textStyles}>{text}</Text> */}
 
         <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+
           <TextComponent
             text={text}
             color={textColor ?? appColors.white}

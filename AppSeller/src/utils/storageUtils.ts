@@ -4,12 +4,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface Data {
     idUser?: string;
     idStore?: string;
+    idNV?: string;
+    idLM?: string;
     nameUser?: string;
     position?:string
 
     isChecked?: boolean;
     taiKhoan?: string
     matKhau?: string
+
+    
 }
 
 // Lưu dữ liệu vào AsyncStorage
