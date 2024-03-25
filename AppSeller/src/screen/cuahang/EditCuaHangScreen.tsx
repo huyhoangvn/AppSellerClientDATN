@@ -35,7 +35,7 @@ import {useDispatch} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {getData} from '../../utils/storageUtils';
 import authenticationAPI from '../../apis/authApi';
-import {CuaHang} from '../../models/CuaHang';
+
 
 const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
@@ -88,47 +88,75 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return null;
   };
 
-  const handleContinue = async () => {
-    const errorMessage = validateInputs();
-    if (errorMessage) {
-      setMsg(errorMessage);
-      handleShowAlert();
-      return; // Dừng lại nếu có lỗi
-    }
-    setLoading(true);
-    try {
-      const idStore = route.params?.cuaHang; // Lấy idCH từ props navigation
-      const result = await getData();
 
-      const res = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/cuahang/${result?.idStore}`,
-        {
-          tenCH: name,
-          diaChi: address,
-          sdt: phone,
-          thoiGianMo: timeO,
-          thoiGianDong: timeC,
-          email: mail,
-        },
-        'put',
-      );
-
-      if (res.success === true) {
-        setMsg(res.msg);
-        handleShowAlert();
-      } else {
-        setMsg(res.msg);
-        handleShowAlert();
-      }
-    } catch (err) {
-      console.log(err);
-      setMsg('Request timeout. Please try again later.'); // Set error message
-      handleShowAlert();
-    } finally {
-      setLoading(false);
-    }
-    navigation.navigate('DetailCuaHangScreen');
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    return `${hours}:${minutes}`;
   };
+
+  const updateTimeOpen = (newTime: string) => {
+    const formattedTime = formatTime(newTime);
+    setTimeOpen(formattedTime);
+  };
+
+  const updateTimeClose = (newTime: string) => {
+    const formattedTime = formatTime(newTime);
+    setTimeClose(formattedTime);
+  };
+
+  
+  
+
+
+  
+
+const handleContinue = async () => {
+  const errorMessage = validateInputs();
+
+  if (errorMessage) {
+    setMsg(errorMessage);
+    handleShowAlert();
+    return; // Dừng lại nếu có lỗi
+  }
+
+ 
+
+  setLoading(true);
+  try {
+    const idStore = route.params?.cuaHang; 
+    const result = await getData();
+
+    const res = await authenticationAPI.HandleAuthentication(
+      `/nhanvien/cuahang/${result?.idStore}`,
+      {
+        tenCH: name,
+        diaChi: address,
+        sdt: phone,
+        thoiGianMo: timeO,
+        thoiGianDong: timeC,
+        email: mail,
+      },
+      'put',
+    );
+
+    if (res.success === true) {
+      setMsg(res.msg);
+      handleShowAlert();
+    } else {
+      setMsg(res.msg);
+      handleShowAlert();
+    }
+  } catch (err) {
+    console.log(err);
+    setMsg('Request timeout. Please try again later.'); // Set error message
+    handleShowAlert();
+  } finally {
+    setLoading(false);
+  }
+
+  navigation.navigate('DetailCuaHangScreen');
+};
+
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -137,7 +165,9 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
       <ScrollView style={styles.container}>
         <Image
           style={[styles.userLogo]}
-          source={require('../../assest/food.jpg')}
+          source={{          
+            uri: 'https://s3-alpha-sig.figma.com/img/9095/7ee6/2e59f0dd47c07df4fd62c0c6f8234fc1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=WcYJ-Aluh~6iE40ETceszZ2fRS5LImXKOS7YDXkEZM8QIC9lNNPYWqn3nJggcBT1n7wbDHcXX8O49ok~KwzFEbOReNtPZec20~gvbKAJpB1rrCF7ndUQUP09estWu0PA2JCbhLuTEtCAVfCuNyfoxGBjEPSkYJu4LOAGcBrollAESA~TO4HQxmmnrh4dNfWg3mlJ2RVkuA6UwvrkXy~74yV4-rNGiv~BN2LhF1to91VABRD74uFzpfTAhozWqsLnZ1f2-7dfZJHW3lLhEexir6SXp1VhQSIP7y6QVemqttKrL2dAnOjkaU7TCqofJ4-14s3XgjZJQ1jRzHKSfCHD-Q__',
+        }}
         />
         <View style={styles.main}>
           {/* tên cửa hàng */}
@@ -163,7 +193,6 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
             label="text"
             placeholder="Địa chỉ"
             value={address}
-            textColor="gray"
             iconColor="gray"
             onChangeText={setAddress}
             icon={faLocationDot}
@@ -181,24 +210,24 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
           {/* thòi gian mở */}
           <EditTextComponent
-            label="text"
+            label="date"
             placeholder="Thời gian mở"
             value={timeO}
             iconColor="gray"
             onChangeText={setTimeOpen}
             icon={faLockOpen}
-            iconRight={faCalendarTimes}
+            onUpdate={updateTimeOpen}
           />
 
-          {/* thời  gian đóng */}
+          {/* Thời  gian đóng */}
           <EditTextComponent
-            label="text"
+            label="date"
             placeholder="Thời gian đóng"
             value={timeC}
             iconColor="gray"
             onChangeText={setTimeClose}
             icon={faLock}
-            iconRight={faCalendarTimes}
+            onUpdate={updateTimeClose} 
           />
 
           <ButtonComponent

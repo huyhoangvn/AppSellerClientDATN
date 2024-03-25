@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -32,50 +32,44 @@ const DetailCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [cuaHang, setCuaHang] = useState<CuaHang[]>([]);
   
 
-  useEffect(() => {
-    const fetchChiTietCuaHang = async () => {
-      const idStore = route.params?.idCH; // Lấy idCH từ props navigation
-      const result = await getData();
-      try {
-        setLoading(true);
-
-        const res = await authenticationAPI.HandleAuthentication(
-          `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
-          'get',
-        );
-        if (res.success === true) {
-          const {
-            tenCH,
-            thoiGianMo,
-            thoiGianDong,
-            thoiGianTao,
-            email,
-            sdt,
-            diaChi,
-            trangThai,
-          } = res.data;
-          // Cập nhật mảng cuaHang bằng cách thêm một đối tượng mới
-          setCuaHang({
-            tenCH,
-            thoiGianMo,
-            thoiGianDong,
-            thoiGianTao: moment(thoiGianTao).format('YYYY-MM-DD HH:mm'),            
-            email,
-            sdt,
-            diaChi,
-            trangThai,
-          });
-        } else {
-          Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lấy dữ liệu cửa hàng');
-        }
-      } catch (err) {
-        Alert.alert('Lỗi', 'Đã xảy ra lỗi khi kết nối đến máy chủ');
-      } finally {
-        setLoading(false);
+  const fetchChiTietCuaHang = useCallback(async () => {
+    const result = await getData();
+    try {
+      setLoading(true);
+      const res = await authenticationAPI.HandleAuthentication(
+        `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
+        'get',
+      );
+      if (res.success === true) {
+        const { tenCH, thoiGianMo, thoiGianDong, thoiGianTao, email, sdt, diaChi, trangThai } = res.data;
+        setCuaHang({
+          tenCH,
+          thoiGianMo,
+          thoiGianDong,
+          thoiGianTao: moment(thoiGianTao).format('YYYY-MM-DD HH:mm'),
+          email,
+          sdt,
+          diaChi,
+          trangThai,
+        });
+      } else {
+        Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lấy dữ liệu cửa hàng');
       }
-    };
-    fetchChiTietCuaHang();
-  }, [route.params]);
+    } catch (err) {
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi kết nối đến máy chủ');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchChiTietCuaHang();
+    });
+
+    return unsubscribe;
+  }, [navigation, fetchChiTietCuaHang]);
+
 
   return (
     <View style={styles.container}>

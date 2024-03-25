@@ -33,6 +33,7 @@ import {
 import {CuaHang} from '../../models/CuaHang';
 import {Route} from 'react-native-tab-view';
 import authenticationAPI from '../../apis/authApi';
+import { getData } from '../../utils/storageUtils';
 
 const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
@@ -40,13 +41,13 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
   useEffect(() => {
     const fetchChiTietCuaHang = async () => {
-      const idStore = route.params?.idCH; // Lấy idCH từ props navigation
-
+      const idStore = route.params?.cuaHang; 
+      const result = await getData();
       try {
         setLoading(true);
 
         const res = await authenticationAPI.HandleAuthentication(
-          `/nhanvien/cuahang/chi-tiet/${idStore}`,
+          `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
           'get',
         );
         if (res.success === true) {
