@@ -27,6 +27,8 @@ import EditMonScreen from './src/screen/mon/EditMonScreen';
 import ListNhanVienScreen from './src/screen/nhanvien/ListNhanVienScreen';
 import UpdatePasswordScreen from './src/screen/nhanvien/UpdatePasswordScreen';
 import EvaluateScreen from './src/screen/danhGia/EvaluateScreen';
+import EditHoaDonScreen from './src/screen/hoadon/EditHoaDonScreen';
+import DetailDatMonScreen from './src/screen/hoadon/DetailDatMonScreen';
 
 const Stack = createStackNavigator();
 interface AppProps {}
@@ -55,12 +57,12 @@ const App: React.FC<AppProps> = () => {
               <Stack.Screen
                 name="RegisterUserScreen"
                 component={RegisterUserScreen}
-                options={{headerShown: false}}
+                options={{headerShown: true, headerTitle: ""}}
               />
               <Stack.Screen
                 name="RegisterStoreScreen"
                 component={RegisterStoreScreen}
-                options={{headerShown: false}}
+                options={{headerShown: true, headerTitle: ""}}
               />
               {/* Trang chủ với nav bar */}
               <Stack.Screen
@@ -130,6 +132,17 @@ const App: React.FC<AppProps> = () => {
                 component={DetailHoaDonScreen}
                 options={{title: 'Chi tiết hóa đơn'}}
               />
+              <Stack.Screen
+                name="DetailDatMonScreen"
+                component={DetailDatMonScreen}
+                options={{title: 'Chi tiết đặt món'}}
+              />
+              <Stack.Screen
+                name="EditHoaDonScreen"
+                component={EditHoaDonScreen}
+                options={{title: 'Sửa hóa đơn'}}
+              />
+
                 {/* Trang quản lý đánh giá */}
                 <Stack.Screen
                 name="EvaluateScreen"

@@ -8,6 +8,7 @@ import {
   FlatList,
   Image,
 } from 'react-native';
+import Svg from 'react-native-svg'; // Import SVG components from react-native-svg
 import NavProps from '../../models/props/NavProps';
 import {faAdd, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
@@ -28,6 +29,7 @@ import authenticationAPI from '../../apis/authApi';
 import {getData} from '../../utils/storageUtils';
 import LoadingComponent from '../../component/LoadingComponent';
 import AlertComponent from '../../component/AlertComponent';
+import { DefaultImage } from '../../assest/svgs';
 
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
@@ -166,8 +168,15 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
       <TouchableOpacity onPress={() => handleDetail(item)}>
       <View style={styles.item}>
-        <Image source={{ uri: item.hinhAnh }} style={{width: 65, height: 65}} />
-        <View style={{paddingHorizontal: 10}}>
+          <Image
+            source={
+            (!item.hinhAnh || item.hinhAnh === "N/A") ?
+              require('./../../assest/default-image.png') :
+              { uri: item.hinhAnh }}
+            style={{ width: 65, height: 65 }}
+            defaultSource={require('./../../assest/default-avatar.png')}
+          />  
+          <View style={{paddingHorizontal: 10}}>
           <Text style={{fontWeight: 'bold', fontSize: 20, color: 'black'}}>Tên món: {item.tenMon}</Text>
           <Text style={{fontSize: 16}}>Loại món: {item.tenLM}</Text>
           <Text style={{fontSize: 16}}>Gía tiền: {item.giaTien}đ</Text>
@@ -268,31 +277,28 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
             onPress={() => navigation.navigate('AddMonScreen')}
           />
         ) : null}
-      </View>
-      <LoadingComponent visible={loading} />
     </View>
+    <LoadingComponent visible={loading} />
+  </View>
 
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: hp(100),
+    flex: 1,
     backgroundColor: appColors.white,
   },
   main: {
-    height: hp(18),
     justifyContent: 'space-between',
   },
   footer: {
-    justifyContent: 'space-between',
-    height: hp(66),
+    flex: 1,
     padding: 10,
   },
   viewDropDow: {
     padding: 10,
     flexDirection: 'row',
-    width: wp(100),
     justifyContent: 'space-between',
   },
   item: {
@@ -302,6 +308,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderRadius: 10,
     flexDirection: 'row',
+    alignItems: 'center'
   },
  
 });

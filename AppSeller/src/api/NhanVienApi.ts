@@ -21,7 +21,7 @@ export default async function login(taiKhoan: string, matKhau: string): Promise<
 
   try {
     const response = await axios.request(config);
-    console.log(JSON.stringify(response.data.msg));
+    // console.log(JSON.stringify(response.data.msg));
   } catch (error) {
     console.log(error);
   }
