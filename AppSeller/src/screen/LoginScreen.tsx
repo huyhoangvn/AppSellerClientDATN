@@ -333,9 +333,9 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
     backgroundColor: appColors.white,
-    height: hp(100),
     paddingVertical: 30
   },
   header: {
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   },
 
   main: {
-    height: hp(40),
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
@@ -361,14 +361,16 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    height: hp(23),
+    flex: 1,
     flexDirection: 'column',
   },
   signOut: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
   },
   logoText: {
+    flex: 1,
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
