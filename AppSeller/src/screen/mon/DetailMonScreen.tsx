@@ -17,36 +17,35 @@ interface DetailProps {
   danhGia: string;
 }
 
-const DetailMonScreen: React.FC<NavProps> = ({ navigation }) => {
-  const route = useRoute();
-  const { tenMon, tenLM, giaTien, hinhAnh, trangThai, danhGia } = route.params.item as DetailProps ;
-  
+const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
+  const {item , position} = route.params;
+
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
-         <Image source={{ uri: hinhAnh }} style={styles.image} />
+         <Image source={{ uri: item.hinhAnh }} style={styles.image} />
       </View>
        <View style={styles.infoContainer}>
        <View style={styles.viewText}>
           <Text>Tên món</Text>
-          <Text style={styles.textPrimary}>{tenMon}</Text>
+          <Text style={styles.textPrimary}>{item.tenMon}</Text>
         </View>
         <View style={styles.viewText}>
           <Text>Loại món</Text>
-          <Text style={styles.textPrimary}>{tenLM}</Text>
+          <Text style={styles.textPrimary}>{item.tenLM}</Text>
         </View>
         <View style={styles.viewText}>
           <Text>Giá tiền</Text>
-          <Text style={styles.textPrimary}>{giaTien}</Text>
+          <Text style={styles.textPrimary}>{item.giaTien}</Text>
         </View>
         <View style={styles.viewText}>
           <Text>Đánh giá</Text>
-          <Text style={styles.textPrimary}>{danhGia}</Text>
+          <Text style={styles.textPrimary}>{item.danhGia}</Text>
           <FontAwesomeIcon icon={faStar} size={24} color="#feb800" style={styles.icon} />
         </View>
         <View style={styles.viewText}>
         <Text>Trạng thái</Text>
-          <Text style={[styles.textPrimary, trangThai ? styles.activeStatus : styles.inactiveStatus]}>{trangThai? 'Hoạt động' : 'Khóa'}</Text>
+          <Text style={[styles.textPrimary, item.trangThai ? styles.activeStatus : styles.inactiveStatus]}>{item.trangThai? 'Hoạt động' : 'Khóa'}</Text>
         </View> 
       </View>
       <View style={styles.buttonContainer}>
@@ -54,7 +53,7 @@ const DetailMonScreen: React.FC<NavProps> = ({ navigation }) => {
           type="primary"
           text="Sửa thông tin"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
-          onPress={() => navigation.navigate('EditMonScreen')}
+          onPress={() => navigation.navigate('EditMonScreen', {item})}
         />
         <ButtonComponent
           type="primary"
