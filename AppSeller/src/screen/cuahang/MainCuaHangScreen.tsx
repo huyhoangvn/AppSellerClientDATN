@@ -39,9 +39,8 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
   const [cuaHang, setCuaHang] = useState<CuaHang[]>([]);
 
-  useEffect(() => {
+ 
     const fetchChiTietCuaHang = async () => {
-      const idStore = route.params?.cuaHang; 
       const result = await getData();
       try {
         setLoading(true);
@@ -71,8 +70,15 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
         setLoading(false);
       }
     };
-    fetchChiTietCuaHang();
-  }, [route.params]);
+
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+        fetchChiTietCuaHang();
+      });
+  
+      return unsubscribe;
+    }, [navigation, fetchChiTietCuaHang]);
+
 
   return (
     <ScrollView style={styles.container}>
