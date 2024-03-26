@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
-const HeaderRightComponent: React.FC<NavProps> = ({ navigation }) =>  {
+const HeaderRightComponent: React.FC<NavProps> = ({ navigation ,idCH}: any) =>  {
+    
     const [showOptionsMenu, setShowOptionsMenu] = React.useState(false);
     const handleGearClick = () => {
         setShowOptionsMenu(true);
@@ -17,7 +18,7 @@ const HeaderRightComponent: React.FC<NavProps> = ({ navigation }) =>  {
 
     const handleOptionClick = (screenName: string) => {
         setShowOptionsMenu(false); // Close the menu when an option is clicked
-        navigation.navigate(screenName);
+        navigation.navigate(screenName,{idCH});//truyền id vào màn hình định hướng
     };
 
     const logout = () => {
