@@ -41,7 +41,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AlertComponent from '../component/AlertComponent';
 import LoadingComponent from '../component/LoadingComponent';
 // import authenticationAPI from '../apis/authApi';
-import {LogoNoText } from '../assest/svgs/index';
+import {LogoNoText} from '../assest/svgs/index';
 
 const {height, width} = Dimensions.get('window');
 
@@ -104,8 +104,6 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
     }
   };
 
- 
-
   const getRemembered = async () => {
     try {
       const storedData = await getData();
@@ -143,10 +141,15 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
       if (res.success === true) {
         const token = await getToken();
         dispatch(setToken(token));
-        rememBer(res.index.id, res.index.idCH, res.index.tenNV, res.index.phanQuyen); // Truyền các đối số cần thiết vào hàm rememBer
+        rememBer(
+          res.index.id,
+          res.index.idCH,
+          res.index.tenNV,
+          res.index.phanQuyen,
+        ); // Truyền các đối số cần thiết vào hàm rememBer
         navigation.reset({
           index: 0,
-          routes: [{ name: 'HomeScreen' , params: { idCH: res.index.idCH }}],
+          routes: [{name: 'HomeScreen', params: {idCH: res.index.idCH}}],
         });
       } else {
         setMsg(res.msg);
@@ -161,13 +164,10 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
     }
   };
 
-  
-
   useEffect(() => {
     getRemembered();
     // setRememberedChecked(true);
   }, []);
-
 
   const handleGet = async () => {
     try {
@@ -185,95 +185,72 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.container}>
-          <LogoNoText/>
-          <Text style={styles.logoText}>Food Center</Text>
-          <View style={styles.main}>
-            <EditTextComponent
-              label="text"
-              placeholder="Nhập tài khoản"
-              value={userName}
-              iconColor="gray"
-              onChangeText={handleUserNameChange}
-              icon={faUser}
-            />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <LogoNoText />
+        <Text style={styles.logoText}>Food Center</Text>
+      </View>
 
-            <EditTextComponent
-              label="pass"
-              placeholder="Nhập mật khẩu"
-              value={password}
-              iconColor="gray"
-              onChangeText={handlePasswordChange}
-              icon={faLock}
-            />
-            <View style={styles.viewButton}>
-              <View style={{flexDirection: 'row'}}>
-                <Switch
-                  style={{paddingLeft: 10}}
-                  trackColor={{true: appColors.primary}}
-                  thumbColor={appColors.white}
-                  value={isRemember}
-                  onChange={() => {
-                    setIsRemember(!isRemember);
-                  }}
-                />
-                <TextComponent
-                  styles={{
-                    alignSelf: 'center',
-                    paddingLeft: 10,
-                    color: appColors.primary,
-                    fontWeight: 'bold',
-                  }}
-                  text="Nhớ mật khẩu"
-                  size={14}
-                />
-              </View>
+      <View style={styles.main}>
+        <EditTextComponent
+          label="text"
+          placeholder="Nhập tài khoản"
+          value={userName}
+          iconColor="gray"
+          onChangeText={handleUserNameChange}
+          icon={faUser}
+        />
 
-              {/* <BouncyCheckbox
-                size={20}
-                fillColor={appColors.primary}
-                unfillColor="#FFFFFF"
-                text="Nhớ mật khẩu"
-                innerIconStyle={{ borderWidth: 1.5 }}
-                textStyle={{
-                  textDecorationLine: 'none',
-                  color: appColors.primary,
-                  fontSize: 14,
-                  marginLeft: -10,
-                  fontWeight: 'bold',
-                }}
-                isChecked={isChecked}
-                onPress={(isChecked: boolean) => {
-                  setChecked(isChecked);
-                 
-                         rememBer();
-                    // rememBer();
-                }}
-                // onPress={handelCheked}
-                style={{ paddingLeft: 15 }}
-              /> */}
-              <ButtonComponent
-                type="link"
-                text="Quên mật khẩu ?"
-                onPress={() => navigation.navigate('SignUpScreen')}
-                textStyles={{fontWeight: 'bold'}} // Cập nhật style ở đây
-              />
-            </View>
-            <ButtonComponent
-              type="primary"
-              text="Đăng nhập"
-              textStyles={{color: 'white', fontSize: 16, fontWeight: 'bold'}}
-              onPress={handleLogin}
+        <EditTextComponent
+          label="pass"
+          placeholder="Nhập mật khẩu"
+          value={password}
+          iconColor="gray"
+          onChangeText={handlePasswordChange}
+          icon={faLock}
+        />
+        <View style={styles.viewButton}>
+          <View style={{flexDirection: 'row'}}>
+            <Switch
+              style={{paddingLeft: 10}}
+              trackColor={{true: appColors.primary}}
+              thumbColor={appColors.white}
+              value={isRemember}
+              onChange={() => {
+                setIsRemember(!isRemember);
+              }}
+            />
+            <TextComponent
+              styles={{
+                alignSelf: 'center',
+                paddingLeft: 10,
+                color: appColors.primary,
+                fontWeight: 'bold',
+              }}
+              text="Nhớ mật khẩu"
+              size={14}
             />
           </View>
-          {/* <View style={{height: hp(7)}}>
+          <ButtonComponent
+            type="link"
+            text="Quên mật khẩu ?"
+            onPress={() => navigation.navigate('SignUpScreen')}
+            textStyles={{fontWeight: 'bold'}} // Cập nhật style ở đây
+          />
+        </View>
+        <ButtonComponent
+          type="primary"
+          text="Đăng nhập"
+          textStyles={{color: 'white', fontSize: 16, fontWeight: 'bold'}}
+          onPress={handleLogin}
+        />
+      </View>
+      {/* <View style={{height: hp(7)}}>
             <AppPath />
           </View> */}
-          <View style={styles.footer}>
-            <View >
-              {/* <ButtonComponent
+      <View style={styles.footer}>
+        <View>
+          {/* <ButtonComponent
                 type="primary"
                 // onPress={handleLoginWithGoogle}
                 color={appColors.white}
@@ -286,7 +263,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                 // onPress={}
               /> */}
 
-              {/* <ButtonComponent
+          {/* <ButtonComponent
                 type="primary"
                 color={appColors.white}
                 textColor={appColors.text}
@@ -298,57 +275,59 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                 textStyles={{color: appColors.white, fontWeight: 'bold'}}
                 onPress={handleGet}
               /> */}
-            </View>
-
-            <View style={styles.signOut}>
-              <TextComponent
-                text="Bạn chưa có tài khoản?  "
-                styles={{color: '#C2BEBE', fontSize: 16}}
-              />
-              <ButtonComponent
-                type="link"
-                text="Đăng ký"
-                textStyles={{
-                  fontSize: 16,
-                  textDecorationLine: 'underline',
-                  fontWeight: 'bold',
-                }}
-                onPress={() => {
-                  navigation.navigate('RegisterStoreScreen');
-                }}
-              />
-              <AlertComponent
-                visible={showAlert}
-                message={msg}
-                onClose={handleCloseAlert}
-              />
-              <LoadingComponent visible={loading ?? false} />
-            </View>
-          </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        <View style={styles.signOut}>
+          <TextComponent
+            text="Bạn chưa có tài khoản?  "
+            styles={{color: '#C2BEBE', fontSize: 16}}
+          />
+          <ButtonComponent
+            type="link"
+            text="Đăng ký"
+            textStyles={{
+              fontSize: 16,
+              textDecorationLine: 'underline',
+              fontWeight: 'bold',
+            }}
+            onPress={() => {
+              navigation.navigate('RegisterStoreScreen');
+            }}
+          />
+          <AlertComponent
+            visible={showAlert}
+            message={msg}
+            onClose={handleCloseAlert}
+          />
+          <LoadingComponent visible={loading ?? false} />
+        </View>
+      </View>
+    </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: appColors.white,
-    paddingVertical: 30
+    backgroundColor: 'white',
   },
   header: {
-    height: hp(30),
-    padding: 20,
-    // backgroundColor: 'black',
-    justifyContent: 'center',
+    flex: 1.5,
+    alignItems: 'center', // Căn giữa theo chiều ngang
+    justifyContent: 'center', // Căn giữa theo chiều dọc
   },
-
   main: {
+    flex: 2,
+    justifyContent: 'space-evenly', // Màu cho phần main
+  },
+  footer: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+  },
+  logoText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: appColors.primary,
+    textAlign: 'center', // Căn giữa văn bản theo chiều ngang
   },
   viewButton: {
     paddingRight: 15,
@@ -359,23 +338,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
-  footer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
   signOut: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  logoText: {
-    flex: 1,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: appColors.primary
-  }
 });
 
 export default LoginScreen;
