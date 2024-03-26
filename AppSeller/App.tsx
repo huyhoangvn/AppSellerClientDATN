@@ -3,7 +3,7 @@ import {
   createStackNavigator,
   StackNavigationProp,
 } from '@react-navigation/stack';
-import {NavigationContainer, NavigationProp} from '@react-navigation/native';
+import {NavigationContainer, NavigationProp, DefaultTheme} from '@react-navigation/native';
 import {MenuProvider} from 'react-native-popup-menu';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
@@ -29,15 +29,28 @@ import UpdatePasswordScreen from './src/screen/nhanvien/UpdatePasswordScreen';
 import EvaluateScreen from './src/screen/danhGia/EvaluateScreen';
 import EditHoaDonScreen from './src/screen/hoadon/EditHoaDonScreen';
 import DetailDatMonScreen from './src/screen/hoadon/DetailDatMonScreen';
+import { appColors } from './src/constants/appColors';
 
 const Stack = createStackNavigator();
+
 interface AppProps {}
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#ffffff', // Set your desired background color here
+  },
+};
+
 const App: React.FC<AppProps> = () => {
   return (
     <Provider store={store}>
       {/* <PersistGate persistor={persistor}> */}
         <MenuProvider>
-          <NavigationContainer>
+          <NavigationContainer
+            theme={navTheme}
+          >
             <Stack.Navigator
 
               initialRouteName="SplashScreen"
@@ -162,6 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: "#ffffff"
   },
   touchableOpacity: {
     marginLeft: 15,
