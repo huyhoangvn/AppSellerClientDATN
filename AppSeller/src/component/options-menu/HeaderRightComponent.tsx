@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
-const HeaderRightComponent: React.FC<NavProps> = ({ navigation }) =>  {
+const HeaderRightComponent: React.FC<NavProps> = ({ navigation }: any) =>  {
+    
     const [showOptionsMenu, setShowOptionsMenu] = React.useState(false);
     const handleGearClick = () => {
         setShowOptionsMenu(true);

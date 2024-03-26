@@ -62,7 +62,6 @@ const HomeScreen: React.FC<NavProps> = ({ navigation,route } : any) =>  {
       >
       <Tab.Screen 
         name="MainCuaHangScreen" 
-        initialParams={{ idCH }} 
         component={MainCuaHangScreen} 
         options={renderTabScreenOptions('Cửa hàng', faHome )}
       />
