@@ -185,7 +185,7 @@ const handleCheckBox2Change = (newValue: boolean) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: hp(90),
+    flex: 1,
     backgroundColor: appColors.white,
     position: 'relative', // Add this line to make positioning easier
   },

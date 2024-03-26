@@ -6,6 +6,7 @@ interface Data {
     idStore?: string;
     idNV?: string;
     idLM?: string;
+    idMon?: string;
     nameUser?: string;
     position?:string
 

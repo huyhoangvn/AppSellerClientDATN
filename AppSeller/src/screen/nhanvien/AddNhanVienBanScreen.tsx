@@ -89,7 +89,7 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
         },
         'post',
       );
-
+      console.log(name);
       if (res.success === true) {
         setMsg(res.msg);
         handleShowAlert();

@@ -97,20 +97,18 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     setPosition(storedPosison);
   };
   const getListMon = async (
-  tenMon: any,
-  giaTienMin: any,
-  giaTienMax: any,
-  trangThai: any,
-  
+      tenMon: any,
+      giaTienMin: any,
+      giaTienMax: any,
+      trangThai: any,
   ) => {
-   
-    setLoading(true);
-
     try {
+      setLoading(true);
       const res = await authenticationAPI.HandleAuthentication (
         `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}`,
         'get',
       )
+
       if (res.success === true) {
         if (res.list.length !== 0 ) {
           setData(res.list);
@@ -123,7 +121,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
             return [...prevData, ...newData];
           });
         } else {
-          setText('Hết dữ liệu');
+          setText('Xem thêm');
           setMsg('Đã đến cuói danh sách');
         }
       } else {
@@ -136,7 +134,6 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     } finally {
       setLoading(false);
     }
-  
 }
   const handleGetAll = async () => {
     try {
