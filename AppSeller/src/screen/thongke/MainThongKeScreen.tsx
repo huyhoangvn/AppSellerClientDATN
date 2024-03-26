@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -7,6 +6,7 @@ import { faMoneyBillAlt, faUtensils } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import ThongKeMonScreen from './ThongKeMonScreen';
 import ThongKeDoanhThuScreen from './ThongKeDoanhThuScreen';
+import { appColors } from '../../constants/appColors';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -20,16 +20,24 @@ const MainThongKeScreen = () => {
   });
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarInactiveTintColor: "#929292",
+        tabBarActiveTintColor: appColors.primary,
+        tabBarIndicatorStyle : { backgroundColor: appColors.primary },
+        tabBarLabelStyle: { fontWeight: 'bold', textTransform: 'capitalize' },
+        tabBarStyle: { backgroundColor: '#ffffff' }
+      }}
+    >
       <Tab.Screen 
         name="ThongKeDoanhThuScreen" 
         component={ThongKeDoanhThuScreen} 
-        options={renderTabScreenOptions('Doanh thu', faMoneyBillAlt)}
+        options={renderTabScreenOptions('Doanh thu')}
       />
       <Tab.Screen 
         name="ThongKeMonScreen" 
         component={ThongKeMonScreen} 
-        options={renderTabScreenOptions('Món Ăn', faUtensils)}
+        options={renderTabScreenOptions('Món Ăn')}
       />
     </Tab.Navigator>
   );

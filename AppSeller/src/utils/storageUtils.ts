@@ -4,12 +4,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface Data {
     idUser?: string;
     idStore?: string;
+    idNV?: string;
+    idLM?: string;
     nameUser?: string;
     position?:string
 
     isChecked?: boolean;
     taiKhoan?: string
     matKhau?: string
+
+    
 }
 
 // Lưu dữ liệu vào AsyncStorage
@@ -27,7 +31,7 @@ export const getData = async (): Promise<Data | null> => {
     try {
         const Data = await AsyncStorage.getItem('Data');
         if (Data !== null) {
-            console.log('Data retrieved successfully:', JSON.parse(Data));
+            // console.log('Data retrieved successfully:', JSON.parse(Data));
             return JSON.parse(Data);
         } else {
             console.log('No data found');
