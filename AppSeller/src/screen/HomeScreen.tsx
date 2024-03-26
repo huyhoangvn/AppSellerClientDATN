@@ -15,7 +15,7 @@ import ListMonScreen from "./mon/ListMonScreen"
 import MainHoaDonScreen from "./hoadon/MainHoaDonScreen"
 import ListNhanVienScreen from "./nhanvien/ListNhanVienScreen"
 import NavProps from '../models/props/NavProps';
-import HeaderRightComponent from '../component/options-menu/HeaderRightComponent';
+import { Size } from 'iconsax-react-native';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -23,11 +23,11 @@ const HomeScreen: React.FC<NavProps> = ({ navigation,route } : any) =>  {
   const idCH = route.params?.idCH; // Lấy idCH từ tham số định tuyến
 
   const renderTabScreenOptions = (label: string, icon: IconProp) : any => ({
-    tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-      <FontAwesomeIcon icon={icon} size={size} color={color} />
+    tabBarIcon: ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
+      <FontAwesomeIcon icon={icon} size={focused ? 23 : 19} color={color} />
     ),
     tabBarLabel: label,
-    headerShown: false, // Hide the header title
+    headerShown: false, // Ẩn tiêu đề header
   });
 
   const ScreenWrapper = (Component: React.ComponentType<any>) => {
@@ -43,21 +43,27 @@ const HomeScreen: React.FC<NavProps> = ({ navigation,route } : any) =>  {
 
   return (
     <Tab.Navigator
-      theme={{ colors: { secondaryContainer: "#E3EED8" }}}
+      theme={{ colors: { secondaryContainer: "white" }}}
       initialRouteName='MainCuaHangScreen'
       shifting={true}
-      activeColor= {appColors.primary}
-      inactiveColor="#92C165"
+      activeColor= {'black'}
+      inactiveColor="white"
+      
+      
       barStyle={{ 
-        backgroundColor: '#CFE7B9', 
+        backgroundColor: '#89b449', 
         height: 72,
-        elevation: 8
+        elevation: 8,
+        borderTopEndRadius: 35,
+        borderTopStartRadius: 35,
+        paddingLeft: 30,
+      paddingRight: 30,
       }}
       >
       <Tab.Screen 
         name="MainCuaHangScreen" 
         component={MainCuaHangScreen} 
-        options={renderTabScreenOptions('Cửa hàng', faHome)}
+        options={renderTabScreenOptions('Cửa hàng', faHome )}
       />
       <Tab.Screen 
         name="MainThongKeScreen" 

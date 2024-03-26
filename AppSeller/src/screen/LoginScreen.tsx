@@ -10,6 +10,8 @@ import {
   Image,
   Pressable,
   Switch,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import NavProps from '../models/props/NavProps';
 
@@ -185,6 +187,11 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   return (
+    <KeyboardAvoidingView 
+    style={{flex: 1}} 
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -150} // Điều chỉnh khoảng cách giữa phần tử và bàn phím
+  >
     <View style={styles.container}>
       <View style={styles.header}>
         <LogoNoText />
@@ -303,6 +310,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
         </View>
       </View>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 const styles = StyleSheet.create({
