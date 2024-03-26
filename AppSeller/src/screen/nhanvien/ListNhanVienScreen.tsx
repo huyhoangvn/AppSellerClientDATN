@@ -30,6 +30,8 @@ import TabComponent from '../../component/TabComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {useFocusEffect} from '@react-navigation/native';
 import AlertComponent from '../../component/AlertComponent';
+import { DefaultAvatar } from '../../assest/svgs';
+import { Svg, SvgXml } from 'react-native-svg';
 
 const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   // const [lastList, setLastList] = useState(false);
@@ -167,7 +169,14 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     return (
       <TouchableOpacity onPress={() => handelDetail(item)}>
         <View style={styles.item}>
-          <Image source={{uri: item.hinhAnh}} style={{width: 65, height: 65}} />
+          <Image
+          source={
+            (!item.hinhAnh || item.hinhAnh === "N/A") ?
+              require('./../../assest/default-avatar.jpg') :
+              { uri: item.hinhAnh }}
+            style={{ width: 65, height: 65 }}
+            defaultSource={require('./../../assest/default-avatar.jpg')}
+          />
           <View style={{paddingHorizontal: 10}}>
             <Text style={{fontWeight: 'bold', color: 'black'}}>
               {item.tenNV}
@@ -289,22 +298,20 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: hp(100),
+    flex: 1,
     backgroundColor: appColors.white,
   },
   main: {
-    height: hp(18),
     justifyContent: 'space-between',
   },
   footer: {
     justifyContent: 'space-between',
-    height: hp(66),
+    flex: 1,
     padding: 10,
   },
   viewDropDow: {
     padding: 10,
     flexDirection: 'row',
-    width: wp(100),
     justifyContent: 'space-between',
   },
   item: {

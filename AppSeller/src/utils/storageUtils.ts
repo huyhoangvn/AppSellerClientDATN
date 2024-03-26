@@ -31,7 +31,7 @@ export const getData = async (): Promise<Data | null> => {
     try {
         const Data = await AsyncStorage.getItem('Data');
         if (Data !== null) {
-            console.log('Data retrieved successfully:', JSON.parse(Data));
+            // console.log('Data retrieved successfully:', JSON.parse(Data));
             return JSON.parse(Data);
         } else {
             console.log('No data found');

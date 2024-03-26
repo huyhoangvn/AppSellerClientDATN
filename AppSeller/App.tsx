@@ -3,7 +3,7 @@ import {
   createStackNavigator,
   StackNavigationProp,
 } from '@react-navigation/stack';
-import {NavigationContainer, NavigationProp} from '@react-navigation/native';
+import {NavigationContainer, NavigationProp, DefaultTheme} from '@react-navigation/native';
 import {MenuProvider} from 'react-native-popup-menu';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
@@ -27,15 +27,30 @@ import EditMonScreen from './src/screen/mon/EditMonScreen';
 import ListNhanVienScreen from './src/screen/nhanvien/ListNhanVienScreen';
 import UpdatePasswordScreen from './src/screen/nhanvien/UpdatePasswordScreen';
 import EvaluateScreen from './src/screen/danhGia/EvaluateScreen';
+import EditHoaDonScreen from './src/screen/hoadon/EditHoaDonScreen';
+import DetailDatMonScreen from './src/screen/hoadon/DetailDatMonScreen';
+import { appColors } from './src/constants/appColors';
 
 const Stack = createStackNavigator();
+
 interface AppProps {}
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#ffffff', // Set your desired background color here
+  },
+};
+
 const App: React.FC<AppProps> = () => {
   return (
     <Provider store={store}>
       {/* <PersistGate persistor={persistor}> */}
         <MenuProvider>
-          <NavigationContainer>
+          <NavigationContainer
+            theme={navTheme}
+          >
             <Stack.Navigator
 
               initialRouteName="SplashScreen"
@@ -55,12 +70,12 @@ const App: React.FC<AppProps> = () => {
               <Stack.Screen
                 name="RegisterUserScreen"
                 component={RegisterUserScreen}
-                options={{headerShown: false}}
+                options={{headerShown: true, headerTitle: ""}}
               />
               <Stack.Screen
                 name="RegisterStoreScreen"
                 component={RegisterStoreScreen}
-                options={{headerShown: false}}
+                options={{headerShown: true, headerTitle: ""}}
               />
               {/* Trang chủ với nav bar */}
               <Stack.Screen
@@ -130,6 +145,17 @@ const App: React.FC<AppProps> = () => {
                 component={DetailHoaDonScreen}
                 options={{title: 'Chi tiết hóa đơn'}}
               />
+              <Stack.Screen
+                name="DetailDatMonScreen"
+                component={DetailDatMonScreen}
+                options={{title: 'Chi tiết đặt món'}}
+              />
+              <Stack.Screen
+                name="EditHoaDonScreen"
+                component={EditHoaDonScreen}
+                options={{title: 'Sửa hóa đơn'}}
+              />
+
                 {/* Trang quản lý đánh giá */}
                 <Stack.Screen
                 name="EvaluateScreen"
@@ -149,6 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: "#ffffff"
   },
   touchableOpacity: {
     marginLeft: 15,

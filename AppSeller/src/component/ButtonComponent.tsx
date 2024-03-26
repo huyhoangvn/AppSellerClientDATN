@@ -70,7 +70,7 @@ const ButtonComponent = (props: Props) => {
             styles={[
               textStyles,
               {
-                fontSize: 18,
+                fontSize: 16,
                 alignSelf: 'center',
               },
             ]}

@@ -21,8 +21,7 @@ import {
 import EditTextComponent from '../component/EditTextComponent';
 import ButtonComponent from '../component/ButtonComponent';
 import {appColors} from '../constants/appColors';
-import {Text} from 'react-native-svg';
-import {text} from '@fortawesome/fontawesome-svg-core';
+import {Text} from 'react-native';
 import TextComponent from '../component/TextComponent';
 import AppPath from '../component/appPath';
 import {Facebook, Google, Logo} from '../assest/svgs';
@@ -42,6 +41,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AlertComponent from '../component/AlertComponent';
 import LoadingComponent from '../component/LoadingComponent';
 // import authenticationAPI from '../apis/authApi';
+import {LogoNoText } from '../assest/svgs/index';
 
 const {height, width} = Dimensions.get('window');
 
@@ -90,7 +90,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
         nameUser: name,
       });
     } else {
-      console.log(idStore)
+      // console.log(idStore)
 
       await saveData({
         taiKhoan: userName,
@@ -144,7 +144,10 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
         const token = await getToken();
         dispatch(setToken(token));
         rememBer(res.index.id, res.index.idCH, res.index.tenNV, res.index.phanQuyen); // Truyền các đối số cần thiết vào hàm rememBer
-        navigation.navigate('HomeScreen',{idCH: res.index.idCH});
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'HomeScreen' , params: { idCH: res.index.idCH }}],
+        });
       } else {
         setMsg(res.msg);
         handleShowAlert();
@@ -173,7 +176,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
         'get',
       );
 
-      console.log(res.data);
+      // console.log(res.data);
       // dispatch(addAuth(res.index));
       // navigation.navigate('HomeScreen')
     } catch (err) {
@@ -185,9 +188,8 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
-          <View style={styles.header}>
-            <Logo style={{alignSelf: 'center'}} />
-          </View>
+          <LogoNoText/>
+          <Text style={styles.logoText}>Food Center</Text>
           <View style={styles.main}>
             <EditTextComponent
               label="text"
@@ -262,16 +264,16 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
             <ButtonComponent
               type="primary"
               text="Đăng nhập"
-              textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+              textStyles={{color: 'white', fontSize: 16, fontWeight: 'bold'}}
               onPress={handleLogin}
             />
           </View>
-          <View style={{height: hp(7)}}>
+          {/* <View style={{height: hp(7)}}>
             <AppPath />
-          </View>
+          </View> */}
           <View style={styles.footer}>
-            <View>
-              <ButtonComponent
+            <View >
+              {/* <ButtonComponent
                 type="primary"
                 // onPress={handleLoginWithGoogle}
                 color={appColors.white}
@@ -282,7 +284,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
                 styles={{borderWidth: 1}}
                 textStyles={{color: 'black', fontWeight: 'bold'}}
                 // onPress={}
-              />
+              /> */}
 
               {/* <ButtonComponent
                 type="primary"
@@ -301,13 +303,13 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
             <View style={styles.signOut}>
               <TextComponent
                 text="Bạn chưa có tài khoản?  "
-                styles={{color: '#C2BEBE', fontSize: 18}}
+                styles={{color: '#C2BEBE', fontSize: 16}}
               />
               <ButtonComponent
                 type="link"
                 text="Đăng ký"
                 textStyles={{
-                  fontSize: 18,
+                  fontSize: 16,
                   textDecorationLine: 'underline',
                   fontWeight: 'bold',
                 }}
@@ -331,8 +333,10 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    alignItems: 'center',
     backgroundColor: appColors.white,
-    height: hp(100),
+    paddingVertical: 30
   },
   header: {
     height: hp(30),
@@ -342,7 +346,7 @@ const styles = StyleSheet.create({
   },
 
   main: {
-    height: hp(40),
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
@@ -357,13 +361,21 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    height: hp(23),
+    flex: 1,
     flexDirection: 'column',
   },
   signOut: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  logoText: {
+    flex: 1,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: appColors.primary
+  }
 });
 
 export default LoginScreen;
