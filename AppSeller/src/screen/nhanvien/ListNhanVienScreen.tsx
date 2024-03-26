@@ -172,10 +172,10 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
           <Image
           source={
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
-              require('./../../assest/default-avatar.png') :
+              require('./../../assest/default-avatar.jpg') :
               { uri: item.hinhAnh }}
             style={{ width: 65, height: 65 }}
-            defaultSource={require('./../../assest/default-avatar.png')}
+            defaultSource={require('./../../assest/default-avatar.jpg')}
           />
           <View style={{paddingHorizontal: 10}}>
             <Text style={{fontWeight: 'bold', color: 'black'}}>
