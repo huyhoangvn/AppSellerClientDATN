@@ -149,7 +149,7 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
         ); // Truyền các đối số cần thiết vào hàm rememBer
         navigation.reset({
           index: 0,
-          routes: [{name: 'HomeScreen', params: {idCH: res.index.idCH}}],
+          routes: [{name: 'HomeScreen'}],
         });
       } else {
         setMsg(res.msg);
