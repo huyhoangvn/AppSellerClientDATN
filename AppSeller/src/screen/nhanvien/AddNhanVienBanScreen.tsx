@@ -20,6 +20,9 @@ import authenticationAPI from '../../apis/authApi';
 import { getData } from '../../utils/storageUtils';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
+
 const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
