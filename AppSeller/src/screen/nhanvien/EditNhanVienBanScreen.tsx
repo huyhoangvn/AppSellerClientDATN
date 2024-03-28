@@ -20,15 +20,18 @@ import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
+import ImagePickerComponent from '../../component/ImagePickerComponent';
 
 const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
-  const {item} = route.params;
+  const {position, item} = route.params;
   const [name, setName] = useState(item.tenNV);
   const [phone, setPhone] = useState(item.sdt);
   const [address, setAddress] = useState(item.diaChi);
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
+  const [imagePath, setImagePath] = useState('');
+  const [status, setStatus] = useState<boolean>();
   // Declare the setLoading function using the useState hook
   const handleShowAlert = () => {
     setShowAlert(true);
@@ -37,15 +40,27 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const handleCloseAlert = () => {
     setShowAlert(false);
   };
-  const hahandelUpdate = async () => {
+  const handelUpdate = async () => {
     setLoading(true);
     try {
       const user = await getData();
-      const id = user?.idUser;
+      const idUser = user?.idUser;
+
+      const formData = new FormData();
+      if (imagePath) {
+        formData.append('hinhAnh', {
+          uri: imagePath,
+          name: generateRandomImageName(), // Tên của hình ảnh
+          type: 'image/jpeg', // Loại của hình ảnh
+        });
+      }
+      formData.append('tenNV', name);
+      formData.append('diaChi', address);
+      formData.append('sdt', phone);
 
       const res = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/nhanvienquanly/sua-nhanvien-ban/${id}/${item._id}`,
-        {tenNV: name, diaChi: address, sdt: phone},
+        `/nhanvien/nhanvienquanly/sua-nhanvien-ban/${idUser}/${item._id}`,
+        formData,
         'put',
       );
 
@@ -64,15 +79,73 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
       setLoading(false);
     }
   };
+
+  const handelLockUser = async () => {
+    setLoading(true);
+    try {
+      const user = await getData();
+      const idUser = user?.idUser;
+
+      const res = await authenticationAPI.HandleAuthentication(
+        `/nhanvien/nhanvienquanly/huy-kich-hoat-nhan-vien-ban/${idUser}/${item._id}`,
+        {},
+        'post',
+      );
+
+      if (res.success === true) {
+        setStatus(res.index.trangThai);
+        if (res.index.trangThai == true) {
+          setMsg('Kích hoạt thành công');
+          handleShowAlert();
+        } else {
+          setMsg('Huỷ Kích hoạt thành công');
+          handleShowAlert();
+        }
+        // setMsg(res.msg);
+        // handleShowAlert();
+      } else {
+        setMsg(res.msg);
+        handleShowAlert();
+      }
+    } catch (err) {
+      console.log(err);
+      setMsg('Request timeout. Please try again later.'); // Set error message
+      handleShowAlert();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateRandomImageName = () => {
+    const prefix = 'IMG_6314_'; // Tiền tố cố định
+    const randomSuffix = Math.floor(Math.random() * 10000); // Số ngẫu nhiên từ 0 đến 9999
+    const extension = '.jpeg'; // Phần mở rộng của tệp
+
+    return `${prefix}${randomSuffix}${extension}`;
+  };
+  const handleImageSelect = async (imagePath: string) => {
+    try {
+      setImagePath(imagePath);
+    } catch (error) {
+      console.log('Error uploading image:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <Image
+        <ImagePickerComponent
+          onImageSelect={handleImageSelect}
+          imageUri={item.hinhAnh}
+          style={{borderRadius: wp(30), overflow: 'hidden'}}
+        />
+
+        {/* <Image
           style={{width: wp(40), height: hp(20), borderRadius: 5}}
           source={{
             uri: item.hinhAnh,
           }}
-        />
+        /> */}
       </View>
       <View style={styles.footer}>
         <EditTextComponent
@@ -105,8 +178,23 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           type="primary"
           text="Lưu"
           textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-          onPress={hahandelUpdate}
+          onPress={handelUpdate}
         />
+        {position === 0 && status == true ? (
+          <ButtonComponent
+            type="primary"
+            text="Khoá nhân viên"
+            textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+            onPress={handelLockUser}
+          />
+        ) : (
+          <ButtonComponent
+            type="primary"
+            text="Mở khoá nhân viên"
+            textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+            onPress={handelLockUser}
+          />
+        )}
       </View>
       <AlertComponent
         visible={showAlert}
@@ -124,12 +212,12 @@ const styles = StyleSheet.create({
     backgroundColor: appColors.white,
   },
   main: {
-    height: hp(25),
+    height: hp(33),
     justifyContent: 'center',
     alignItems: 'center',
   },
   footer: {
-    height: hp(40),
+    height: hp(50),
     justifyContent: 'space-between',
   },
 });
