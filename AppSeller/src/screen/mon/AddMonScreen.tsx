@@ -119,11 +119,20 @@ const handelSave = async () => {
     setLoading(false);
    }
 };
+const handleImageSelect = async (imagePath: string) => {
+  try {
+    console.log("🚀 ~ handleImageSelect ~ imagePath:", imagePath)
+    
+     
+  } catch (error) {
+      console.log('Error uploading image:', error);
+  }
+};
 
   return (
   <View style={styles.container}>
     
-    <ImagePickerComponent/>
+    <ImagePickerComponent onImageSelect={handleImageSelect} />
    
     <View style={styles.inputContainer}>
         <EditTextComponent

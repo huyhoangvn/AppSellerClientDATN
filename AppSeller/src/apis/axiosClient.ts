@@ -1,14 +1,9 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import queryString from 'query-string';
-import {appInfo} from '../constants/appInfos';
+import { appInfo } from '../constants/appInfos';
 import { AxiosResponse } from '../constants/axiosResponse';
-import { useDispatch, useSelector } from 'react-redux';
-import { getData, saveData, saveToken } from '../utils/storageUtils';
+import { saveToken } from '../utils/storageUtils';
 import store from '../redux/store';
-import { setToken } from '../redux/reducers/authReducers';
-// import { CustomAxiosResponse } from '../constants/appApiResponse';
-// import { CustomAxiosResponse } from '../constants/appApiResponse';
-
 
 const axiosClient = axios.create({
   baseURL: appInfo.BASE_URL,
@@ -27,53 +22,6 @@ axiosClient.interceptors.request.use(async (config) => {
   }
   return config;
 });
-// axiosClient.interceptors.response.use(
-//   res => {
-//     if (res.data && res.status === 200 && res.headers && res.headers.authorization) {
-//       const token = res.headers.authorization;
-//       console.log('Token:', token);
-//       return res.data;
-      
-//     }
-//     throw new Error('Error');
-//   },
-//   error => {
-//     console.log(`Error api ${JSON.stringify(error)}`);
-//     throw new Error(error.response);
-//   },
-// );
-
-
-
-// axiosClient.interceptors.response.use(
-//   async (res: AxiosResponse) => {
-   
-//     try {
-    
-//     // Gọi hàm để lưu dữ liệu vào AsyncStorage
-//       if (res.data && res.status === 200) {
-//         const token = res.headers.authorization;
-//         await saveToken( token ); // Lưu token vào AsyncStorage
-//         return res.data;
-//       }
-//       throw new Error('Error');
-//     } catch (error) {
-//       console.log('Error api:', error);
-//       throw new Error('Error');
-//     }
-//   },
-//   (error: any) => {
-//     if (error.response) {
-//       const errorData = error.response.data;
-//       throw new Error(JSON.stringify({ error: errorData, message: 'Đã xảy ra lỗi' }));
-//     } else {
-//       console.log('Error api:', JSON.stringify(error));
-//       throw new Error('Error');
-//     }
-//   }
-// );
-
-
 
 axiosClient.interceptors.response.use(
   async (res: AxiosResponse) => {
@@ -100,9 +48,18 @@ axiosClient.interceptors.response.use(
   }
 );
 
-
-
-
-
+export const uploadImage = async (url: string, formData: FormData) => {
+  try {
+    const response = await axiosClient.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw new Error('Error uploading image');
+  }
+};
 
 export default axiosClient;

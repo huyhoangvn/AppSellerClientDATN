@@ -40,6 +40,7 @@ import authenticationAPI from '../../apis/authApi';
 const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
   const cuaHang = route.params.cuaHang;
+  console.log("🚀 ~ cuaHang:", cuaHang)
   const [name, setName] = useState(cuaHang.tenCH);
   const [phone, setPhone] = useState(cuaHang.sdt);
   const [address, setAddress] = useState(cuaHang.diaChi);

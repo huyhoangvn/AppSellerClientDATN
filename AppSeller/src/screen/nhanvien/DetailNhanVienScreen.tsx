@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import NavProps from '../../models/props/NavProps';
 import {
@@ -16,78 +16,136 @@ import {
 import {appColors} from '../../constants/appColors';
 import ButtonComponent from '../../component/ButtonComponent';
 import EditTextComponent from '../../component/EditTextComponent';
-const DetailNhanVienScreen: React.FC<NavProps> = ({navigation,route} : any) => {
-  const {item , position} = route.params;
+import authenticationAPI from '../../apis/authApi';
+import AlertComponent from '../../component/AlertComponent';
+import LoadingComponent from '../../component/LoadingComponent';
+import ImagePickerComponent from '../../component/ImagePickerComponent';
+import {getData} from '../../utils/storageUtils';
+import {DefaultAvatar} from '../../assest/svgs';
+const DetailNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
+  const {idUser, position} = route.params;
+
+  const [item, setItem] = useState<any>();
+  const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [msg, setMsg] = useState('');
+
+  const handleShowAlert = () => {
+    setShowAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
 
   const hahandelUpdate = () => {
-    navigation.navigate('EditNhanVienBanScreen', {item});
+    navigation.navigate('EditNhanVienBanScreen', {position:position ,item:item});
   };
   const hahandelUpdatePass = () => {
     navigation.navigate('UpdatePasswordScreen');
   };
+
+  const getDetail = async () => {
+    try {
+      setLoading(true);
+      const res = await authenticationAPI.HandleAuthentication(
+        `/nhanvien/nhanvienquanly/chi-tiet-nhan-vien/${idUser}`,
+        'get',
+      );
+
+      if (res.success === true) {
+        setItem(res.index);
+      } else {
+        // Xử lý khi có lỗi từ API
+        setMsg('Request failed. Please try again.');
+        handleShowAlert();
+      }
+    } catch (err) {
+      console.log(err);
+      setMsg('Request timeout. Please try again later.');
+      handleShowAlert();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getDetail();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          style={{width: wp(40), height: hp(20), borderRadius: 5}}
-          source={{
-            uri: item.hinhAnh,
-          }}
-        />
+        {item && item.hinhAnh ? (
+          <Image
+            style={{
+              width: wp(40),
+              height: hp(20),
+              borderRadius: wp(20),
+              overflow: 'hidden',
+            }}
+            source={{uri: item.hinhAnh}}
+          />
+        ) : (
+          <DefaultAvatar />
+        )}
       </View>
       <View style={styles.main}>
-        <View style = {styles.viewText}>
+        <View style={styles.viewText}>
           <Text>Tên</Text>
-          <Text style = {styles.textPrimary}>{item.tenNV}</Text>
+          <Text style={styles.textPrimary}>{item?.tenNV}</Text>
         </View>
 
-        <View style = {styles.viewText}>
+        <View style={styles.viewText}>
           <Text>Giới tính</Text>
-          <Text style = {styles.textPrimary}>{item.gioiTinh == 2 ? 'nam' : 'nữ'}</Text>
-
+          <Text style={styles.textPrimary}>
+            {item?.gioiTinh == 2 ? 'nam' : 'nữ'}
+          </Text>
         </View>
 
-        <View style = {styles.viewText}>
+        <View style={styles.viewText}>
           <Text>Email</Text>
-          <Text style = {styles.textPrimary}>{item.taiKhoan}</Text>
-
+          <Text style={styles.textPrimary}>{item?.taiKhoan}</Text>
         </View>
 
-        <View style = {styles.viewText}>
+        <View style={styles.viewText}>
           <Text>Số điện thoại</Text>
-          <Text style = {styles.textPrimary}>{item.sdt}</Text>
-
+          <Text style={styles.textPrimary}>{item?.sdt}</Text>
         </View>
-        
-        <View style = {styles.viewText}>
+
+        <View style={styles.viewText}>
           <Text>Địa chỉ</Text>
-          <Text style={[styles.textPrimary, styles.wrapText, styles.addressText]}>
-          {item.diaChi}
-  </Text>
+          <Text
+            style={[styles.textPrimary, styles.wrapText, styles.addressText]}>
+            {item?.diaChi}
+          </Text>
         </View>
 
-        <View style = {styles.viewText}>
+        <View style={styles.viewText}>
           <Text>Vai trò</Text>
-          <Text style = {styles.textPrimary}>{item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}</Text>
-
+          <Text style={styles.textPrimary}>
+            {item?.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}
+          </Text>
         </View>
 
-        <View style = {styles.viewText}>
+        <View style={styles.viewText}>
           <Text>Trạng thái</Text>
-          <Text style = {styles.textPrimary}>{item.trangThai === true ? 'Hoạt động' : 'Không hoạt động'}</Text>
-
+          <Text style={{fontWeight:'bold',color: item?.trangThai ? 'green' : 'red'}}>
+              {item?.trangThai ? 'Hoạt động' : 'Không hoạt động'}
+            </Text>
         </View>
-      
-        
       </View>
-      <View style = {styles.footer}>
-        {position === 0 ? (  <ButtonComponent
-          type="primary"
-          text="Sửa nhân viên"
-          textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-          onPress={hahandelUpdate}
-        />) : null}
-    
+      <View style={styles.footer}>
+        {position === 0 ? (
+          <ButtonComponent
+            type="primary"
+            text="Sửa nhân viên"
+            textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+            onPress={hahandelUpdate}
+          />
+        ) : null}
+
         <ButtonComponent
           type="primary"
           text="Đổi mật khẩu"
@@ -95,6 +153,12 @@ const DetailNhanVienScreen: React.FC<NavProps> = ({navigation,route} : any) => {
           onPress={hahandelUpdatePass}
         />
       </View>
+      <LoadingComponent visible={loading} />
+      <AlertComponent
+        visible={showAlert}
+        message={msg}
+        onClose={handleCloseAlert}
+      />
     </View>
   );
 };
@@ -104,14 +168,13 @@ const styles = StyleSheet.create({
     height: hp(84),
     backgroundColor: appColors.white,
     justifyContent: 'space-between',
-
   },
   header: {
     height: hp(20),
     justifyContent: 'center',
     alignItems: 'center',
   },
-  main:{
+  main: {
     paddingHorizontal: 10,
     height: hp(45),
     justifyContent: 'space-between',
@@ -125,15 +188,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     paddingHorizontal: 5,
     paddingVertical: 5,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   textPrimary: {
     color: 'black',
-    fontWeight:'bold'
+    fontWeight: 'bold',
   },
-  wrapText:{
+  wrapText: {
     flexWrap: 'wrap',
-    textAlign: 'right'
+    textAlign: 'right',
   },
   addressText: {
     width: '70%', // Chiếm 50% chiều rộng của View cha

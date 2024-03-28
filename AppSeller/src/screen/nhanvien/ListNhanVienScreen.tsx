@@ -145,7 +145,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
 
   const handelDetail = (item: any) => {
     navigation.navigate('DetailNhanVienScreen', {
-      item: item,
+      idUser: item._id,
       position: position,
     });
   };
@@ -165,7 +165,10 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     }, []),
   );
 
+
+
   const renderItem = ({item}: {item: NhanVien}) => {
+    console.log("🚀 ~ renderItem ~ item:", item.hinhAnh)
     return (
       <TouchableOpacity onPress={() => handelDetail(item)}>
         <View style={styles.item}>
