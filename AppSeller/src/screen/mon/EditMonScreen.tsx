@@ -87,7 +87,7 @@ const handleCheckBox2Change = (newValue: boolean) => {
     };
     try {
       setLoading(true);
-      const res = await authenticationAPI.HandleAuthentication(
+      const res:any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/mon/${idNV}`,
          requestData,
         'post',
