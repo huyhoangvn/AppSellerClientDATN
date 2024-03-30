@@ -31,12 +31,12 @@ const MainThongKeScreen = () => {
     >
       <Tab.Screen 
         name="ThongKeDoanhThuScreen" 
-        component={ThongKeMonScreen} 
+        component={ThongKeDoanhThuScreen} 
         options={renderTabScreenOptions('Doanh thu')}
       />
       <Tab.Screen 
         name="ThongKeMonScreen" 
-        component={ThongKeDoanhThuScreen} 
+        component={ThongKeMonScreen} 
         options={renderTabScreenOptions('Món Ăn')}
       />
     </Tab.Navigator>
