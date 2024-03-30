@@ -118,6 +118,7 @@ const EditTextComponent = (props: Props) => {
           display="spinner" // Use 'spinner' for Android
           onChange={handleDateChange}
         />
+        
       )}
     </View>
   );
