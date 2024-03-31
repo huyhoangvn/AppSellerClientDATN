@@ -76,7 +76,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   //Tìm kiếm theo tên
   const timKiemTheoTen = (item: string) => {
     handleSearch(item, giaTienMin, giaTienMax, trangThai, 1);
-  };
+  }; 
 
   //Tìm kiếm theo giá
   const timKiemTheoGiaTien = async (item: any) => {

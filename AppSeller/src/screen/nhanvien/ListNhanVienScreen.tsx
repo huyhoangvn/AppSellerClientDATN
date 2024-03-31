@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -44,15 +44,20 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [text, setText] = useState('Xem thêm');
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPosition, setItemsPosition] = useState<any>();
-  const [itemStatus, setItemStatus] = useState<any>();
+  const [status, setStatus] = useState('');
+  const [phanQuyen, setPhanQuyen] = useState('');
+  const [name, setName] = useState('');
+  const [page, setPage] = useState(1);
+
+  
 
   const itemsPosition = [
+    {label: 'Tất cả', value: ''},
     {label: 'Quản lý', value: 0},
     {label: 'Nhân viên', value: 1},
   ];
   const itemsStatus = [
+    {label: 'Tất cả', value: ''},
     {label: 'Hoạt động', value: true},
     {label: 'Không hoạt động', value: false},
   ];
@@ -65,19 +70,15 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     setShowAlert(false);
   };
 
-  const handleSelectItemPosition = (item: any) => {
-    getListUser('', item.value, '', '');
-    setText('');
+  const handleSelectItemPosition = async (item: any) => {
+    await getListUser(name, item.value, status, page);
   };
-  const handleSelectItemStatus = (item: any) => {
-    getListUser('', '', item.value, '');
-    setText('');
+  const handleSelectItemStatus = async (item: any) => {
+    await getListUser(name, phanQuyen, item.value, page);
   };
 
-  const acstionSearch = async (item: string) => {
-    await getListUser(item, '', '', '');
-    setText('');
-
+  const actionSearch = async (item: string) => {
+    await getListUser(item, phanQuyen, status, page);
   };
   const getPosison = async () => {
     const storedData = await getData();
@@ -85,11 +86,13 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     setPosition(storedPosison);
   };
 
+
+
   const getListUser = async (
-    name: any,
-    phanQuyen: any,
-    trangThai: any,
-    page: any,
+    name?: any,
+    phanQuyen?: any,
+    trangThai?: any,
+    page?: any,
   ) => {
     try {
       setLoading(true);
@@ -101,15 +104,8 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
       if (res.success === true) {
         if (res.index.length !== 0 && res.currentPage === 1) {
           setData(res.index);
-          setDataNew([]);
         } else if (res.index.length !== 0 && res.currentPage !== 1) {
-          setData(prevData => {
-            const newData = res.index.filter(
-              (item: {_id: string | undefined}) =>
-                !prevData.find(oldItem => oldItem._id === item._id),
-            );
-            return [...prevData, ...newData];
-          });
+          setData(prevData => [...prevData, ...res.index]);
         } else {
           setData([]);
           // setText('Hết dữ liệu');
@@ -121,6 +117,10 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
         setMsg('Request failed. Please try again.');
         handleShowAlert();
       }
+      setStatus(trangThai);
+      setPhanQuyen(phanQuyen);
+      setName(name);
+      setPage(page);
     } catch (err) {
       console.log(err);
       setMsg('Request timeout. Please try again later.');
@@ -133,9 +133,9 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const handleGetAll = async () => {
     try {
       setLoading(true);
-      const nextPage = currentPage + 1; // Tăng giá trị của currentPage lên 1
-      await getListUser('', '', '', nextPage);
-      setCurrentPage(nextPage);
+      const nextPage = page + 1;
+      // setPage(nextPage) // Tăng giá trị của currentPage lên 1
+      getListUser(name, phanQuyen, status, nextPage);
     } catch (error) {
       console.error('Error loading next page:', error);
     } finally {
@@ -151,24 +151,25 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   useEffect(() => {
-    getListUser('', '', '', 1);
+    getListUser('', '', '', page);
     getPosison();
     // setRememberedChecked(true);
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      getListUser('', '', '', 1);
+      getListUser('', '', '', page);
       return () => {
         // Cleanup logic nếu cần (không bắt buộc)
       };
     }, []),
   );
 
+  
+
 
 
   const renderItem = ({item}: {item: NhanVien}) => {
-    console.log("🚀 ~ renderItem ~ item:", item.hinhAnh)
     return (
       <TouchableOpacity onPress={() => handelDetail(item)}>
         <View style={styles.item}>
@@ -203,7 +204,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
           placeholder="Nhập tên nhân viên"
           iconRight={faMagnifyingGlass}
           stylesEdit={{backgroundColor: 'white'}}
-          onChangeText={(text: string) => acstionSearch(text)}
+          onChangeText={(text: string) => actionSearch(text)}
           stylesContainer={{
             backgroundColor: appColors.white,
             borderColor: 'black',
@@ -220,7 +221,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
               label: item.label,
               value: item.value.toString(),
             }))} // Danh sách các mục
-            defaultValue="item1" // Giá trị mặc định
             containerStyle={{width: wp(55), borderRadius: 100}}
             onChangeItem={item => {
               handleSelectItemPosition(item);
@@ -249,7 +249,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             <Text style={{textAlign: 'center', fontSize: 20}}>
               không tìm thấy nhân viên
             </Text>
-            <TouchableOpacity onPress={() => {getListUser('', '', '', 1),setCurrentPage(1)}}>
+            <TouchableOpacity onPress={() => {getListUser('', '', '', 1),setPage(1)}}>
               <Text
                 style={{
                   textAlign: 'center',
