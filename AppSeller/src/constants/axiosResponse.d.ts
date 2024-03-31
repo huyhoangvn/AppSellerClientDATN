@@ -1,4 +1,4 @@
-import { AxiosResponseHeaders, InternalAxiosRequestConfig, RawAxiosResponseHeaders } from "axios";
+import { AxiosResponseHeaders, InternalAxiosRequestConfig, RawAxiosResponseHeaders,AxiosResponse } from "axios";
 
 // import { AxiosResponse } from "axios";
 export interface AxiosResponse<T = any, D = any> {
@@ -6,6 +6,7 @@ export interface AxiosResponse<T = any, D = any> {
   currentPage: number;
   index: T,
   data: T;
+  list: T;
   success: boolean;
   status: number;
   statusText: string;
