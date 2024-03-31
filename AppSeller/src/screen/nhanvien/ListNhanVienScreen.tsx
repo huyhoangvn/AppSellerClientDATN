@@ -85,7 +85,27 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     const storedPosison = storedData?.position;
     setPosition(storedPosison);
   };
+  const handelDetail = (item: any) => {
+    navigation.navigate('DetailNhanVienScreen', {
+      idUser: item._id,
+      position: position,
+    });
+  };
 
+  const handleGetAll = async () => {
+    try {
+      setLoading(true);
+      const nextPage = page + 1;
+      // setPage(nextPage) // Tăng giá trị của currentPage lên 1
+      getListUser(name, phanQuyen, status, nextPage);
+    } catch (error) {
+      console.error('Error loading next page:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
 
 
   const getListUser = async (
@@ -130,25 +150,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     }
   };
 
-  const handleGetAll = async () => {
-    try {
-      setLoading(true);
-      const nextPage = page + 1;
-      // setPage(nextPage) // Tăng giá trị của currentPage lên 1
-      getListUser(name, phanQuyen, status, nextPage);
-    } catch (error) {
-      console.error('Error loading next page:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handelDetail = (item: any) => {
-    navigation.navigate('DetailNhanVienScreen', {
-      idUser: item._id,
-      position: position,
-    });
-  };
 
   useEffect(() => {
     getListUser('', '', '', page);
@@ -208,7 +209,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
           stylesContainer={{
             backgroundColor: appColors.white,
             borderColor: 'black',
-            borderWidth: 1,
+            borderWidth: 1.5,
             elevation: 0,
           }}
           iconColor={appColors.primary}

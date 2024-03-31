@@ -44,7 +44,7 @@ const DropDownComponent = (props: Props) => {
       setValue={setSelectedValue}
       multiple={false}
       zIndex={9999}
-      style={{backgroundColor: '#fafafa', borderRadius: 30}}
+      style={{backgroundColor: '#fafafa', borderRadius: 30,borderWidth:1.5}}
       containerStyle={[containerStyle]}
       onSelectItem={(value) => handel(value)}
       placeholder={placeholder}

@@ -5,6 +5,8 @@ export interface AxiosResponse<T = any, D = any> {
   msg: string;
   currentPage: number;
   index: T,
+  hoaDon: T,
+  MonDat: T,
   data: T;
   list: T;
   success: boolean;
