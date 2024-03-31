@@ -18,6 +18,7 @@ import { HoaDon } from '../../models/HoaDon';
 import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
+import { getData } from '../../utils/storageUtils';
 const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
@@ -32,7 +33,8 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   const [code, setCode] = useState('');
   const [date, setDate] = useState<any>();
   const [selectedDate, setSelectedDate] = useState<Date>();
- 
+  const [position, setPosition] = useState<any>();
+
   
   const statusPurchase = [
     {label: 'Tất cả', value: ''},
@@ -72,38 +74,48 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
     setShowAlert(false);
   };
 
-  const handleSelectItemPurchase =  (item: any) => {
-    getListInvoice(code,date,item.value,payment,page);
+  const handleSelectItemPurchase =  async (item: any) => {
+    await getListInvoice(code,date,item.value,payment,page);
   };
   const handleSelectItemPayment = async (item: any) => {
-    getListInvoice(code,date,purchase,item.value,page);
+    await getListInvoice(code,date,purchase,item.value,page);
 
     // await getListInvoice(page,code,item.value,payment);
   };
   const actionSearch = async (item: string) => {
-    getListInvoice(item,date,purchase,payment,page);
+    await getListInvoice(item,date,purchase,payment,page);
 
   };
 
-  const searchDate = async (item: Date | string) => {
-    setSelectedDate(item as Date);
+  const searchDate =  (item: Date | string) => {
+     setSelectedDate(item as Date);
   }
 
-  const handleDateSelected = (date: Date | string) => {
+  const handleDateSelected = async (date: Date | string) => {
     setSelectedDate(date as Date);
 
-    getListInvoice(code,date,purchase,payment,page);
+    await getListInvoice(code,date,purchase,payment,page);
 
   };
 
 
   const handelDetail = (item: any) => {
-    navigation.navigate('DetailNhanVienScreen', {
-      // idUser: item.id,
-      // position: position,
+    navigation.navigate('DetailHoaDonScreen', {
+      id: item._id,
     });
   };
 
+  const handleGetAll = async () => {
+    try {
+      setLoading(true);
+      const nextPage = page + 1; // Tăng giá trị của currentPage lên 1
+      await getListInvoice(code,date,purchase,payment,nextPage);
+    } catch (error) {
+      console.error('Error loading next page:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -113,8 +125,6 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
     purchaseStatus?: any,
     paymentStatus?: any,
     page?: any,
-
-
   ) => {
     try {
       setLoading(true);
@@ -155,17 +165,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
     }
   };
 
-  const handleGetAll = async () => {
-    try {
-      setLoading(true);
-      const nextPage = page + 1; // Tăng giá trị của currentPage lên 1
-      await getListInvoice(code,date,purchase,payment,nextPage);
-    } catch (error) {
-      console.error('Error loading next page:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
 
   
@@ -220,7 +220,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
           stylesContainer={{
             backgroundColor: appColors.white,
             borderColor: 'black',
-            borderWidth: 1,
+            borderWidth: 1.5,
             elevation: 0,
           }}
           iconColor={appColors.primary}
@@ -235,7 +235,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
           stylesContainer={{
             backgroundColor: appColors.white,
             borderColor: 'black',
-            borderWidth: 1,
+            borderWidth: 1.5,
             elevation: 0,
           }}
           onDateSelected={(item) =>handleDateSelected(item)}
@@ -279,7 +279,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
               không tìm thấy nhân viên
             </Text>
             <TouchableOpacity 
-            onPress={() => {getListInvoice('','','','',1) , setPage(1)}}
+            onPress={async () => {await getListInvoice('','','','',1) , setPage(1)}}
             >
               <Text
                 style={{
