@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity, Image} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, ScrollView, Platform} from 'react-native';
 import NavProps from '../../models/props/NavProps';
 import EditTextComponent from '../../component/EditTextComponent';
 import {
@@ -160,6 +160,13 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   return (
+    <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // Điều chỉnh vị trí của bàn phím
+  >
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+ 
     <View style={styles.container}>
       <View style={styles.header}>
         <EditTextComponent
@@ -205,6 +212,7 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
             // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
             // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
             // onEndReachedThreshold={.1}
+            scrollEnabled={false}
             ListFooterComponent={() => (
               <View style={{alignItems: 'center', paddingVertical: 10}}>
                 {/* {lastList === true && scroll !== true ? ( */}
@@ -228,6 +236,9 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
       />
       </View>
     </View>
+    </ScrollView>
+     </KeyboardAvoidingView>
+
   );
 };
 
