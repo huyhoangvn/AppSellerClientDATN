@@ -1,5 +1,13 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import NavProps from '../../models/props/NavProps';
 import {
   faShop,
@@ -132,77 +140,85 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <ImagePickerComponent
-          onImageSelect={handleImageSelect}
-          imageUri={item.hinhAnh}
-          style={{borderRadius: wp(30), overflow: 'hidden'}}
-        />
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // Điều chỉnh vị trí của bàn phím
+    >
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <View style={styles.container}>
+          <View style={styles.main}>
+            <ImagePickerComponent
+              onImageSelect={handleImageSelect}
+              imageUri={item.hinhAnh}
+              style={{borderRadius: wp(30), overflow: 'hidden'}}
+            />
 
-        {/* <Image
+            {/* <Image
           style={{width: wp(40), height: hp(20), borderRadius: 5}}
           source={{
             uri: item.hinhAnh,
           }}
         /> */}
-      </View>
-      <View style={styles.footer}>
-        <EditTextComponent
-          label="text"
-          placeholder="Họ và tên"
-          value={name}
-          iconColor="gray"
-          onChangeText={setName}
-          icon={faShop}
-        />
+          </View>
+          <View style={styles.footer}>
+            <EditTextComponent
+              label="text"
+              placeholder="Họ và tên"
+              value={name}
+              iconColor="gray"
+              onChangeText={setName}
+              icon={faShop}
+            />
 
-        <EditTextComponent
-          label="text"
-          placeholder="Số điện thoại"
-          value={phone}
-          iconColor="gray"
-          onChangeText={setPhone}
-          icon={faPhone}
-        />
+            <EditTextComponent
+              label="text"
+              placeholder="Số điện thoại"
+              value={phone}
+              iconColor="gray"
+              onChangeText={setPhone}
+              icon={faPhone}
+            />
 
-        <EditTextComponent
-          label="text"
-          placeholder="Địa chỉ"
-          value={address}
-          iconColor="gray"
-          onChangeText={setAddress}
-          icon={faLocationDot}
-        />
-        <ButtonComponent
-          type="primary"
-          text="Lưu"
-          textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-          onPress={handelUpdate}
-        />
-        {position === 0 && status == true ? (
-          <ButtonComponent
-            type="primary"
-            text="Khoá nhân viên"
-            textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-            onPress={handelLockUser}
+            <EditTextComponent
+              label="text"
+              placeholder="Địa chỉ"
+              value={address}
+              iconColor="gray"
+              onChangeText={setAddress}
+              icon={faLocationDot}
+            />
+            <ButtonComponent
+              type="primary"
+              text="Lưu"
+              textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+              onPress={handelUpdate}
+            />
+            {position === 0 && status == true ? (
+              <ButtonComponent
+                type="primary"
+                text="Khoá nhân viên"
+                textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+                onPress={handelLockUser}
+              />
+            ) : (
+              <ButtonComponent
+                type="primary"
+                text="Mở khoá nhân viên"
+                textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
+                onPress={handelLockUser}
+              />
+            )}
+          </View>
+          <AlertComponent
+            visible={showAlert}
+            message={msg}
+            onClose={handleCloseAlert}
           />
-        ) : (
-          <ButtonComponent
-            type="primary"
-            text="Mở khoá nhân viên"
-            textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-            onPress={handelLockUser}
-          />
-        )}
-      </View>
-      <AlertComponent
-        visible={showAlert}
-        message={msg}
-        onClose={handleCloseAlert}
-      />
-      <LoadingComponent visible={loading ?? false} />
-    </View>
+          <LoadingComponent visible={loading ?? false} />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
