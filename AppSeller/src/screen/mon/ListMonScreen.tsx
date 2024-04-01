@@ -32,6 +32,7 @@ import AlertComponent from '../../component/AlertComponent';
 import { DefaultImage } from '../../assest/svgs';
 import { appImageSize } from '../../constants/appImageSize';
 import { appFontSize } from '../../constants/appFontSizes';
+import {useFocusEffect} from '@react-navigation/native';
 
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
@@ -69,10 +70,11 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   ];
 
   //Hiển thị chi tiết
-  const handleDetail = ( item: Mon ) => {
+  const handleDetail = ( item: any ) => {
     navigation.navigate("DetailMonScreen", { item });
+    console.log(item);
   };
-
+  
   //Tìm kiếm theo tên
   const timKiemTheoTen = (item: string) => {
     handleSearch(item, giaTienMin, giaTienMax, trangThai, 1);
@@ -121,7 +123,6 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   //Tìm kiếm
   const handleSearch = async (tenMon: any, giaTienMin: any, giaTienMax: any, trangThai: any, trang: any) => {
-    console.log(`/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}&trang=${trang}`);
     const res : any = await authenticationAPI.HandleAuthentication (
     `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}&trang=${trang}`,
       'get',
@@ -162,7 +163,18 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1);    
     getPhanQuyen();
   }, []); 
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1);    
+      getPhanQuyen();
+      return () => {
+        // Cleanup logic nếu cần (không bắt buộc)
+      };
+    }, []),
+  );
 
+ 
   const renderItem = ({ item }: { item: Mon }) => {  
     return (
       <TouchableOpacity onPress={() => handleDetail(item)}>

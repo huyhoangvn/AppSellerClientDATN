@@ -78,7 +78,7 @@ const timKiemTheoThang = async (item: any) => {
     handleSearch();
   }, [year, thangChon]);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: { item: any }) => {
     return (
       <TouchableOpacity>
         <View style={styles.item}>
