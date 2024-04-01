@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet,Image, TextInput , TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { View, Text, StyleSheet,Image, TextInput , TouchableOpacity, PermissionsAndroid, ImageBackgroundComponent } from 'react-native';
 import NavProps from '../../models/props/NavProps';
 import { useRoute } from '@react-navigation/native'; // Importing useRoute hook
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -11,173 +11,237 @@ import CheckBox from 'expo-checkbox';
 import DropdownPicker from '../../component/drowpdown/DropdownPicker';
 import DropDownComponent from '../../component/DropDownComponent';
 import authenticationAPI from '../../apis/authApi';
+import { getData } from '../../utils/storageUtils';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {appColors} from '../../constants/appColors';
-import { getData } from '../../utils/storageUtils';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
+import * as ImagePicker from 'expo-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import ImagePickerComponent from '../../component/ImagePickerComponent';
 
-const EditMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
-  const route = useRoute(); // Using useRoute hook to get route object
+
+const EditMonScreen: React.FC<NavProps> = ({ navigation, route }:any) =>  {
+  const { item } = route.params;
+
+  const [tenMon, setTenMon] = useState(item.tenMon);
+  const [trangThai, setTrangThai] = useState(item.trangThai);
+  const [idLM, setidLM] = useState(item.tenLM);
+  const [giaTien, setGiaTien] = useState(item.giaTien);
+
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const [checkBox1, setCheckBox1] = useState(false);
-  const [checkBox2, setCheckBox2] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [selectedCategory, setSelectedCategory] = useState<any>(null);
-
+  const [loaMon, setLoaiMon] = useState<{ label: string; value: string; }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Mon[]>([]);
-  const [position, setPosition] = useState<any>();
-  const [tenMon, setTenMon] = useState('');
-  const [price, setPrice] = useState('');
+  const [imagePath, setImagePath] = useState('');
 
 
-  const categoryOptions = [
-    { label: 'Đò chiên', value: 'Đò chiên' },
-    { label: 'Đồ rán', value: 'Đồ rán' },
-  ];
-const validateInputs = () => {
+//Trạng thái select input
+const itemsStatus = [
+  {label: 'Hoạt động', value: 1},
+  {label: 'Khóa', value: 0},
+];
+const loaiMonItem = [
+  {label: 'Trạng thái', value: 0},
+];
+
+  const setSelectedLoaiMon =(item:any)=>{
+    setidLM(item.value);
+    
+  };
+  const setSelectedTrangThai =(item:any)=>{
+    setTrangThai(item.value);
+  };
+  const validateInputs = () => {
+    if (!imagePath) {
+      return ('Hình ảnh không hợp lệ.');
+    }
   if (!tenMon.trim()) {
     return 'Vui lòng nhập tên món';
+  }
+  if(!idLM  && idLM === ''){
+    return 'Vui lòng chọn loại món ';
+
   }
   if (!price.trim() ) {
     return 'Vui lòng nhập giá tiền hợp lệ';
   }
-  if (!checkBox1 && !checkBox2) {
-    return 'Vui lòng chọn ít nhất một trạng thái';
+  if(!trangThai  && trangThai === ''){
+    return 'Vui lòng chọn trạng thái món ';
   }
+  
   return null;
-};
-const handleShowAlert = () => {
-  setShowAlert(true);
-};
+  };
+  const handleShowAlert = () => {
+  setShowAlert(true); 
+  };
 
 const handleCloseAlert = () => {
   setShowAlert(false);
 };
-const handleCheckBox1Change = (newValue: boolean) => {
-  setCheckBox1(newValue);
-};
+const generateRandomImageName = () => {
+  const prefix = 'IMG_6314_'; // Tiền tố cố định
+  const randomSuffix = Math.floor(Math.random() * 10000); // Số ngẫu nhiên từ 0 đến 9999
+  const extension = '.jpeg'; // Phần mở rộng của tệp
 
-const handleCheckBox2Change = (newValue: boolean) => {
-  setCheckBox2(newValue);
+  return `${prefix}${randomSuffix}${extension}`;
 };
-  const handelSave = async () => {
-    const errorMessage = validateInputs();
-    if (errorMessage) {
-      setMsg(errorMessage);
+const handleImageSelect = async (imagePath: string) => {
+  try {
+    setImagePath(imagePath);
+  } catch (error) {
+    console.log('Error uploading image:', error);
+  }
+};
+const handelUpdate = async (  ) => {
+  
+  try {
+    setLoading(true);
+    const data = await getData();
+    const idNV = data?.idUser;
+  
+    const formData = new FormData();
+      if (imagePath) {
+        formData.append('hinhAnh', {
+          uri: imagePath,
+          name: generateRandomImageName(), // Tên của hình ảnh
+          type: 'image/jpeg', // Loại của hình ảnh
+        });
+      }
+      formData.append('idNV', idNV);
+      formData.append('idLM', idLM);
+      formData.append('tenMon', tenMon);
+      formData.append('giaTien', giaTien);
+      formData.append('trangThai', trangThai);
+    const res:any = await authenticationAPI.HandleAuthentication(
+      `/nhanvien/mon/${item._id}`,
+       formData,
+       'put', // 
+    );
+    console.log(res);
+    if (res.success === true) {
+      setMsg(res.msg);
       handleShowAlert();
-      return;
+    } else {
+      setMsg(res.msg);
+      handleShowAlert();
     }
     
-    const data = await getData();
-    const idNV = data?.idNV;
-    const checkbox = data?.isChecked;
-    const requestData = {
-      idNV: idNV,
-      tenMon: tenMon,
-      giaTien: price,
-      trangThai: checkbox,
-      tenLM: selectedCategory,
-    };
-    try {
-      setLoading(true);
-      const res:any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/mon/${idNV}`,
-         requestData,
-        'post',
-      );
-      if (res.success === true) {
-        setMsg(res.msg);
-        handleShowAlert();
-      } else {
-        setMsg(res.msg);
-        handleShowAlert();
-      }
-    } catch (err) {
-      console.log(err);
-      setMsg('Request timeout. Please try again later.'); // Set error message
-      handleShowAlert();
-    } finally {
-      setLoading(false);
+  } catch (err) {
+    console.log(err);
+    setMsg(msg); // Set error message
+    handleShowAlert();
+  } finally {
+    setLoading(false);
+   }
+};
+
+
+
+const danhSachLoaiMon = async ()=>{
+  try {
+    const res: any = await  authenticationAPI.HandleAuthentication (
+      `/nhanvien/loaimon/`,
+      'put',
+    );
+
+    if( res && res.success === true ){
+     // đây là chỗ để set danh sách loại món 
+     const newCategoryOptions: { label: string; value: string }[] = (res.list as any[]).map(item => ({
+      label: item.tenLM.trim(),
+      value: item._id.trim()
+    }));
+    setLoaiMon([...newCategoryOptions]);
     }
-  };
+    else{
+      setMsg('Thất bại.');
+    }
+  } catch (error) {
+     console.log(error);
+     setMsg('Request timeout. Please try again later.'); // Set error message
+  }
+
+}
+
+useEffect(() => {
+  danhSachLoaiMon();
+}, []); 
+
   return (
   <View style={styles.container}>
-    <Image style={styles.userLogo} source={{uri:'data:image/png;base64,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',}} />
-
+    
+    <ImagePickerComponent
+              onImageSelect={handleImageSelect}
+              imageUri={item.hinhAnh}
+              style={{borderRadius: wp(30), overflow: 'hidden'}}
+            />   
     <View style={styles.inputContainer}>
-      <EditTextComponent
-        label="text"
-        placeholder="Tên món"
-        iconColor="gray"
-        icon={faCalendarWeek}
-        onChangeText={setTenMon}
-        />
-         <DropDownComponent
+        <EditTextComponent
+         label="text"
+         placeholder="Tên món"
+         value={tenMon}
+         iconColor="gray"
+         icon={faCalendarWeek}
+         onChangeText={setTenMon}
+         />
+        
+   <View style={styles.main}>
+    <View style={styles.viewDropDow}>
+      <DropDownComponent
             label="Select Item" // Nhãn cho DropDownComponent
-            value={selectedItem} // Giá trị được chọn
-            items={categoryOptions.map(item => ({
+            value={idLM}
+            items={loaMon.map(item => ({
               label: item.label,
               value: item.value.toString(),
             }))} // Danh sách các mục
-            defaultValue="item1" // Giá trị mặc định
-            containerStyle={styles.inputDropdown}
-            onChangeItem={item => setSelectedCategory(item?.valueOf)}
-            placeholder="Loại món"
+            containerStyle={{width: wp(55)}}    
+            onChangeItem={(item) => setSelectedLoaiMon(item)}
+            placeholder="Chọn loại món"
           /> 
-
-        <EditTextComponent
+         <DropDownComponent
+            label="Select Item" // Nhãn cho DropDownComponent
+            value={trangThai}
+            items={itemsStatus.map(item => ({
+              label: item.label,
+              value: item.value.toString(),
+            }))} // Danh sách các mục
+            containerStyle={{width: wp(35), marginLeft: 5}}       
+            onChangeItem={(item) => setSelectedTrangThai(item)}
+            placeholder="Trạng thái"
+          /> 
+    </View>
+    </View>
+    <EditTextComponent
           label="text"
           placeholder="20.000"
+          value={giaTien}
           iconColor="gray"
           icon={faCoins}
-          onChangeText={setPrice}
+          onChangeText={setGiaTien}
         />
-
-
-    </View>
-
-    <View style={styles.checkboxContainer}>
-       <Text style={styles.label}>Trạng thái</Text>
-     <View style={styles.checkbox}>
-       <CheckBox
-       disabled={false}
-       value={checkBox1}
-       onValueChange={handleCheckBox1Change} 
-       />
-       <Text style={styles.checkboxText}>Hoạt động</Text>
-    </View>
-     <View style={styles.checkbox}>
-      <CheckBox
-       disabled={false}
-       value={checkBox2}
-       onValueChange={handleCheckBox2Change} 
-       />
-      <Text style={styles.checkboxText}>Khóa</Text>
-    </View>
    </View>
+   
 
     <View style={styles.buttonContainer}>
       <ButtonComponent
        type="primary"
        text="Lưu"
        textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
-       onPress={handelSave}
+       onPress={handelUpdate}
 
       />
     </View>
+    <LoadingComponent visible={loading ?? false} />
+
     <AlertComponent
           visible={showAlert}
           message={msg}
           onClose={handleCloseAlert}
         />
-     <LoadingComponent visible={loading}/>  
   </View>
 
   );
@@ -187,7 +251,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: appColors.white,
-    position: 'relative', // Add this line to make positioning easier
+  },
+  main:{
+    justifyContent: 'space-between',
   },
   inputContainer: {
     marginTop: 20,
@@ -197,47 +263,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1, // Add this line to set the zIndex of the input container
-  },
-  userLogo: {
-    width: 150,
-    height: 150,
-    borderRadius: 50,
-    resizeMode: 'cover',
-    alignSelf: 'center',
-    marginTop: 20, // Adjusted marginTop
-    marginBottom: 20, // Adjusted marginBottom
-  },
-
- 
-  inputDropdown: {
-    width: wp(95),
-    borderRadius: 100,
-    backgroundColor: appColors.editTextColor,
-    marginTop: 20,
-    marginBottom: 20,
-    position: 'relative', // Add this line to make positioning easier
-    zIndex: 2, // Add this line to set the zIndex of the dropdown component
-  },
- 
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 5,
-  },
-  checkboxText: {
-    color: 'black',
-    marginLeft: 5,
-  },
-  inactiveCheckbox: {
-    backgroundColor: 'red',
-  },
+  }, 
   
+  viewDropDow: {
+    padding:20,
+    flexDirection: 'row',
+    paddingLeft: 10,
+    justifyContent: 'space-between',
+    margin: 10,
+  },
   label: {
     fontSize: 16,
     marginRight: 10,

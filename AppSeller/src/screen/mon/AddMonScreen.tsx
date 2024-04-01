@@ -132,7 +132,7 @@ const handelSave = async () => {
        formData,
       'post',
     );
-  
+  console.log(res);
     if (res.success === true) {
       setMsg(res.msg);
       handleShowAlert();
@@ -143,7 +143,7 @@ const handelSave = async () => {
     
   } catch (err) {
     console.log(err);
-    setMsg('Request timeout. Please try again later.'); // Set error message
+    setMsg(msg); // Set error message
     handleShowAlert();
   } finally {
     setLoading(false);
