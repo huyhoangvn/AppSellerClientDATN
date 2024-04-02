@@ -111,7 +111,7 @@ const timKiemTheoThang = async (item: any) => {
             <TextInput
               style={styles.input}
               placeholder="Năm"
-              value={year}
+              value={year ? year.toString() : ''}
               editable={false}
             />
             <FontAwesomeIcon icon={faCaretDown} style={styles.icon} />
