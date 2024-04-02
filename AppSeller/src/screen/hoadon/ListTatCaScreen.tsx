@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
 import DropDownComponent from '../../component/DropDownComponent';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -29,6 +30,7 @@ import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
+import EditText from '../../component/edittext/EditText';
 const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
@@ -206,127 +208,138 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // Điều chỉnh vị trí của bàn phím
+      <KeyboardAvoidingView
+      style={{ flex: 1,backgroundColor: 'white' }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      // Tùy chỉnh khoảng cách cuộn thêm khi bàn phím hiển thị
     >
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <EditTextComponent
-              label="iconRight"
-              placeholder="Nhập mã hoá đơn"
-              iconRight={faMagnifyingGlass}
-              stylesEdit={{backgroundColor: 'white'}}
-              onChangeText={(text: string) => actionSearch(text)}
-              stylesContainer={{
-                backgroundColor: appColors.white,
-                borderColor: 'black',
-                borderWidth: 1.5,
-                elevation: 0,
-              }}
-              iconColor={appColors.primary}
-            />
+      <View style={styles.container}>
+      {/* <ScrollView> */}
+        <View style={styles.header}>
+          <EditTextComponent
+            label="iconRight"
+            placeholder="Nhập mã hoá đơn"
+            iconRight={faMagnifyingGlass}
+            stylesEdit={{backgroundColor: 'white'}}
+            onChangeText={(text: string) => actionSearch(text)}
+            stylesContainer={{
+              backgroundColor: appColors.white,
+              borderColor: 'black',
+              borderWidth: 1.5,
+              elevation: 1,
+            }}
+            iconColor={appColors.primary}
+          />
 
-            <EditTextComponent
-              label="date"
-              placeholder="Chọn ngày"
-              value={selectedDate ? selectedDate.toString() : ''} // Convert
-              stylesEdit={{backgroundColor: 'white'}}
-              onChangeText={(text: string) => searchDate(text)}
-              stylesContainer={{
-                backgroundColor: appColors.white,
-                borderColor: 'black',
-                borderWidth: 1.5,
-                elevation: 0,
+          <EditTextComponent
+            label="date"
+            placeholder="Chọn ngày"
+            value={selectedDate ? selectedDate.toString() : ''} // Convert
+            stylesEdit={{backgroundColor: 'white'}}
+            onChangeText={(text: string) => searchDate(text)}
+            stylesContainer={{
+              backgroundColor: appColors.white,
+              borderColor: 'black',
+              borderWidth: 1.5,
+              elevation: 0,
+            }}
+            onDateSelected={item => handleDateSelected(item)}
+            iconColor={appColors.primary}
+          />
+          <View style={styles.viewDropDow}>
+            <DropDownComponent
+              label="Select Item" // Nhãn cho DropDownComponent
+              value={selectedItem} // Giá trị được chọn
+              items={statusPurchase.map(item => ({
+                label: item.label,
+                value: item.value.toString(),
+              }))} // Danh sách các mục
+              containerStyle={{
+                width: wp(55),
+                borderRadius: 100,
+                maxHeight: 200,
               }}
-              onDateSelected={item => handleDateSelected(item)}
-              iconColor={appColors.primary}
+              onChangeItem={item => {
+                handleSelectItemPurchase(item);
+              }}
+              placeholder="Trạng thanh toán"
             />
-            <View style={styles.viewDropDow}>
-              <DropDownComponent
-                label="Select Item" // Nhãn cho DropDownComponent
-                value={selectedItem} // Giá trị được chọn
-                items={statusPurchase.map(item => ({
-                  label: item.label,
-                  value: item.value.toString(),
-                }))} // Danh sách các mục
-                containerStyle={{width: wp(55), borderRadius: 100}}
-                onChangeItem={item => {
-                  handleSelectItemPurchase(item);
-                }}
-                placeholder="Trạng thanh toán"
-              />
-              <DropDownComponent
-                label="Select Item" // Nhãn cho DropDownComponent
-                value={selectedItem} // Giá trị được chọn
-                items={statusPayment.map(item => ({
-                  label: item.label,
-                  value: item.value.toString(),
-                }))} // Danh sách các mục
-                defaultValue="item1"
-                containerStyle={{width: wp(35)}}
-                placeholder="Trạng thái thanh toán"
-                onChangeItem={item => {
-                  handleSelectItemPayment(item);
-                }}
-              />
-            </View>
-          </View>
-          <View style={styles.main}>
-            {data.length === 0 ? (
-              <View>
-                <Text style={{textAlign: 'center', fontSize: 20}}>
-                  không tìm thấy nhân viên
-                </Text>
-                <TouchableOpacity
-                  onPress={async () => {
-                    await getListInvoice('', '', '', '', 1), setPage(1);
-                  }}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      marginTop: 20,
-                      color: appColors.primary,
-                      textDecorationLine: 'underline',
-                    }}>
-                    Trở lại
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <FlatList
-                data={data}
-                renderItem={renderItem}
-                keyExtractor={item => item._id || ''}
-                scrollEnabled={false}
-                // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
-                // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
-                // onEndReachedThreshold={.1}
-                ListFooterComponent={() => (
-                  <View style={{alignItems: 'center', paddingVertical: 10}}>
-                    {/* {lastList === true && scroll !== true ? ( */}
-                    <TouchableOpacity onPress={handleGetAll}>
-                      <Text style={{fontSize: 14}}>{text}</Text>
-                    </TouchableOpacity>
-                    {/* ) : null} */}
-                  </View>
-                )}
-              />
-            )}
-          </View>
-          <View>
-            <LoadingComponent visible={loading} />
-            <AlertComponent
-              visible={showAlert}
-              message={msg}
-              onClose={handleCloseAlert}
+        
+            <DropDownComponent
+              label="Select Item" // Nhãn cho DropDownComponent
+              value={selectedItem} // Giá trị được chọn
+              items={statusPayment.map(item => ({
+                label: item.label,
+                value: item.value.toString(),
+              }))} // Danh sách các mục
+              defaultValue="item1"
+              containerStyle={{width: wp(35), maxHeight: 200}}
+              placeholder="Trạng thái thanh toán"
+              onChangeItem={item => {
+                handleSelectItemPayment(item);
+              }}
             />
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+   
+        <View style={styles.main}>
+          {data.length === 0 ? (
+            <View style={{height: hp(100)}}>
+              <Text style={{textAlign: 'center', fontSize: 20}}>
+                không tìm thấy nhân viên
+              </Text>
+              <TouchableOpacity
+                onPress={async () => {
+                  await getListInvoice('', '', '', '', 1), setPage(1);
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    marginTop: 20,
+                    color: appColors.primary,
+                    textDecorationLine: 'underline',
+                  }}>
+                  Trở lại
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+  
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={item => item._id || ''}
+              scrollEnabled={true}
+              style={{height: hp(80)}}
+              // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
+              // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
+              // onEndReachedThreshold={.1}
+              ListFooterComponent={() => (
+                <View style={{alignItems: 'center', paddingVertical: 10}}>
+                  {/* {lastList === true && scroll !== true ? ( */}
+                  <TouchableOpacity onPress={handleGetAll}>
+                    <Text style={{fontSize: 14}}>{text}</Text>
+                  </TouchableOpacity>
+                  {/* ) : null} */}
+                </View>
+              )}
+            />
+          )}
+        </View>
+        
+
+        <View>
+          <LoadingComponent visible={loading} />
+          <AlertComponent
+            visible={showAlert}
+            message={msg}
+            onClose={handleCloseAlert}
+          />
+        </View>
+        {/* </ScrollView> */}
+      </View>
+      
+   </KeyboardAvoidingView>
   );
 };
 
@@ -335,7 +348,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flex: 1,
     justifyContent: 'space-between',
   },
   viewDropDow: {
