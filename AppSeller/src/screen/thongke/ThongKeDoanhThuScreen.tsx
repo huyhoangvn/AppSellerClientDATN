@@ -119,9 +119,9 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         'get',
       );
       console.log(res);
-      if (res && res.success === true && res.data) {
+      if (res && res.success === true && res.index) {
         // Xử lý dữ liệu từ res ở đây nếu cần thiết
-        setMonthlyRevenue(res.data);
+        setMonthlyRevenue(res.index);
       } else {
         setMsg('Thất bại hoặc dữ liệu không có sẵn.');
       }
