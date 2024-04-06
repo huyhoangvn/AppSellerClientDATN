@@ -31,6 +31,7 @@ import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
 import EditText from '../../component/edittext/EditText';
+import { appFontSize } from '../../constants/appFontSizes';
 const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
@@ -114,15 +115,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleGetAll = async () => {
-    try {
-      setLoading(true);
-      const nextPage = page + 1; // Tăng giá trị của currentPage lên 1
-      await getListInvoice(code, date, purchase, payment, nextPage);
-    } catch (error) {
-      console.error('Error loading next page:', error);
-    } finally {
-      setLoading(false);
-    }
+      await getListInvoice(code, date, purchase, payment, page + 1);
   };
 
   const getListInvoice = async (
@@ -132,46 +125,46 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
     paymentStatus?: any,
     page?: any,
   ) => {
+
     try {
-      setLoading(true);
-      const res = await authenticationAPI.HandleAuthentication(
+      setLoading(true); // Set loading to true before making the API call
+
+      const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/hoaDon?maHD=${code}&thoiGianTao=${date}&trangThaiMua=${purchaseStatus}&trangThaiThanhToan=${paymentStatus}&trang=${page}`,
-        'get',
+         'get',
       );
 
-      if (res.success === true) {
-        if (res.list.length !== 0 && res.currentPage === 1) {
-          setData(res.list);
-          setDataNew([]);
-        } else if (res.list.length !== 0 && res.currentPage !== 1) {
-          setData(prevData => [...prevData, ...res.list]);
-        } else {
-          setData([]);
-          // setText('Hết dữ liệu');
-          // setMsg('Đã đến cuói danh sách');
-          // handleShowAlert();
+      if (res.success === false) {
+        if (!res.list) {
+          return;
         }
+        return;
+      }
+
+      if (page === 1) {
+        setData([...res.list]);
       } else {
-        // Xử lý khi có lỗi từ API
-        setMsg('Request failed. Please try again.');
-        handleShowAlert();
+          setData(prevData => [...prevData, ...res.list]);
+       }
+      if (res.list.length > 0) {
+        setPage(page);
+        setText(res.list.length === 10 ? 'Xem Thêm' : 'Hết');
+      } else {
+        setText('Hết');
       }
       setCode(code);
       setDate(date);
       setPurchase(purchaseStatus);
       setPayment(paymentStatus);
-      setPage(page);
-    } catch (err) {
-      console.log(err);
-      setMsg('Request timeout. Please try again later.');
-      handleShowAlert();
+    } catch (error) {
+      console.error(error);
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
   useEffect(() => {
-    getListInvoice('', '', '', '', page);
+    getListInvoice('', '', '', '', 1);
   }, []);
 
   const renderItem = ({item}: {item: HoaDon}) => {
@@ -316,11 +309,9 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
               // onEndReachedThreshold={.1}
               ListFooterComponent={() => (
                 <View style={{alignItems: 'center', paddingVertical: 10}}>
-                  {/* {lastList === true && scroll !== true ? ( */}
                   <TouchableOpacity onPress={handleGetAll}>
-                    <Text style={{fontSize: 14}}>{text}</Text>
+                    <Text style={{fontSize: appFontSize.normal}}>{text}</Text>
                   </TouchableOpacity>
-                  {/* ) : null} */}
                 </View>
               )}
             />
