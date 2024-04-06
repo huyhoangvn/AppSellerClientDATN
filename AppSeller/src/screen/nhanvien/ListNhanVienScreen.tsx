@@ -1,37 +1,29 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   Image,
 } from 'react-native';
 import NavProps from '../../models/props/NavProps';
-import {faAdd, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
+import {faAdd} from '@fortawesome/free-solid-svg-icons';
 
 import {
   widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import EditTextComponent from '../../component/EditTextComponent';
-import {faMagnifyingGlass, faUser} from '@fortawesome/free-solid-svg-icons';
+import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
-import {color} from '@rneui/themed/dist/config';
-import DropDownPicker from 'react-native-dropdown-picker';
 import DropDownComponent from '../../component/DropDownComponent';
-import TextComponent from '../../component/TextComponent';
 import FloatButtonComponent from '../../component/FloatButtonComponent';
 import {NhanVien} from '../../models/NhanVien';
 import authenticationAPI from '../../apis/authApi';
 import {getData} from '../../utils/storageUtils';
-import TabComponent from '../../component/TabComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {useFocusEffect} from '@react-navigation/native';
 import AlertComponent from '../../component/AlertComponent';
-import { DefaultAvatar } from '../../assest/svgs';
-import { Svg, SvgXml } from 'react-native-svg';
 
 const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   // const [lastList, setLastList] = useState(false);
@@ -93,16 +85,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleGetAll = async () => {
-    try {
-      setLoading(true);
-      const nextPage = page + 1;
-      // setPage(nextPage) // Tăng giá trị của currentPage lên 1
-      getListUser(name, phanQuyen, status, nextPage);
-    } catch (error) {
-      console.error('Error loading next page:', error);
-    } finally {
-      setLoading(false);
-    }
+    getListUser(name, phanQuyen, status, page + 1);
   };
 
   
@@ -114,52 +97,55 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     trangThai?: any,
     page?: any,
   ) => {
+
     try {
-      setLoading(true);
-      const res = await authenticationAPI.HandleAuthentication(
+      setLoading(true); // Set loading to true before making the API call
+
+      const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/nhanvienquanly?tenNV=${name}&phanQuyen=${phanQuyen}&trangThai=${trangThai}&page=${page}`,
-        'get',
+          'get',
       );
 
-      if (res.success === true) {
-        if (res.index.length !== 0 && res.currentPage === 1) {
-          setData(res.index);
-        } else if (res.index.length !== 0 && res.currentPage !== 1) {
-          setData(prevData => [...prevData, ...res.index]);
-        } else {
-          setData([]);
-          // setText('Hết dữ liệu');
-          // setMsg('Đã đến cuói danh sách');
-          // handleShowAlert();
+      if (res.success === false) {
+        if (!res.list) {
+          return;
         }
+        return;
+      }
+
+      if (page === 1) {
+        setData([...res.index]);
       } else {
-        // Xử lý khi có lỗi từ API
-        setMsg('Request failed. Please try again.');
-        handleShowAlert();
+        setData(prevListHienThi => [...prevListHienThi, ...res.index]);
+      }
+      if (res.index.length > 0) {
+        setPage(page);
+        setText(res.index.length === 10 ? 'Xem Thêm' : 'Hết');
+      } else {
+        setText('Hết');
       }
       setStatus(trangThai);
       setPhanQuyen(phanQuyen);
       setName(name);
-      setPage(page);
-    } catch (err) {
-      console.log(err);
-      setMsg('Request timeout. Please try again later.');
+    } catch (error) {
+      setMsg('Lỗi kết nối');
       handleShowAlert();
+      console.error(error);
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
 
   useEffect(() => {
-    getListUser('', '', '', page);
+    getListUser('', '', '', 1);
     getPosison();
     // setRememberedChecked(true);
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      getListUser('', '', '', page);
+      getListUser('', '', '', 1);
       return () => {
         // Cleanup logic nếu cần (không bắt buộc)
       };
