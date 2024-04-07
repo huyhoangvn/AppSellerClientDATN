@@ -17,11 +17,22 @@ import {
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
+import DropDownComponent from '../../component/DropDownComponent';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import {text} from '@fortawesome/fontawesome-svg-core';
 import {HoaDon} from '../../models/HoaDon';
 import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
+import {getData} from '../../utils/storageUtils';
+import EditText from '../../component/edittext/EditText';
+import {appFontSize} from '../../constants/appFontSizes';
 const ListThanhCongScreen: React.FC<NavProps> = ({navigation}) => {
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
   const [data, setData] = useState<HoaDon[]>([]);
   const [dataNew, setDataNew] = useState<HoaDon[]>([]);
@@ -29,8 +40,12 @@ const ListThanhCongScreen: React.FC<NavProps> = ({navigation}) => {
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
   const [page, setPage] = useState(1);
-  const [purchase, setPurchase] = useState(3);
+  const [purchase, setPurchase] = useState('');
+  const [payment, setPayment] = useState('');
   const [code, setCode] = useState('');
+  const [date, setDate] = useState<any>();
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [position, setPosition] = useState<any>();
 
   const getStatusText = (status: number): string => {
     switch (status) {
@@ -57,7 +72,7 @@ const ListThanhCongScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const actionSearch = async (item: string) => {
-    getListInvoice(item, purchase, page);
+    await getListInvoice(item, 3, page);
   };
 
   const handelDetail = (item: any) => {
@@ -66,62 +81,76 @@ const ListThanhCongScreen: React.FC<NavProps> = ({navigation}) => {
     });
   };
 
+  const handleGetAll = async () => {
+    await getListInvoice(code, 3, page + 1);
+  };
+
   const getListInvoice = async (
     code?: any,
     purchaseStatus?: any,
     page?: any,
   ) => {
     try {
-      const res = await authenticationAPI.HandleAuthentication(
+      setLoading(true); // Set loading to true before making the API call
+      const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/hoaDon?maHD=${code}&trangThaiMua=${purchaseStatus}&trang=${page}`,
         'get',
       );
 
-      if (res.success === true) {
-        if (res.list.length !== 0 && res.currentPage === 1) {
-          setData(res.list);
-          setDataNew([]);
-        } else if (res.list.length !== 0 && res.currentPage !== 1) {
-          setData(prevData => [...prevData, ...res.list]);
-        } else {
-          setData([]);
-          // setText('Hết dữ liệu');
-          // setMsg('Đã đến cuói danh sách');
-          // handleShowAlert();
+      if (res.success === false) {
+        if (!res.list) {
+          return;
         }
+        return;
+      }
+
+      if (page === 1) {
+        setData([...res.list]);
       } else {
-        // Xử lý khi có lỗi từ API
-        setMsg('Request failed. Please try again.');
-        handleShowAlert();
+        setData(prevData => [...prevData, ...res.list]);
+      }
+      if (res.list.length > 0) {
+        setPage(page);
+        setText(res.list.length === 10 ? 'Xem Thêm' : 'Hết');
+      } else {
+        setText('Hết');
       }
       setCode(code);
       setPurchase(purchaseStatus);
-      setPage(page);
-    } catch (err) {
-      console.log(err);
-      setMsg('Request timeout. Please try again later.');
-      handleShowAlert();
+      setDate(date);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGetAll = async () => {
-    try {
-      setLoading(true);
-      const nextPage = page + 1; // Tăng giá trị của currentPage lên 1
-      await getListInvoice(code, 3, nextPage);
-    } catch (error) {
-      console.error('Error loading next page:', error);
-    } finally {
-      setLoading(false);
-    }
+  const formatDate = (dateTimeString: any) => {
+    const dateTime = new Date(dateTimeString);
+
+    const day = dateTime.getDate();
+    const month = dateTime.getMonth() + 1; // JavaScript month is zero-based
+    const year = dateTime.getFullYear();
+
+    const formattedDate = `${day < 10 ? '0' : ''}${day}/${
+      month < 10 ? '0' : ''
+    }${month}/${year}`;
+
+    const hours = dateTime.getHours();
+    const minutes = dateTime.getMinutes();
+    const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${
+      minutes < 10 ? '0' : ''
+    }${minutes}`;
+
+    return {formattedDate, formattedTime};
   };
+
   useEffect(() => {
     getListInvoice('', 3, page);
   }, []);
 
   const renderItem = ({item}: {item: HoaDon}) => {
+    const {formattedDate, formattedTime} = formatDate(item.thoiGianTao);
     return (
       <TouchableOpacity onPress={() => handelDetail(item)}>
         <View style={styles.item}>
@@ -148,6 +177,9 @@ const ListThanhCongScreen: React.FC<NavProps> = ({navigation}) => {
                 <Text style={{color: 'green'}}> Đã thanh toán</Text>
               )}
             </Text>
+            <Text style={{color: 'black', fontWeight: 'bold'}}>
+              Ngày tạo: {formattedDate || ''} - {formattedTime || ''}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -156,79 +188,81 @@ const ListThanhCongScreen: React.FC<NavProps> = ({navigation}) => {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // Điều chỉnh vị trí của bàn phím
+      style={{flex: 1, backgroundColor: 'white'}}
+      contentContainerStyle={{flexGrow: 1}}
+      // Tùy chỉnh khoảng cách cuộn thêm khi bàn phím hiển thị
     >
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <EditTextComponent
-              label="iconRight"
-              placeholder="Nhập mã hoá đơn"
-              iconRight={faMagnifyingGlass}
-              stylesEdit={{backgroundColor: 'white'}}
-              onChangeText={(text: string) => actionSearch(text)}
-              stylesContainer={{
-                backgroundColor: appColors.white,
-                borderColor: 'black',
-                borderWidth: 1.5,
-              }}
-              iconColor={appColors.primary}
-            />
-          </View>
-          <View style={styles.main}>
-            {data.length === 0 ? (
-              <View>
-                <Text style={{textAlign: 'center', fontSize: 20}}>
-                  không tìm thấy nhân viên
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    getListInvoice('', 3, 1), setPage(1);
-                  }}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      marginTop: 20,
-                      color: appColors.primary,
-                      textDecorationLine: 'underline',
-                    }}>
-                    Trở lại
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <FlatList
-                data={data}
-                renderItem={renderItem}
-                keyExtractor={item => item._id || ''}
-                scrollEnabled={false}
-                // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
-                // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
-                // onEndReachedThreshold={.1}
-                ListFooterComponent={() => (
-                  <View style={{alignItems: 'center', paddingVertical: 10}}>
-                    {/* {lastList === true && scroll !== true ? ( */}
-                    <TouchableOpacity onPress={handleGetAll}>
-                      <Text style={{fontSize: 14}}>{text}</Text>
-                    </TouchableOpacity>
-                    {/* ) : null} */}
-                  </View>
-                )}
-              />
-            )}
-          </View>
-          <View>
-            <LoadingComponent visible={loading} />
-            <AlertComponent
-              visible={showAlert}
-              message={msg}
-              onClose={handleCloseAlert}
-            />
-          </View>
+      <View style={styles.container}>
+        {/* <ScrollView> */}
+        <View style={styles.header}>
+          <EditTextComponent
+            label="iconRight"
+            placeholder="Nhập mã hoá đơn"
+            iconRight={faMagnifyingGlass}
+            stylesEdit={{backgroundColor: 'white'}}
+            onChangeText={(text: string) => actionSearch(text)}
+            stylesContainer={{
+              backgroundColor: appColors.white,
+              borderColor: 'black',
+              borderWidth: 1.5,
+              elevation: 1,
+            }}
+            iconColor={appColors.primary}
+          />
         </View>
-      </ScrollView>
+
+        <View style={styles.main}>
+          {data.length === 0 ? (
+            <View style={{height: hp(100)}}>
+              <Text style={{textAlign: 'center', fontSize: 20}}>
+                không tìm thấy nhân viên
+              </Text>
+              <TouchableOpacity
+                onPress={async () => {
+                  await getListInvoice('', 3, 1), setPage(1);
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    marginTop: 20,
+                    color: appColors.primary,
+                    textDecorationLine: 'underline',
+                  }}>
+                  Trở lại
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={item => item._id || ''}
+              scrollEnabled={true}
+              style={{height: hp(80)}}
+              // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
+              // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
+              // onEndReachedThreshold={.1}
+              ListFooterComponent={() => (
+                <View style={{alignItems: 'center', paddingVertical: 10}}>
+                  <TouchableOpacity onPress={handleGetAll}>
+                    <Text style={{fontSize: appFontSize.normal}}>{text}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          )}
+        </View>
+
+        <View>
+          <LoadingComponent visible={loading} />
+          <AlertComponent
+            visible={showAlert}
+            message={msg}
+            onClose={handleCloseAlert}
+          />
+        </View>
+        {/* </ScrollView> */}
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -238,18 +272,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+  },
+  viewDropDow: {
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   main: {
-    flex: 7,
+    flex: 2,
   },
+
   item: {
     marginHorizontal: 10,
     padding: 10,
     borderColor: 'black',
     borderWidth: 0.5,
-    marginBottom: 15,
+    marginTop: 15,
     borderRadius: 10,
     flexDirection: 'row',
   },
