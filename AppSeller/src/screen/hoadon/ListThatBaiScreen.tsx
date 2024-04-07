@@ -91,7 +91,6 @@ const ListThatBaiScreen: React.FC<NavProps> = ({navigation}) => {
     page?: any,
   ) => {
     try {
-      setLoading(true); // Set loading to true before making the API call
       const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/hoaDon?maHD=${code}&trangThaiMua=${purchaseStatus}&trang=${page}`,
         'get',
