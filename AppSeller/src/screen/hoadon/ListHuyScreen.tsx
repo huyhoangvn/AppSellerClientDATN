@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableHighlight,
 } from 'react-native';
 import NavProps from '../../models/props/NavProps';
 import EditTextComponent from '../../component/EditTextComponent';
@@ -31,7 +32,7 @@ import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
 import EditText from '../../component/edittext/EditText';
 import {appFontSize} from '../../constants/appFontSizes';
-const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
+const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
   const [data, setData] = useState<HoaDon[]>([]);
@@ -40,7 +41,7 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
   const [page, setPage] = useState(1);
-  const [purchase, setPurchase] = useState('');
+  const [status, setStatus] = useState('');
   const [payment, setPayment] = useState('');
   const [code, setCode] = useState('');
   const [date, setDate] = useState<any>();
@@ -82,17 +83,18 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleGetAll = async () => {
-    await getListInvoice(code, 0, page + 1);
+    await getListInvoice(code, 4, page + 1);
   };
 
   const getListInvoice = async (
     code?: any,
-    purchaseStatus?: any,
+    status?: any,
     page?: any,
   ) => {
     try {
+   
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/hoaDon?maHD=${code}&trangThaiMua=${purchaseStatus}&trang=${page}`,
+        `/nhanvien/hoaDon?maHD=${code}&trangThai=${status}&trang=${page}`,
         'get',
       );
 
@@ -115,7 +117,7 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
         setText('Hết');
       }
       setCode(code);
-      setPurchase(purchaseStatus);
+      setStatus(status);
       setDate(date);
     } catch (error) {
       console.error(error);
@@ -151,37 +153,38 @@ const ListChoDuyetScreen: React.FC<NavProps> = ({navigation}) => {
   const renderItem = ({item}: {item: HoaDon}) => {
     const {formattedDate, formattedTime} = formatDate(item.thoiGianTao);
     return (
-      <TouchableOpacity onPress={() => handelDetail(item)}>
-        <View style={styles.item}>
-          <View style={{paddingHorizontal: 10}}>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
-              MHD:{item.maHD}
-            </Text>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
-              Tổng tiền:{' '}
-              {parseInt(item.tongTien || '').toLocaleString('vi-VN', {
-                style: 'currency',
-                currency: 'VND',
-              })}
-            </Text>
-            <Text style={{color: 'black', fontWeight: 'bold'}}>
-              {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
-              Trạng thái mua: {getStatusText(item.trangThaiMua ?? 0)}
-            </Text>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
-              Thanh toán:
-              {item.trangThaiThanhToan === 0 ? (
-                <Text style={{color: 'red'}}> Chưa thanh toán</Text>
-              ) : (
-                <Text style={{color: 'green'}}> Đã thanh toán</Text>
-              )}
-            </Text>
-            <Text style={{color: 'black', fontWeight: 'bold'}}>
-              Ngày tạo: {formattedDate || ''} - {formattedTime || ''}
-            </Text>
+        <TouchableOpacity // Màu sắc khi chạm vào
+        onPress={() => handelDetail(item)}>
+          <View style={styles.item}>
+            <View style={{paddingHorizontal: 10}}>
+              <Text style={{fontWeight: 'bold', color: 'black'}}>
+                MHD:{item.maHD}
+              </Text>
+              <Text style={{fontWeight: 'bold', color: 'black'}}>
+                Tổng tiền:{' '}
+                {parseInt(item.tongTien || '').toLocaleString('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                })}
+              </Text>
+              <Text style={{color: 'black', fontWeight: 'bold'}}>
+                {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
+                Trạng thái mua: {getStatusText(item.trangThaiMua ?? 0)}
+              </Text>
+              <Text style={{fontWeight: 'bold', color: 'black'}}>
+                Thanh toán:
+                {item.trangThaiThanhToan === 0 ? (
+                  <Text style={{color: 'red'}}> Chưa thanh toán</Text>
+                ) : (
+                  <Text style={{color: 'green'}}> Đã thanh toán</Text>
+                )}
+              </Text>
+              <Text style={{color: 'black', fontWeight: 'bold'}}>
+                Ngày tạo: {formattedDate || ''} - {formattedTime || ''}
+              </Text>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
     );
   };
 
@@ -282,15 +285,25 @@ const styles = StyleSheet.create({
     flex: 2,
   },
 
-  item: {
-    marginHorizontal: 10,
-    padding: 10,
-    borderColor: 'black',
-    borderWidth: 0.5,
-    marginTop: 15,
-    borderRadius: 10,
-    flexDirection: 'row',
-  },
+//   item: {
+//     borderColor: 'black',
+//     borderWidth: 0.5,
+//     marginTop: 15,
+//     borderRadius: 10,
+//     flexDirection: 'row',
+//   },
+  
+item: {
+  marginHorizontal: 10,
+  padding: 10,
+  borderColor: 'black',
+  borderWidth: 0.5,
+  marginTop: 15,
+  borderRadius: 10,
+  flexDirection: 'row',
+},
 });
 
-export default ListChoDuyetScreen;
+export default ListHuyScreen;
+
+

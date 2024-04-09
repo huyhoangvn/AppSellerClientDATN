@@ -13,6 +13,7 @@ import ListDangGiaoScreen from './ListDangGiaoScreen';
 import ListThanhCongScreen from './ListThanhCongScreen';
 import ListThatBaiScreen from './ListThatBaiScreen';
 import ListTatCaScreen from './ListTatCaScreen';
+import ListHuyScreen from './ListHuyScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -64,6 +65,11 @@ const ListHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
       <Tab.Screen 
         name="ListThatBaiScreen" 
         component={ListThatBaiScreen} 
+        options={renderTabScreenOptions('Thất bại')}
+      />
+      <Tab.Screen 
+        name="ListHuyScreen" 
+        component={ListHuyScreen} 
         options={renderTabScreenOptions('Thất bại')}
       />
     </Tab.Navigator>
