@@ -134,13 +134,19 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   const handleLogin = async () => {
     try {
       setLoading(true); // Bắt đầu hiển thị loading
-      const res = await authenticationAPI.HandleAuthentication(
+      const res: any = await authenticationAPI.HandleAuthentication(
         '/nhanvien/auth',
         {taiKhoan: userName, matKhau: password},
         'post',
       );
 
       if (res.success === true) {
+        if(res.index.phanQuyen === 2){
+          setMsg('Tài khoản đang chờ duyệt. Vui lòng liên hệ quản trị viên để được duyệt tài khoản.');
+          handleShowAlert();
+          setLoading(false);
+          return;
+        }
         const token = await getToken();
         dispatch(setToken(token));
         rememBer(
