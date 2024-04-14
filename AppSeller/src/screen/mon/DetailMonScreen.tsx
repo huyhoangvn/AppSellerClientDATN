@@ -14,6 +14,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { getData } from '../../utils/storageUtils';
 
 const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
 
@@ -29,10 +30,12 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
     setShowAlert(false);
   };
   const getDetail = async () => {
+    const reslt = await getData();
+    const idMon = reslt?.idMon;
     try {
       setLoading(true);
       const res:any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/mon/${item._id}`,
+        `/nhanvien/mon/${idMon}`,
         'get',
       );
       if (!res && res.success === true) {
@@ -114,7 +117,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
           type="primary"
           text="Đánh giá"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
-          onPress={() => navigation.navigate('EvaluateScreen',{item})}
+          onPress={() => navigation.navigate('EvaluateScreen',{item: item})}
         />
       </View>
     </View>

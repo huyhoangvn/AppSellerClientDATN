@@ -22,15 +22,15 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
 
   const getDanhGia = async () => {
     try {
+      
+
       const res: any = await authenticationAPI.HandleAuthentication(
         `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}`,
         'get',
       );
-
-      if (res && res.success) {
-        const { list, count, currentPage, totalPage } = res;
+     console.log(res);
+      if (res && res.success === true) {
         setDanhGiaList(res.list);
-        setDanhGiaList(prevList => [...prevList, ...list]);
         setTrang(trang+1);
 
         setSoLuong(res.count);
@@ -42,19 +42,14 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
       setMsg(msg);
     }
   };
-
- 
-
   useEffect(() => {
     getDanhGia();
   }, []);
 
-  const handleEvaluate = (item: any) => {
-    navigation.navigate("DetailMonScreen", { item });
-  };
+
 
   const renderItem = ({ item }: { item: any }) => (
-    <TouchableOpacity onPress={() => handleEvaluate(item)}>
+    <TouchableOpacity>
       <View style={styles.itemContainer}>
       <Image
             source={
