@@ -91,8 +91,13 @@ const ListChuanBiScreen: React.FC<NavProps> = ({navigation}) => {
     page?: any,
   ) => {
     try {
+      const item = await getData();
+      if (!item) {
+        return;
+      }
+      const idStore = item?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/hoaDon?maHD=${code}&trangThaiMua=${purchaseStatus}&trang=${page}`,
+        `/nhanvien/hoaDon/cuahang/${idStore}?maHD=${code}&trangThaiMua=${purchaseStatus}&trang=${page}`,
         'get',
       );
 
