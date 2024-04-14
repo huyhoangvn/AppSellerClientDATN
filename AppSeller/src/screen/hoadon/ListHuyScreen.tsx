@@ -92,9 +92,13 @@ const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
     page?: any,
   ) => {
     try {
-   
+      const item = await getData();
+      if (!item) {
+        return;
+      }
+      const idStore = item?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/hoaDon?maHD=${code}&trangThai=${status}&trang=${page}`,
+        `/nhanvien/hoaDon/cuahang/${idStore}?maHD=${code}&trangThai=${status}&trang=${page}`,
         'get',
       );
 

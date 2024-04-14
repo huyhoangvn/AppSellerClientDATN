@@ -128,9 +128,13 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
 
     try {
       setLoading(true); // Set loading to true before making the API call
-
+      const item = await getData();
+      if (!item) {
+        return;
+      }
+      const idStore = item?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/hoaDon?maHD=${code}&thoiGianTao=${date}&trangThaiMua=${purchaseStatus}&trangThaiThanhToan=${paymentStatus}&trang=${page}`,
+        `/nhanvien/hoaDon/cuahang/${idStore}?maHD=${code}&thoiGianTao=${date}&trangThaiMua=${purchaseStatus}&trangThaiThanhToan=${paymentStatus}&trang=${page}`,
          'get',
       );
 
