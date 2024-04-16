@@ -13,6 +13,9 @@ import MyButtonComponent from '../../component/button/MyButtonComponent';
 import authenticationAPI from '../../apis/authApi';
 import { formatTrangThai, formatTrangThaiGiaoHang, formatTrangThaiThanhToan } from '../../utils/trangThaiFormat';
 import { formatTrangThaiColor, formatTrangThaiGiaoHangColor, formatTrangThaiThanhToanColor } from '../../utils/trangThaiColor';
+import OptionPicker from '../../component/hoadon/OptionPicker';
+import { formatBtn, formatTrangThaiMuaBtn, formatTrangThaiMuaBtnColor } from '../../utils/trangThaiBtnFormat';
+import { Tree } from 'iconsax-react-native';
 
 const HoaDonResExample = {
   index: {
@@ -36,7 +39,7 @@ const HoaDonResExample = {
     trangThaiMua: 0,
     phiGiaoHang: 24000,
     trangThaiThanhToan: 0,
-    trangThai: 0
+    trangThai: true
   },
   list: [
     {
@@ -90,7 +93,7 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [diaChi, setDiaChi] = useState("");
   const [phanTramKhuyenMai, setPhanTramKhuyenMai] = useState(0);
   const [trangThaiMua, setTrangThaiMua] = useState(0)
-  const [trangThai, setTrangThai] = useState(0)
+  const [trangThai, setTrangThai] = useState(true)
   const [trangThaiThanhToan, setTrangThaiThanhToan] = useState(0)
   const [ghiChu, setGhiChu] = useState("")
   const [thanhTien, setThanhTien] = useState(0)
@@ -98,6 +101,47 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [isActiveThanhToan, setIsActiveThanhToan] = useState(false);
   const [isActiveHuy, setIsActiveHuy] = useState(false);
   const [phiVanChuyen, setPhiVanChuyen] = useState("")
+  const [modalDuyetVisible, setModalDuyetVisible] = useState(false);
+  const [modalChuanBiVisible, setModalChuanBiVisible] = useState(false);
+  const [modalGiaoHangVisible, setModalGiaoHangVisible] = useState(false);
+  const [modalHuyVisible, setModalHuyVisible] = useState(false);
+  const [modalThanhToanVisible, setModalThanhToanVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  const optionsGiaoHang = [
+    { key: 'Giao hàng thành công', value: 3 },
+    { key: 'Giao hàng thất bại', value: 4 },
+  ];
+
+  const optionsThoiGianGiao = [
+    { key: '5 phút', value: 5 },
+    { key: '10 phút', value: 10 },
+    { key: '15 phút', value: 15 },
+    { key: '20 phút', value: 20 },
+    { key: '25 phút', value: 25 },
+    { key: '30 phút', value: 30 },
+    { key: '35 phút', value: 35 },
+    { key: '40 phút', value: 40 },
+    { key: '45 phút', value: 45 },
+    { key: '50 phút', value: 50 },
+    { key: '55 phút', value: 55 },
+  ];
+
+  const optionsLyDoHuy = [
+    { key: 'Không có ghi chú', value: ""},
+    { key: 'Hủy do vị trí quá xa', value: "Hủy do vị trí quá xa" },
+    { key: 'Hủy do hết hàng', value: "Hủy do hết hàng"},
+    { key: 'Hủy do thái độ khách hàng', value: "Hủy do thái độ khách hàng" },
+    { key: 'Hủy do khách hàng yêu cầu', value: "Hủy do khách hàng yêu cầu"},
+  ];
+
+  const optionsLyDoGiaoThatBai = [
+    { key: 'Không có ghi chú', value: ""},
+    { key: 'Giao thất bại do đơn vị giao hàng', value: "Giao thất bại do đơn vị giao hàng"},
+    { key: 'Giao thất bại do khách không nhận hàng', value: "Giao thất bại do khách không nhận hàng" },
+    { key: 'Giao thất bại do lỗi cửa hàng', value: "Giao thất bại do lỗi cửa hàng"},
+  ];
 
   const getThongTinHD = async (id: string)=>{
     if(!id){return}
@@ -124,8 +168,8 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         setTrangThai(index.trangThai)
         setTrangThaiMua(index.trangThaiMua)
         setTrangThaiThanhToan(index.trangThaiThanhToan)
-        setIsActiveThanhToan(index.trangThaiThanhToan?true:false)
-        setIsActiveHuy((trangThaiMua === 0 || trangThai === 0)?true:false)
+        setIsActiveThanhToan((index.trangThaiMua == 3)?true:false)
+        setIsActiveHuy((((index.trangThaiMua === 0 || index.trangThaiMua === 1)  && index.trangThai === true) || index.trangThai === false)?true:false)
         setPhiVanChuyen(formatCurrency(index.phiGiaoHang))
         setDanhSachMonDat(list)
       }
@@ -140,51 +184,28 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   const thanhToan = () => {
     if(isActiveThanhToan){
-      //Chuyển đến màn hình thanh toán
-
-
+      setModalThanhToanVisible(true)
     } else {
-      showAlert("Chưa thể thanh toán", "Quý khách vui lòng đợi đơn hàng được giao thành công để thực hiện giao dịch")
+      showAlert("Chưa thể xác nhận thanh toán", "Chỉ có thể xác nhận thanh toán cho đơn hàng đã được giao thành công")
     }
   }
 
   const huyHoaDon = () => {
     if(isActiveHuy){
-      showAlert("Bạn có muốn hủy ?", "Hủy hóa đơn " + maHD, true)
-      .then(async (result) => {
-        if (result) {
-          try{
-            // const res : any = await authenticationAPI.HandleAuthentication(
-            //   '/khachhang/hoadon/delete' + "/" + idHD,
-            //   {},
-            //   'delete',
-            // );
-            const res : any = DeleteResExample
-            if(res.success === true){
-              showAlert("Hủy hóa đơn", "Hủy hóa đơn thành công", false)
-              navigation.goBack()
-              return;
-            }
-            showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại", false)
-            return;
-          }
-          catch(e){
-            showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại do đường truyền", false)
-          }
-        }
-      })
-      .catch(e => {
-        // Handle error if necessary
-        showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại do hệ thống", false)
-      });
-      return
+      setModalHuyVisible(true);
     } else {
-      if(trangThaiMua !== 0){
-        if(trangThaiThanhToan === 1){
+      if(trangThaiMua > 0){
+        if(trangThaiMua === 3 && trangThaiThanhToan === 1){
           showAlert("Không thể hủy", "Đơn hàng đã thanh toán không thể hủy")
           return;
         }
-        showAlert("Không thể hủy", "Đơn hàng đang được giao không thể hủy liên hệ cửa hàng " + tenCH + " để nhận hỗ trợ")
+        if(trangThaiMua === 3 && trangThaiThanhToan === 0){
+          showAlert("Không thể hủy", "Đơn hàng đã được giao xác nhận thanh toán để hoàn thành giao hàng")
+          return;
+        }
+        else if(trangThaiMua === 2 && trangThaiThanhToan === 0){
+          showAlert("Không thể hủy", "Đơn hàng đang được giao không thể hủy vui lòng xác nhận đơn hàng thất bại nếu giao hàng không thành công")
+        }
         return;
       }
     }
@@ -215,6 +236,151 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     );
   };
 
+  const handleDuyetSelect = (selected : any) => {
+    try{
+      const thoiGianGiao = selected.option1
+      // const res : any = await authenticationAPI.HandleAuthentication(
+      //   '/nhanvien/hoadon/delete' + "/" + idHD,
+      //   {},
+      //   'delete',
+      // );
+      const res : any = DeleteResExample
+      if(res.success === true){
+        showAlert("Xác nhận duyệt", "Xác nhận duyệt thành công", false)
+        getThongTinHD(idHD)
+        return;
+      }
+      showAlert("Xác nhận duyệt", "Xác nhận duyệt thất bại", false)
+      return;
+    }
+    catch(e){
+      showAlert("Xác nhận duyệt", "Xác nhận duyệt thất bại do đường truyền", false)
+    }
+  };
+
+  const handleChuanBiSelect = (selected: any) => {
+    try{
+      // const res : any = await authenticationAPI.HandleAuthentication(
+      //   '/nhanvien/hoadon/delete' + "/" + idHD,
+      //   {},
+      //   'delete',
+      // );
+      const res : any = DeleteResExample
+      if(res.success === true){
+        showAlert("Tiến hành giao hàng", "Tiến hành giao hàng thành công", false)
+        getThongTinHD(idHD)
+        return;
+      }
+      showAlert("Tiến hành giao hàng", "Tiến hành giao hàng thất bại", false)
+      return;
+    }
+    catch(e){
+      showAlert("Tiến hành giao hàng", "Tiến hành giao hàng thất bại do đường truyền", false)
+    }
+  };
+
+  const handleGiaoHangSelect = (selected: any) => {
+    try{
+      const trangThaiMua = selected.option1
+      const ghiChu = selected.option2
+      // const res : any = await authenticationAPI.HandleAuthentication(
+      //   '/nhanvien/hoadon/delete' + "/" + idHD,
+      //   {},
+      //   'delete',
+      // );
+      const res : any = DeleteResExample
+      if(res.success === true){
+        showAlert("Xác nhận giao hàng", "Xác nhận giao hàng thành công", false)
+        getThongTinHD(idHD)
+        return;
+      }
+      showAlert("Xác nhận giao hàng", "Xác nhận giao hàng thất bại", false)
+      return;
+    }
+    catch(e){
+      showAlert("Xác nhận giao hàng", "Xác nhận giao hàng thất bại do đường truyền", false)
+    }  
+  };
+
+  const handleHuySelect = (selected: any) => {
+    showAlert("Bạn có muốn hủy ?", "Hủy hóa đơn " + maHD, true)
+    .then(async (result) => {
+      if (result) {
+        try{
+          const ghiChu = selected.option1
+          // const res : any = await authenticationAPI.HandleAuthentication(
+          //   '/nhanvien/hoadon/delete' + "/" + idHD,
+          //   {},
+          //   'delete',
+          // );
+          const res : any = DeleteResExample
+          if(res.success === true){
+            showAlert("Hủy hóa đơn", "Hủy hóa đơn thành công", false)
+            getThongTinHD(idHD)
+            return;
+          }
+          showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại", false)
+          return;
+        }
+        catch(e){
+          showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại do đường truyền", false)
+        }
+      }
+    })
+    .catch(e => {
+      // Handle error if necessary
+      showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại do hệ thống", false)
+    });
+    return
+  };
+
+  const handleThanhToanSelect = (selected: any) => {
+    try{
+      // const res : any = await authenticationAPI.HandleAuthentication(
+      //   '/nhanvien/hoadon/delete' + "/" + idHD,
+      //   {},
+      //   'delete',
+      // );
+      const res : any = DeleteResExample
+      if(res.success === true){
+        showAlert("Xác nhận thanh toán", "Xác nhận thanh toán thành công", false)
+        getThongTinHD(idHD)
+        return;
+      }
+      showAlert("Xác nhận thanh toán", "Xác nhận thanh toán thất bại", false)
+      return;
+    }
+    catch(e){
+      showAlert("Xác nhận thanh toán", "Xác nhận thanh toán thất bại do đường truyền", false)
+    }
+  };
+
+  const setModal = (trangThai: number) => {
+    switch (trangThai) {
+      case 0:
+        setModalDuyetVisible(true)
+        break;
+  
+      case 1:
+        setModalChuanBiVisible(true)
+        break;
+  
+      case 2:
+        setModalGiaoHangVisible(true)
+        break;
+  
+      case 3:
+        showAlert("Hóa đơn giao thất bại", "Liên hệ cửa hàng để cập nhật trạng thái giao hàng" )
+        break;
+  
+      case 4:
+        showAlert("Hóa đơn giao thành công", "Quý khách hàng có thể thực hiện giao dịch thanh toán" )
+        break;
+
+      default:
+        break;
+    }
+  };
   return (
     <ScrollView>
 
@@ -288,8 +454,49 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           rightText={formatTrangThai(trangThai)}
           rightColor={formatTrangThaiColor(trangThai)}
         /> 
-        <MyButtonComponent text="Thanh toán" onPress={thanhToan} color={(isActiveThanhToan)?appColors.primary:"gray"}/>
-        <MyButtonComponent text="Hủy hóa đơn" onPress={huyHoaDon} color={(isActiveHuy)?appColors.primary:"gray"}/>
+
+        <MyButtonComponent text={formatTrangThaiMuaBtn(trangThaiMua)} onPress={() => setModal(trangThaiMua)} color={formatTrangThaiMuaBtnColor(trangThaiMua)}/>
+        <OptionPicker
+          visible={modalDuyetVisible}
+          optionalTitle={"Nhập thời gian giao hàng dự kiến"}
+          optionalDesc={"Thời gian giao tính từ thời điểm hiện tại"}
+          onSelect={handleDuyetSelect}
+          onClose={() => setModalDuyetVisible(false)}
+          options={optionsThoiGianGiao}
+        />
+        <OptionPicker
+          visible={modalChuanBiVisible}
+          optionalTitle={"Giao món ăn cho khách hàng"}
+          optionalDesc={"Đơn hàng sẽ được giao và không thể hủy"}
+          onSelect={handleChuanBiSelect}
+          onClose={() => setModalChuanBiVisible(false)}
+        />
+        <OptionPicker
+          visible={modalGiaoHangVisible}
+          optionalTitle={"Xác nhận giao hàng"}
+          optionalDesc={"Xác nhận đơn hàng giao thất bại phải có ghi chú"}
+          onSelect={handleGiaoHangSelect}
+          onClose={() => setModalGiaoHangVisible(false)}
+          options={optionsGiaoHang}
+          options2={optionsLyDoGiaoThatBai}
+        />
+        <OptionPicker
+          visible={modalHuyVisible}
+          optionalTitle={"Bạn có muốn hủy ?"}
+          optionalDesc={"Vui lòng chọn lý do hủy hóa đơn và hóa đơn bị hủy sẽ không thể kích hoạt lại"}
+          onSelect={handleHuySelect}
+          onClose={() => setModalHuyVisible(false)}
+          options={optionsLyDoHuy}
+        />
+        <OptionPicker
+          visible={modalThanhToanVisible}
+          optionalTitle={"Tiến hành xác nhận thanh toán"}
+          optionalDesc={"Đơn hàng sẽ được xác nhận thanh toán và không thể thay đổi"}
+          onSelect={handleThanhToanSelect}
+          onClose={() => setModalThanhToanVisible(false)}
+        />
+        <MyButtonComponent text="Thanh toán" onPress={thanhToan} color={formatBtn(isActiveThanhToan)}/>
+        <MyButtonComponent text="Hủy hóa đơn" onPress={huyHoaDon} color={formatBtn(isActiveHuy)}/>
     </View>
     </ScrollView>
   );

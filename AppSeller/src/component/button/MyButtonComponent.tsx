@@ -17,6 +17,7 @@ const MyButtonComponent: React.FC<ButtonProps> = ({ color = 'orange', text, onPr
 
 const styles = StyleSheet.create({
   button: {
+    flex: 1,
     borderRadius: 26.5,
     paddingVertical: 10,
     paddingHorizontal: 20,

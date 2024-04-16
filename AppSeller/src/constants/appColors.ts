@@ -15,7 +15,8 @@ export const appColors = {
   green: '#3BB647',
   editTextColor: '#EAEAEA',
   yellow: '#FFB800',
-  secondary : '#CFE7B9'
+  secondary : '#CFE7B9',
+  warmOrange: "#FF7144",//Màu cam
 };
 
 // export const FONT_SIZE: number = 16;
