@@ -31,6 +31,7 @@ import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
 import EditText from '../../component/edittext/EditText';
 import {appFontSize} from '../../constants/appFontSizes';
+import { useIsFocused } from '@react-navigation/native';
 const ListChuanBiScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
@@ -149,9 +150,12 @@ const ListChuanBiScreen: React.FC<NavProps> = ({navigation}) => {
     return {formattedDate, formattedTime};
   };
 
+  const isFocused = useIsFocused();
   useEffect(() => {
-    getListInvoice('', 1, page);
-  }, []);
+    if(isFocused){
+      getListInvoice('', 1, page);
+    }
+  }, [isFocused]);
 
   const renderItem = ({item}: {item: HoaDon}) => {
     const {formattedDate, formattedTime} = formatDate(item.thoiGianTao);
@@ -219,7 +223,7 @@ const ListChuanBiScreen: React.FC<NavProps> = ({navigation}) => {
           {data.length === 0 ? (
             <View style={{height: hp(100)}}>
               <Text style={{textAlign: 'center', fontSize: 20}}>
-                không tìm thấy nhân viên
+              không tìm thấy hoá đơn
               </Text>
               <TouchableOpacity
                 onPress={async () => {
@@ -232,7 +236,6 @@ const ListChuanBiScreen: React.FC<NavProps> = ({navigation}) => {
                     color: appColors.primary,
                     textDecorationLine: 'underline',
                   }}>
-                  Trở lại
                 </Text>
               </TouchableOpacity>
             </View>
