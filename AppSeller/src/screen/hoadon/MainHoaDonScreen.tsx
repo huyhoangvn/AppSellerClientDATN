@@ -70,7 +70,7 @@ const ListHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
       <Tab.Screen 
         name="ListHuyScreen" 
         component={ListHuyScreen} 
-        options={renderTabScreenOptions('Thất bại')}
+        options={renderTabScreenOptions('Huỷ')}
       />
     </Tab.Navigator>
   );
