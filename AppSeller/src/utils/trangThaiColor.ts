@@ -1,10 +1,10 @@
 import { appColors } from "../constants/appColors";
 
-export function formatTrangThaiColor(trangThai: number): string {
+export function formatTrangThaiColor(trangThai: boolean): string {
     switch (trangThai) {
-        case 0:
+        case true:
             return appColors.red;
-        case 1:
+        case false:
             return appColors.primary;
         default:
             return appColors.text;
