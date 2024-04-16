@@ -13,6 +13,7 @@ import { appColors } from '../../constants/appColors';
 
 const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
   const { item } = route.params;
+  console.log(item);
   const [soLuongDanhGia, setSoLuongDanhGia] = useState('');
   const [soLuong, setSoLuong] = useState('');
   const [danhGiaList, setDanhGiaList] = useState<any[]>([]);
@@ -25,10 +26,9 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
       
 
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}`,
+        `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}?trangThai=1`,
         'get',
       );
-     console.log(res);
       if (res && res.success === true) {
         setDanhGiaList(res.list);
         setTrang(trang+1);
