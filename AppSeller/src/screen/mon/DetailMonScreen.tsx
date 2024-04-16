@@ -20,6 +20,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
 
   const {item, position} = route.params;
   const [data, setData] = useState<any>();
+  const [danhGia, setDanhGia] = useState<any>();
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
@@ -40,6 +41,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
       );
       if (!res && res.success === true) {
         setData(res.index);
+        setMsg(res.msg);
       } else {
         // Xử lý khi có lỗi từ API
         setMsg('Request failed. Please try again.');
@@ -53,13 +55,35 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
       setLoading(false);
     }
   };
-
+  const getDanhGiaTrungBinh = async () => {
+    const reslt = await getData();
+    const idMon = reslt?.idMon;
+    try {
+      setLoading(true);
+      const res:any = await authenticationAPI.HandleAuthentication(
+        `/khachhang/danhgia/get-trung-binh/${item._id}`
+      );
+      if (res.success === true) {
+        setDanhGia(res.index);
+        setMsg(res.msg);
+      }
+       else {
+        // Xử lý khi có lỗi từ API
+        setMsg(res.msg);
+        handleShowAlert();
+      }
+    } catch (error) {
+     console.log(error);
+    }
+  }
   useEffect(() => {
     getDetail();
+    getDanhGiaTrungBinh();
   }, []);
   useFocusEffect(
     React.useCallback(() => {
       getDetail();    
+
       return () => {
         // Cleanup logic nếu cần (không bắt buộc)
       };
@@ -98,7 +122,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
         </View>
         <View style={styles.viewText}>
           <Text>Đánh giá</Text>
-          <Text style={styles.textPrimary}>{item?.danhGia}</Text>
+          <Text style={styles.textPrimaryDanhGia}>{danhGia}</Text>
           <FontAwesomeIcon icon={faStar} size={24} color="#feb800" style={styles.icon} />
         </View>
         <View style={styles.viewText}>
@@ -160,8 +184,12 @@ const styles = StyleSheet.create({
   },
   textPrimary: {
     color: 'black',
-    fontWeight:'bold',
     fontSize: 18, // Adjust font size as needed
+  },
+  textPrimaryDanhGia:{
+    color: 'black',
+    fontSize: 18, 
+    left: 120,  
   },
   icon: {
     marginRight: 5,
