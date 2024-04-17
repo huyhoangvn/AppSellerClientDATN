@@ -29,8 +29,11 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
   optionalTitle,
   optionalDesc,
 }) => {
-  const [selectedOption, setSelectedOption] = useState<string | number>('');
-  const [selectedOption2, setSelectedOption2] = useState<string | number>('');
+  const initialSelectedOption = options.length > 0 ? options[0].value : '';
+  const initialSelectedOption2 = options2.length > 0 ? options2[0].value : '';
+
+  const [selectedOption, setSelectedOption] = useState<string | number>(initialSelectedOption);
+  const [selectedOption2, setSelectedOption2] = useState<string | number>(initialSelectedOption2);
 
   // Handle option selection
   const handleOptionSelect = (value: string | number) => {

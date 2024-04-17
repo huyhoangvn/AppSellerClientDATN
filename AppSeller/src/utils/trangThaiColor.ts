@@ -3,9 +3,9 @@ import { appColors } from "../constants/appColors";
 export function formatTrangThaiColor(trangThai: boolean): string {
     switch (trangThai) {
         case true:
-            return appColors.red;
-        case false:
             return appColors.primary;
+        case false:
+            return appColors.red;
         default:
             return appColors.text;
     }

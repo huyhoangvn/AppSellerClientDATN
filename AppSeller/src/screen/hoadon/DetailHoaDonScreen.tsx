@@ -130,6 +130,7 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   const optionsLyDoHuy = [
     { key: 'Không có ghi chú', value: ""},
+    { key: 'Hủy do hóa đơn bị lỗi', value: "Hủy do hóa đơn bị lỗi" },
     { key: 'Hủy do vị trí quá xa', value: "Hủy do vị trí quá xa" },
     { key: 'Hủy do hết hàng', value: "Hủy do hết hàng"},
     { key: 'Hủy do thái độ khách hàng', value: "Hủy do thái độ khách hàng" },
@@ -168,9 +169,10 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         setTrangThai(index.trangThai)
         setTrangThaiMua(index.trangThaiMua)
         setTrangThaiThanhToan(index.trangThaiThanhToan)
-        setIsActiveThanhToan((index.trangThaiMua == 3)?true:false)
-        setIsActiveHuy((((index.trangThaiMua === 0 || index.trangThaiMua === 1)  && index.trangThai === true) || index.trangThai === false)?true:false)
+        setIsActiveThanhToan((index.trangThaiMua == 3 && index.trangThai === true)?true:false)
+        setIsActiveHuy((((index.trangThaiMua === 0 || index.trangThaiMua === 1)  && index.trangThai === true))?true:false)
         setPhiVanChuyen(formatCurrency(index.phiGiaoHang))
+        setGhiChu(index.ghiChu)
         setDanhSachMonDat(list)
       }
     } catch (e) {
@@ -236,15 +238,16 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     );
   };
 
-  const handleDuyetSelect = (selected : any) => {
+  const handleDuyetSelect = async (selected : any) => {
     try{
       const thoiGianGiao = selected.option1
-      // const res : any = await authenticationAPI.HandleAuthentication(
-      //   '/nhanvien/hoadon/delete' + "/" + idHD,
-      //   {},
-      //   'delete',
-      // );
-      const res : any = DeleteResExample
+      console.log(selected)
+      const res : any = await authenticationAPI.HandleAuthentication(
+        '/nhanvien/hoadon/dang-chuan-bi' + "/" + idHD,
+        {soPhutGiaoHang: thoiGianGiao},
+        'post',
+      );
+      // const res : any = DeleteResExample
       if(res.success === true){
         showAlert("Xác nhận duyệt", "Xác nhận duyệt thành công", false)
         getThongTinHD(idHD)
@@ -258,20 +261,20 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     }
   };
 
-  const handleChuanBiSelect = (selected: any) => {
+  const handleChuanBiSelect = async (selected: any) => {
     try{
-      // const res : any = await authenticationAPI.HandleAuthentication(
-      //   '/nhanvien/hoadon/delete' + "/" + idHD,
-      //   {},
-      //   'delete',
-      // );
-      const res : any = DeleteResExample
+      const res : any = await authenticationAPI.HandleAuthentication(
+        '/nhanvien/hoadon/dang-giao-hang' + "/" + idHD,
+        {},
+        'post',
+      );
+      // const res : any = DeleteResExample
       if(res.success === true){
         showAlert("Tiến hành giao hàng", "Tiến hành giao hàng thành công", false)
         getThongTinHD(idHD)
         return;
       }
-      showAlert("Tiến hành giao hàng", "Tiến hành giao hàng thất bại", false)
+      showAlert("Tiến hành giao hàng", res.msg, false)
       return;
     }
     catch(e){
@@ -279,22 +282,40 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     }
   };
 
-  const handleGiaoHangSelect = (selected: any) => {
+  const handleGiaoHangSelect = async (selected: any) => {
+    if(selected.option2 === "" && selected.option1 === 4){
+      showAlert("Xác nhận giao hàng", "Mời bạn nhập lý do giao hàng thất bại")
+      return 
+    }
     try{
       const trangThaiMua = selected.option1
       const ghiChu = selected.option2
-      // const res : any = await authenticationAPI.HandleAuthentication(
-      //   '/nhanvien/hoadon/delete' + "/" + idHD,
-      //   {},
-      //   'delete',
-      // );
-      const res : any = DeleteResExample
+      let res : any = {
+        success: false,
+        msg: "Xác nhận giao hàng thất bại do không nhận được phản hồi"
+      }
+      if(trangThaiMua === 4){
+        res = await authenticationAPI.HandleAuthentication(
+          '/nhanvien/hoadon/giao-hang-that-bai' + "/" + idHD,
+          {ghiChu: ghiChu},
+          'post',
+        );
+      }
+      else if(trangThaiMua === 3){
+        res = await authenticationAPI.HandleAuthentication(
+          '/nhanvien/hoadon/giao-hang-thanh-cong' + "/" + idHD,
+          {ghiChu: ghiChu},
+          'post',
+        );
+      }
+      // const res : any = DeleteResExample
+      console.log
       if(res.success === true){
         showAlert("Xác nhận giao hàng", "Xác nhận giao hàng thành công", false)
         getThongTinHD(idHD)
         return;
       }
-      showAlert("Xác nhận giao hàng", "Xác nhận giao hàng thất bại", false)
+      showAlert("Xác nhận giao hàng", res.msg, false)
       return;
     }
     catch(e){
@@ -303,23 +324,27 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   };
 
   const handleHuySelect = (selected: any) => {
+    if(selected.option1 === ""){
+      showAlert("Hủy hóa đơn", "Mời bạn nhập lý do hủy hóa đơn")
+      return 
+    }
     showAlert("Bạn có muốn hủy ?", "Hủy hóa đơn " + maHD, true)
     .then(async (result) => {
       if (result) {
         try{
           const ghiChu = selected.option1
-          // const res : any = await authenticationAPI.HandleAuthentication(
-          //   '/nhanvien/hoadon/delete' + "/" + idHD,
-          //   {},
-          //   'delete',
-          // );
-          const res : any = DeleteResExample
+          const res : any = await authenticationAPI.HandleAuthentication(
+            '/nhanvien/hoadon/delete' + "/" + idHD,
+            {ghiChu: ghiChu},
+            'post',
+          );
+          // const res : any = DeleteResExample
           if(res.success === true){
             showAlert("Hủy hóa đơn", "Hủy hóa đơn thành công", false)
             getThongTinHD(idHD)
             return;
           }
-          showAlert("Hủy hóa đơn", "Hủy hóa đơn thất bại", false)
+          showAlert("Hủy hóa đơn", res.msg, false)
           return;
         }
         catch(e){
@@ -355,8 +380,12 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     }
   };
 
-  const setModal = (trangThai: number) => {
-    switch (trangThai) {
+  const setModal = (trangThaiMua: number) => {
+    if(trangThai === false){
+      showAlert("Xác nhận thanh toán", "Hóa đơn đã hủy không thể tiến hành xác nhận giao hàng")
+      return
+    }
+    switch (trangThaiMua) {
       case 0:
         setModalDuyetVisible(true)
         break;
@@ -455,7 +484,7 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           rightColor={formatTrangThaiColor(trangThai)}
         /> 
 
-        <MyButtonComponent text={formatTrangThaiMuaBtn(trangThaiMua)} onPress={() => setModal(trangThaiMua)} color={formatTrangThaiMuaBtnColor(trangThaiMua)}/>
+        <MyButtonComponent text={formatTrangThaiMuaBtn(trangThaiMua)} onPress={() => setModal(trangThaiMua)} color={formatTrangThaiMuaBtnColor(trangThaiMua, trangThai)}/>
         <OptionPicker
           visible={modalDuyetVisible}
           optionalTitle={"Nhập thời gian giao hàng dự kiến"}
