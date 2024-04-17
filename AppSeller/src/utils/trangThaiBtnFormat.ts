@@ -17,8 +17,11 @@ export function formatTrangThaiMuaBtn(trangThai: number): string {
     }
 }
 
-export function formatTrangThaiMuaBtnColor(trangThai: number): string {
-    switch (trangThai) {
+export function formatTrangThaiMuaBtnColor(trangThaiMua: number, trangThai: boolean): string {
+    if(trangThai === false){
+        return appColors.gray
+    }
+    switch (trangThaiMua) {
         case 0:
             return appColors.primary;
         case 1:
