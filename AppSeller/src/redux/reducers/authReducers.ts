@@ -3,7 +3,7 @@ import { NhanVien } from "../../models/NhanVien";
 import { CuaHang } from "../../models/CuaHang";
 
 const initialState: NhanVien = {
-    id: '',
+    _id: '',
     idCH: '',
     tenNV: '',
     gioiTinh: 0,
@@ -23,7 +23,7 @@ const initialStateStore: CuaHang = {
     thoiGianMo: '',
     thoiGianDong: '',
     hinhAnh: '',
-    trangThai: false,
+    trangThai:true, 
 };
 
 const authSlide = createSlice({
@@ -56,6 +56,10 @@ const storeSlide = createSlice({
         }
     },
 });
+
+
+
+
 export const authReducers = authSlide.reducer;
 export const storeReducers = storeSlide.reducer;
 
@@ -65,3 +69,5 @@ export const getToken = (state: any) => state.authReducers.authData.token; // Ac
 
 export const { dataStore, deleteData } = storeSlide.actions;
 export const getDataStore = (state: any) => state.storeReducers; // Access entire store state
+
+

@@ -62,14 +62,15 @@ const ButtonComponent = (props: Props) => {
         {icon && iconFlex === 'left' && <View style={iConStyles}>{icon}</View>}
         {/* <Text style={textStyles}>{text}</Text> */}
 
-        <View style={{justifyContent: 'center', flex: 1}}>
+        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+
           <TextComponent
             text={text}
             color={textColor ?? appColors.white}
             styles={[
               textStyles,
               {
-                fontSize: 18,
+                fontSize: 16,
                 alignSelf: 'center',
               },
             ]}

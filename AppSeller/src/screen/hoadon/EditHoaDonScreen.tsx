@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import NavProps from '../../models/props/NavProps';
 
-const ListHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
+const EditHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome to list hoa đơn Screen!</Text>
+      <Text style={styles.text}>Welcome to detail hóa đơn Screen!</Text>
     </View>
   );
 };
@@ -22,4 +22,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListHoaDonScreen;
+export default EditHoaDonScreen;

@@ -8,16 +8,24 @@ import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import { getData } from '../../utils/storageUtils';
 
-const HeaderRightComponent: React.FC<NavProps> = ({ navigation }) =>  {
+const HeaderRightComponent: React.FC<NavProps> = ({ navigation }: any) =>  {
+    
     const [showOptionsMenu, setShowOptionsMenu] = React.useState(false);
     const handleGearClick = () => {
         setShowOptionsMenu(true);
     };
 
-    const handleOptionClick = (screenName: string) => {
-        setShowOptionsMenu(false); // Close the menu when an option is clicked
-        navigation.navigate(screenName);
+    const handleOptionClick = async (screenName: string) => {
+      const item = await getData();
+      const idUser = item?.idUser; // Add null check
+      const position = item?.position; // Add null check
+      setShowOptionsMenu(false);
+      navigation.navigate(screenName, {
+        idUser: idUser,
+        position: position,
+      });
     };
 
     const logout = () => {

@@ -18,7 +18,6 @@ import TextComponent from '../../component/TextComponent';
 import ButtonComponent from '../../component/ButtonComponent';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {appColors} from '../../constants/appColors';
-import {getData} from '../../utils/storageUtils';
 import AlertComponent from '../../component/AlertComponent';
 import authenticationAPI from '../../apis/authApi';
 import { useSelector } from 'react-redux';
@@ -26,6 +25,7 @@ import { getDataStore } from '../../redux/reducers/authReducers';
 import { NhanVien } from '../../models/NhanVien';
 import { CuaHang } from '../../models/CuaHang';
 import { ScrollView } from 'react-native-gesture-handler';
+import LoadingComponent from '../../component/LoadingComponent';
 
 const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
   const [name, setName] = useState('');
@@ -63,8 +63,8 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
       return 'Vui lòng nhập địa chỉ';
     }
 
-    if (!userName.trim()) {
-      return 'Vui lòng nhập mật khẩu';
+    if (!userName.trim() || !/^\S+@\S+\.\S+$/.test(userName.trim())) {
+      return 'Vui lòng nhập địa chỉ email hợp lệ';
     }
 
     if (!pass.trim()) {
@@ -99,12 +99,17 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
 
       if (res.success === true) {
         setMsg(res.msg)
+        handleShowAlert();
       } else {
         setMsg(res.msg)
         handleShowAlert();
       }
     } catch (err) {
       console.log(err);
+      setTimeout(() => {
+        setMsg('Lỗi server');
+        handleShowAlert();
+      }, 1000);
     }
   };
   
@@ -143,6 +148,11 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
       }, 1000);
     } catch (err) {
       console.log(err);
+      setTimeout(() => {
+        setMsg('Lỗi server');
+        handleShowAlert();
+        setIsLoading(false);
+      }, 1000);
     }
   };
  
@@ -164,7 +174,6 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Đảm bảo bàn phím không che phủ các EditText
   >
     <ScrollView style={styles.container} >
-    {isLoading && <ActivityIndicator size="large" color = {appColors.primary} />}
       <View style={styles.header}>
         <TextComponent
           text="Đăng Ký"
@@ -190,7 +199,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
           
 
           <EditTextComponent
-            label="text"
+            label="number"
             placeholder="Số điện thoại"
             value={phone}
             iconColor="gray"
@@ -209,7 +218,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
 
           <EditTextComponent
             label="text"
-            placeholder="Tài khoản"
+            placeholder="Email"
             value={userName}
             iconColor="gray"
             onChangeText={setUserName}
@@ -292,6 +301,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
           message={msg}
           onClose={handleCloseAlert}
         />
+        <LoadingComponent visible={isLoading}/>
       </View>
     </ScrollView>
     </KeyboardAvoidingView>
@@ -311,6 +321,7 @@ backgroundColor: 'white',
   header: {
     height: hp(10),
     justifyContent: 'center',
+    alignItems: 'center'
   },
   main: {
     height: hp(80),
