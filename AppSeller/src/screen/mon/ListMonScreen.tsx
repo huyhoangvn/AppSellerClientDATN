@@ -184,7 +184,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-image.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: appImageSize.size75.width, height: appImageSize.size75.height }}
+            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 10 }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />  
           <View style={{paddingHorizontal: 10}}>
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   item: {
-    padding: 10,
+    padding: 8,
     borderColor: 'black',
     borderWidth: 0.5,
     marginTop: 15,
