@@ -8,6 +8,8 @@ import {
   ScrollView,
   Alert,
   Platform,
+  FlatList,
+  TouchableOpacity
 } from 'react-native';
 import TextComponent from '../../component/TextComponent';
 import {
@@ -34,10 +36,16 @@ import {CuaHang} from '../../models/CuaHang';
 import {Route} from 'react-native-tab-view';
 import authenticationAPI from '../../apis/authApi';
 import { getData } from '../../utils/storageUtils';
+import { appImageSize } from '../../constants/appImageSize';
+import { appFontSize } from '../../constants/appFontSizes';
+import {appColors} from '../../constants/appColors';
+import {Mon} from '../../models/Mon';
 
 const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
   const [cuaHang, setCuaHang] = useState<CuaHang[]>([]);
+  const [listHienThi, setListMon] = useState<Mon[]>([]);
+  const [msg, setMsg] = useState('');
 
  
     const fetchChiTietCuaHang = async () => {
@@ -70,15 +78,61 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
         setLoading(false);
       }
     };
+    
+    const getMonBanChay = async () =>{
+      try {
+        const res:any = await authenticationAPI.HandleAuthentication(
+          `/nhanvien/mon`,
+          'get',
+        )
+        if(res.success  === true) {
+          setListMon(res.list);
+          setMsg(res.msg);
+        }
+        else{
+          setMsg(res.msg);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', () => {
         fetchChiTietCuaHang();
+        getMonBanChay();
       });
-  
+
       return unsubscribe;
     }, [navigation, fetchChiTietCuaHang]);
+ 
+    const renderItem = ({ item }: { item: Mon }) =>
+   {
+    console.log(item);
 
+      return (
+        <TouchableOpacity >
+        <View style={styles.item}>
+            <Image
+              source={
+              (!item.hinhAnh || item.hinhAnh === "N/A") ?
+                require('./../../assest/default-image.jpg') :
+                { uri: item.hinhAnh }}
+              style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 10 }}
+              defaultSource={require('./../../assest/default-avatar.jpg')}
+            />  
+            <View style={{paddingHorizontal: 10}}>
+            <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>Tên món: {item.tenMon}</Text>
+            <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
+            <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
+            <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
+              {item.trangThai ? 'Hoạt động' : 'Khóa'}
+            </Text>    
+          </View>
+        </View>
+      </TouchableOpacity>
+      );
+    };
 
   return (
     <ScrollView style={styles.container}>
@@ -147,13 +201,26 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           </View>
         </View>
       )}
+      <View style={styles.footer}>
+      <Text style={styles.textMonBanChay}>
+        Món đang phục vụ
+      </Text>
+       <FlatList
+          scrollEnabled={false}
+          data={listHienThi}
+          renderItem={renderItem}
+          keyExtractor={(item: any) => item._id}
+        />
+      </View>
+      
+      
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: hp(100),
+    flex: 1,
     backgroundColor: 'white',
   },
 
@@ -191,11 +258,27 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 10,
   },
-
-  // info: {
-  //   fontSize: 16,
-  //   marginBottom: 5,
-  // },
+  
+  textMonBanChay:{
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    marginLeft: 5,
+  },
+  item: {
+    padding: 10,
+    borderColor: 'black',
+    borderWidth: 0.5,
+    marginTop: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  footer:{
+    flex: 1,
+  }
+ 
 });
 
 export default MainCuaHangScreen;
