@@ -107,7 +107,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   }, [navigation, fetchChiTietCuaHang]);
 
   const renderItem = ({item}: {item: Mon}) => {
-    console.log(item);
+    // console.log(item);
 
     return (
       <TouchableOpacity>

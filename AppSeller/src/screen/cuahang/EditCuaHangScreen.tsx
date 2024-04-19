@@ -95,75 +95,37 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return `${hours}:${minutes}`;
   };
 
+   // Cập nhật thời gian mở
   const updateTimeOpen = (newTime: string) => {
     const formattedTime = formatTime(newTime);
     setTimeOpen(formattedTime);
   };
 
+ // Cập nhật thời gian đóng
   const updateTimeClose = (newTime: string) => {
     const formattedTime = formatTime(newTime);
     setTimeClose(formattedTime);
   };
 
-  // const handleContinue = async () => {
-  //   const errorMessage = validateInputs();
+  
 
-  //   if (errorMessage) {
-  //     setMsg(errorMessage);
-  //     handleShowAlert();
-  //     return; // Dừng lại nếu có lỗi
-  //   }
-
-  //   setLoading(true);
-  //   try {
-  //     const idStore = route.params?.cuaHang;
-  //     const result = await getData();
-
-  //     const res = await authenticationAPI.HandleAuthentication(
-  //       `/nhanvien/cuahang/${result?.idStore}`,
-  //       {
-  //         tenCH: name,
-  //         diaChi: address,
-  //         sdt: phone,
-  //         thoiGianMo: timeO,
-  //         thoiGianDong: timeC,
-  //         email: mail,
-  //       },
-  //       'put',
-  //     );
-
-  //     if (res.success === true) {
-  //       setMsg(res.msg);
-  //       handleShowAlert();
-  //     } else {
-  //       setMsg(res.msg);
-  //       handleShowAlert();
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //     setMsg('Request timeout. Please try again later.'); // Set error message
-  //     handleShowAlert();
-  //   } finally {
-  //     setLoading(false);
-  //   }
-
-  //   navigation.navigate('DetailCuaHangScreen');
-  // };
-
+   // Xử lý khi nhấn nút "Lưu"
   const handleContinue = async () => {
     setLoading(true);
     try {
       const idStore = route.params?.cuaHang;
       const result = await getData();
 
+      console.log(result)
       const formData = new FormData();
       if (imagePath) {
         formData.append('hinhAnh', {
           uri: imagePath,
-          name: generateRandomImageName(), // Tên của hình ảnh
+          name: generateRandomImageName(), // Tạo tên ngẫu nhiên cho hình ảnh
           type: 'image/jpeg', // Loại của hình ảnh
         });
       }
+    
       formData.append('tenCH', name);
       formData.append('diaChi', address);
       formData.append('sdt', phone);
@@ -193,6 +155,7 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     }
   };
 
+  // Tạo tên ngẫu nhiên cho hình ảnh
   const generateRandomImageName = () => {
     const prefix = 'IMG_6314_'; // Tiền tố cố định
     const randomSuffix = Math.floor(Math.random() * 10000); // Số ngẫu nhiên từ 0 đến 9999
@@ -200,6 +163,8 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
     return `${prefix}${randomSuffix}${extension}`;
   };
+
+// Xử lý khi chọn ảnh
   const handleImageSelect = async (imagePath: string) => {
     try {
       setImagePath(imagePath);
