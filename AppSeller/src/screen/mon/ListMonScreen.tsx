@@ -145,7 +145,6 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   //Tìm kiếm theo trạng thái
   const timKiemTheoTrangThai = async (item: any) => {
     await handleSearch(tenMon, giaTienMin, giaTienMax, parseInt(item.value, 10), 1, tenLM);
-    console.log(item.value);
   };
 
   //Lấy phân quyền
@@ -162,7 +161,6 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}&trang=${trang}&tenLM=${tenLM}`,
       'get',
     )    
-   console.log(res);
     if (res.success === false) {
       if (!res.list) {
         return;

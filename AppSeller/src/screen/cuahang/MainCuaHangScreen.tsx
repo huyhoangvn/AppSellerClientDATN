@@ -105,8 +105,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return unsubscribe;
   }, [navigation, fetchChiTietCuaHang]);
 
-      return unsubscribe;
-    }, [navigation, fetchChiTietCuaHang]);
+
  
     const renderItem = ({ item }: { item: Mon }) =>
    {
