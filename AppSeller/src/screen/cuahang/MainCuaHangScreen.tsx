@@ -53,7 +53,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
       try {
         setLoading(true);
 
-        const res = await authenticationAPI.HandleAuthentication(
+        const res:any = await authenticationAPI.HandleAuthentication(
           `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
           'get',
         );
@@ -108,7 +108,6 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
  
     const renderItem = ({ item }: { item: Mon }) =>
    {
-    console.log(item);
 
       return (
         <TouchableOpacity >
@@ -277,6 +276,7 @@ const styles = StyleSheet.create({
   },
   footer:{
     flex: 1,
+    margin: 10,
   }
  
 });
