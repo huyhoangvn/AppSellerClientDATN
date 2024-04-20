@@ -53,30 +53,29 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     const result = await getData();
     try {
       setLoading(true);
-
-      const res = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
-        'get',
-      );
-      if (res.success === true) {
-        const {hinhAnh,tenCH, thoiGianMo, thoiGianDong, email, sdt, diaChi} = res.data;
-        // Cập nhật mảng cuaHang bằng cách thêm một đối tượng mới
-        setCuaHang({
-          hinhAnh,
-          tenCH,
-          thoiGianMo,
-          thoiGianDong,
-          email,
-          sdt,
-          diaChi,
-        });
-      } else {
-        Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lấy dữ liệu cửa hàng');
-      }
-    } catch (err) {
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi kết nối đến máy chủ');
-    } finally {
-      setLoading(false);
+        const res:any = await authenticationAPI.HandleAuthentication(
+          `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
+          'get',
+        );
+        if (res.success === true) {
+          const {tenCH, thoiGianMo, thoiGianDong, email, sdt, diaChi} =
+            res.data;
+          // Cập nhật mảng cuaHang bằng cách thêm một đối tượng mới
+          setCuaHang({
+            tenCH,
+            thoiGianMo,
+            thoiGianDong,
+            email,
+            sdt,
+            diaChi,
+          });
+        } else {
+          Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lấy dữ liệu cửa hàng');
+        }
+      } catch (err) {
+        Alert.alert('Lỗi', 'Đã xảy ra lỗi khi kết nối đến máy chủ');
+      } finally {
+        setLoading(false);
     }
   };
 
@@ -106,9 +105,11 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return unsubscribe;
   }, [navigation, fetchChiTietCuaHang]);
 
-  const renderItem = ({item}: {item: Mon}) => {
-    // console.log(item);
-
+      return unsubscribe;
+    }, [navigation, fetchChiTietCuaHang]);
+ 
+    const renderItem = ({ item }: { item: Mon }) =>
+   {
     return (
       <TouchableOpacity>
         <View style={styles.item}>
@@ -301,7 +302,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     flex: 1,
-  },
+    margin: 10,
+  }
 });
 
 export default MainCuaHangScreen;
