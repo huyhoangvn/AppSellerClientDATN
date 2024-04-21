@@ -51,6 +51,8 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [isChecked, setChecked] = useState<boolean>();
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
+  // Định nghĩa một biến state để xác định xem liệu hình ảnh đã được chọn hay không
+  const [imageSelected, setImageSelected] = useState<boolean>(false);
 
   const handleShowAlert = () => {
     setShowAlert(true);
@@ -95,28 +97,25 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return `${hours}:${minutes}`;
   };
 
-   // Cập nhật thời gian mở
+  // Cập nhật thời gian mở
   const updateTimeOpen = (newTime: string) => {
     const formattedTime = formatTime(newTime);
     setTimeOpen(formattedTime);
   };
 
- // Cập nhật thời gian đóng
+  // Cập nhật thời gian đóng
   const updateTimeClose = (newTime: string) => {
     const formattedTime = formatTime(newTime);
     setTimeClose(formattedTime);
   };
 
-  
-
-   // Xử lý khi nhấn nút "Lưu"
+  // Xử lý khi nhấn nút "Lưu"
   const handleContinue = async () => {
     setLoading(true);
     try {
       const idStore = route.params?.cuaHang;
       const result = await getData();
 
-      console.log(result)
       const formData = new FormData();
       if (imagePath) {
         formData.append('hinhAnh', {
@@ -125,7 +124,7 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           type: 'image/jpeg', // Loại của hình ảnh
         });
       }
-    
+
       formData.append('tenCH', name);
       formData.append('diaChi', address);
       formData.append('sdt', phone);
@@ -164,10 +163,18 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return `${prefix}${randomSuffix}${extension}`;
   };
 
-// Xử lý khi chọn ảnh
-  const handleImageSelect = async (imagePath: string) => {
+  // Xử lý khi chọn ảnh
+  const handleImageSelect = async (imagePath: string | null) => {
     try {
-      setImagePath(imagePath);
+      if (imagePath) {
+        setImagePath(imagePath);
+        // Khi có ảnh được chọn, đặt giá trị của biến imageSelected thành true
+        setImageSelected(true);
+      } else {
+        // Nếu không có ảnh được chọn, sử dụng ảnh mặc định và đặt giá trị của biến imageSelected thành false
+        setImagePath(require('./../../assest/default-image.jpg'));
+        setImageSelected(false);
+      }
     } catch (error) {
       console.log('Error uploading image:', error);
     }
@@ -179,13 +186,7 @@ const EditCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Đảm bảo bàn phím không che phủ các EditText
     >
       <ScrollView style={styles.container}>
-        {/* <Image
-          style={[styles.userLogo]}
-          source={{
-            uri: 'https://s3-alpha-sig.figma.com/img/9095/7ee6/2e59f0dd47c07df4fd62c0c6f8234fc1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=WcYJ-Aluh~6iE40ETceszZ2fRS5LImXKOS7YDXkEZM8QIC9lNNPYWqn3nJggcBT1n7wbDHcXX8O49ok~KwzFEbOReNtPZec20~gvbKAJpB1rrCF7ndUQUP09estWu0PA2JCbhLuTEtCAVfCuNyfoxGBjEPSkYJu4LOAGcBrollAESA~TO4HQxmmnrh4dNfWg3mlJ2RVkuA6UwvrkXy~74yV4-rNGiv~BN2LhF1to91VABRD74uFzpfTAhozWqsLnZ1f2-7dfZJHW3lLhEexir6SXp1VhQSIP7y6QVemqttKrL2dAnOjkaU7TCqofJ4-14s3XgjZJQ1jRzHKSfCHD-Q__',
-          }}
-        /> */}
-
+      
         <ImagePickerComponent
           onImageSelect={handleImageSelect}
           imageUri={cuaHang.hinhAnh}

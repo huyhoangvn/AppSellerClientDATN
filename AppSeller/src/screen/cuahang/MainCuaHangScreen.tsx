@@ -53,29 +53,30 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     const result = await getData();
     try {
       setLoading(true);
-        const res:any = await authenticationAPI.HandleAuthentication(
-          `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
-          'get',
-        );
-        if (res.success === true) {
-          const {tenCH, thoiGianMo, thoiGianDong, email, sdt, diaChi} =
-            res.data;
-          // Cập nhật mảng cuaHang bằng cách thêm một đối tượng mới
-          setCuaHang({
-            tenCH,
-            thoiGianMo,
-            thoiGianDong,
-            email,
-            sdt,
-            diaChi,
-          });
-        } else {
-          Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lấy dữ liệu cửa hàng');
-        }
-      } catch (err) {
-        Alert.alert('Lỗi', 'Đã xảy ra lỗi khi kết nối đến máy chủ');
-      } finally {
-        setLoading(false);
+      const res: any = await authenticationAPI.HandleAuthentication(
+        `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
+        'get',
+      );
+      if (res.success === true) {
+        const {hinhAnh, tenCH, thoiGianMo, thoiGianDong, email, sdt, diaChi} =
+          res.data;
+        // Cập nhật mảng cuaHang bằng cách thêm một đối tượng mới
+        setCuaHang({
+          hinhAnh,
+          tenCH,
+          thoiGianMo,
+          thoiGianDong,
+          email,
+          sdt,
+          diaChi,
+        });
+      } else {
+        Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lấy dữ liệu cửa hàng');
+      }
+    } catch (err) {
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi kết nối đến máy chủ');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,10 +106,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return unsubscribe;
   }, [navigation, fetchChiTietCuaHang]);
 
-
- 
-    const renderItem = ({ item }: { item: Mon }) =>
-   {
+  const renderItem = ({item}: {item: Mon}) => {
     return (
       <TouchableOpacity>
         <View style={styles.item}>
@@ -157,21 +155,15 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     <ScrollView style={styles.container}>
       {cuaHang && (
         <View>
-          {/* <Image
-            style={[styles.userLogo]}
-            source={{
-              uri: 'https://s3-alpha-sig.figma.com/img/9095/7ee6/2e59f0dd47c07df4fd62c0c6f8234fc1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=WcYJ-Aluh~6iE40ETceszZ2fRS5LImXKOS7YDXkEZM8QIC9lNNPYWqn3nJggcBT1n7wbDHcXX8O49ok~KwzFEbOReNtPZec20~gvbKAJpB1rrCF7ndUQUP09estWu0PA2JCbhLuTEtCAVfCuNyfoxGBjEPSkYJu4LOAGcBrollAESA~TO4HQxmmnrh4dNfWg3mlJ2RVkuA6UwvrkXy~74yV4-rNGiv~BN2LhF1to91VABRD74uFzpfTAhozWqsLnZ1f2-7dfZJHW3lLhEexir6SXp1VhQSIP7y6QVemqttKrL2dAnOjkaU7TCqofJ4-14s3XgjZJQ1jRzHKSfCHD-Q__',
-            }}
-          /> */}
-
-          {cuaHang && cuaHang.hinhAnh ? (
-            <Image
-              style={[[styles.userLogo]]}
-              source={{uri: cuaHang?.hinhAnh}}
-            />
-          ) : (
-            <DefaultAvatar />
-          )}
+          
+          <Image
+            source={
+              !cuaHang.hinhAnh || cuaHang.hinhAnh === 'N/A'
+                ? require('./../../assest/default-image.jpg')
+                : {uri: cuaHang.hinhAnh}
+            }
+            style={[[styles.userLogo]]}
+          />
 
           {/* tên cửa hàng */}
           <Text style={styles.textTitle}> {cuaHang.tenCH}</Text>
@@ -276,8 +268,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   userLogo: {
-    width: 392,
-    height: 155,
+    width: appImageSize.sizeCH.width,
+    height: appImageSize.sizeCH.height,
     resizeMode: 'cover',
     alignSelf: 'center',
     marginTop: 10,
@@ -302,7 +294,7 @@ const styles = StyleSheet.create({
   footer: {
     flex: 1,
     margin: 10,
-  }
+  },
 });
 
 export default MainCuaHangScreen;

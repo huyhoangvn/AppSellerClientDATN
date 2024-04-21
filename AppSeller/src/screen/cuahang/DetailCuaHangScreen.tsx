@@ -85,18 +85,16 @@ const DetailCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
   return (
     <View style={styles.container}>
-      {/* <Image
-        style={[styles.userLogo]}
-        source={{
-          uri: 'https://s3-alpha-sig.figma.com/img/9095/7ee6/2e59f0dd47c07df4fd62c0c6f8234fc1?Expires=1711929600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=WcYJ-Aluh~6iE40ETceszZ2fRS5LImXKOS7YDXkEZM8QIC9lNNPYWqn3nJggcBT1n7wbDHcXX8O49ok~KwzFEbOReNtPZec20~gvbKAJpB1rrCF7ndUQUP09estWu0PA2JCbhLuTEtCAVfCuNyfoxGBjEPSkYJu4LOAGcBrollAESA~TO4HQxmmnrh4dNfWg3mlJ2RVkuA6UwvrkXy~74yV4-rNGiv~BN2LhF1to91VABRD74uFzpfTAhozWqsLnZ1f2-7dfZJHW3lLhEexir6SXp1VhQSIP7y6QVemqttKrL2dAnOjkaU7TCqofJ4-14s3XgjZJQ1jRzHKSfCHD-Q__',
-        }}
-      /> */}
+       <Image
+            source={
+              !cuaHang?.hinhAnh || cuaHang.hinhAnh === 'N/A'
+                ? require('./../../assest/default-image.jpg')
+                : {uri: cuaHang.hinhAnh}
+            }
+            style={[[styles.userLogo]]}
+          />
       <View style={styles.main}>
-      {cuaHang && cuaHang.hinhAnh ? (
-        <Image style={[styles.userLogo]} source={{uri: cuaHang.hinhAnh}} />
-      ) : (
-        <DefaultAvatar />
-      )}
+   
 
       {/* tên cửa hàng */}
       <View style={styles.viewText}>
@@ -189,12 +187,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   main: {
+    paddingTop:19,
     paddingHorizontal: 10,
-    height: hp(75),
+    height: hp(55),
     justifyContent: 'space-between',
   },
   footer: {
-    paddingTop: 15,
+    marginTop: 15,
     height: hp(10),
     justifyContent: 'space-between',
   },
