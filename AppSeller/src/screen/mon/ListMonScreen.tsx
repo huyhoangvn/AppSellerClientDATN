@@ -40,6 +40,7 @@ const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', '
 const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   const [loading, setLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
 
   // const [listApi, setListApi] = useState<Mon[]>([]);
   const [listHienThi, setListHienThi] = useState<Mon[]>([]);
@@ -52,7 +53,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [tenMon, setTenMon] = useState("");
   const [trangThai, setTrangThai] = useState(-1);
   const [trang, setTrang] = useState(1);
-
+  const [tenLM, setTenLM] = useState('');
   //Giá tiền select input
   const itemsPosition = [
     {label: 'Tất cả', value: -1},
@@ -61,7 +62,13 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     {label: 'Dưới 100.000 đ', value: 2},
     {label: 'Trên 100.000 đ', value: 3},
   ];
-
+  const itemsTenLM = [
+    {label: 'Tất cả', value: ''},
+    {label: 'Cơm ', value: 0},
+    {label: 'Đồ chiên', value:1},
+    {label: 'Đồ rán', value: 2},
+    {label: 'Gà', value: 3},
+  ];
   //Trạng thái select input
   const itemsStatus = [
     {label: 'Tất cả', value: -1},
@@ -77,7 +84,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   
   //Tìm kiếm theo tên
   const timKiemTheoTen = (item: string) => {
-    handleSearch(item, giaTienMin, giaTienMax, trangThai, 1);
+    handleSearch(item, giaTienMin, giaTienMax, trangThai, 1, tenLM);
   }; 
 
   //Tìm kiếm theo giá
@@ -105,12 +112,39 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         minPrice = 0;
         maxPrice = Number.MAX_SAFE_INTEGER;
     }
-    await handleSearch(tenMon, minPrice, maxPrice, trangThai, 1);
+    await handleSearch(tenMon, minPrice, maxPrice, trangThai, 1, tenLM);
   };
+ //Tìm kiếm theo trạng thái
+ const timKiemTheoTenLM = async (item: any) => {
+  let categoryName = ''; // Initialize an empty string to store the category name
+  
+  switch (item.value) {
+    case '':
+      categoryName = '';
+      break;
+    case '0':
+      categoryName = 'Cơm';
+      break;
+    case '1':
+      categoryName = 'Đồ chiên';
+      break;
+    case '2':
+      categoryName = 'Đồ rán';
+      break;
+    case '3':
+      categoryName = 'Gà';
+      break;
+    default:
+      categoryName = 'Trạng thái không xác định';
+  }
+  
+  await handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, categoryName);
+  console.log(item.value, item.label, categoryName); // Log the selected value, label, and category name
+};
 
   //Tìm kiếm theo trạng thái
   const timKiemTheoTrangThai = async (item: any) => {
-    await handleSearch(tenMon, giaTienMin, giaTienMax, parseInt(item.value, 10), 1);
+    await handleSearch(tenMon, giaTienMin, giaTienMax, parseInt(item.value, 10), 1, tenLM);
   };
 
   //Lấy phân quyền
@@ -122,12 +156,11 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   
 
   //Tìm kiếm
-  const handleSearch = async (tenMon: any, giaTienMin: any, giaTienMax: any, trangThai: any, trang: any) => {
+  const handleSearch = async (tenMon: any, giaTienMin: any, giaTienMax: any, trangThai: any, trang: any, tenLM: any) => {
     const res : any = await authenticationAPI.HandleAuthentication (
-    `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}&trang=${trang}`,
+    `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}&trang=${trang}&tenLM=${tenLM}`,
       'get',
     )    
-
     if (res.success === false) {
       if (!res.list) {
         return;
@@ -151,22 +184,23 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     setGiaTienMax(giaTienMax);
     setTrangThai(trangThai);
     setTenMon(tenMon);
+    setTenLM(tenLM);
     //Set state sau cùng vì state nó không cập nhật ngay lập tức trong hàm
   }
 
   //Xem thêm
   const xemThemMon = async () => {
-    await handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, trang+1);
+    await handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, trang+1, tenLM);
   };
  
   useEffect(() => {
-    handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1);    
+    handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, tenLM);    
     getPhanQuyen();
   }, []); 
   
   useFocusEffect(
     React.useCallback(() => {
-      handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1);    
+      handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, tenLM);    
       getPhanQuyen();
       return () => {
         // Cleanup logic nếu cần (không bắt buộc)
@@ -184,7 +218,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-image.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: appImageSize.size75.width, height: appImageSize.size75.height }}
+            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 10 }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />  
           <View style={{paddingHorizontal: 10}}>
@@ -220,14 +254,14 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         /> 
         <View style={styles.viewDropDow}>
           <DropDownComponent
-            label="Giá tiền" // Nhãn cho DropDownComponent
-            items={itemsPosition.map(item => ({
+            label="Loại món" // Nhãn cho DropDownComponent
+            items={itemsTenLM.map(item => ({
               label: item.label,
               value: item.value.toString(),
             }))} // Danh sách các mục
             containerStyle={{width: wp(55), borderRadius: 100}}
-            onChangeItem={async item => await timKiemTheoGiaTien(item)}
             placeholder="Tất cả"
+            onChangeItem={async item => await timKiemTheoTenLM(item)}
           />
           <DropDownComponent
             label="Trạng thái" // Nhãn cho DropDownComponent
@@ -295,7 +329,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   item: {
-    padding: 10,
+    padding: 8,
     borderColor: 'black',
     borderWidth: 0.5,
     marginTop: 15,
