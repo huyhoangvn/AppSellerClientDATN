@@ -44,7 +44,6 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     setYear(item);
     setIsPickerVisible(false);
     await thongkeNam(item); // Gọi hàm thongkeNam với năm mới được chọn
-    console.log(item);
   };
   const thongKeNgay = async (type: string) => {
     try {
