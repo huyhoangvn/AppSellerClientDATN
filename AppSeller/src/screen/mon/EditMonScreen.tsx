@@ -67,7 +67,7 @@ const loaiMonItem = [
     return 'Vui lòng chọn loại món ';
 
   }
-  if (!price.trim() ) {
+  if (!giaTien.trim() ) {
     return 'Vui lòng nhập giá tiền hợp lệ';
   }
   if(!trangThai  && trangThai === ''){
