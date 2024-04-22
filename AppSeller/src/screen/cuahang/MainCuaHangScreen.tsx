@@ -49,11 +49,16 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [listHienThi, setListMon] = useState<Mon[]>([]);
   const [msg, setMsg] = useState('');
 
+  //Hiển thị chi tiết
+  const handleDetail = ( item: any ) => {
+    navigation.navigate("DetailMonScreen", { item });
+  };
+  
   const fetchChiTietCuaHang = async () => {
     const result = await getData();
     try {
       setLoading(true);
-      const res: any = await authenticationAPI.HandleAuthentication(
+      const res:any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
         'get',
       );
@@ -108,7 +113,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
   const renderItem = ({item}: {item: Mon}) => {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>handleDetail(item)}>
         <View style={styles.item}>
           <Image
             source={
@@ -127,7 +132,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
             <Text
               style={{
                 fontWeight: 'bold',
-                fontSize: appFontSize.title,
+                fontSize: 22,
                 color: 'black',
               }}>
               Tên món: {item.tenMon}
@@ -218,7 +223,9 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
               marginLeft={5}
             />
             <Text style={styles.textContent}>{cuaHang.diaChi}</Text>
+            
           </View>
+          <Text style={styles.line} />
         </View>
       )}
       <View style={styles.footer}>
@@ -263,9 +270,10 @@ const styles = StyleSheet.create({
   },
 
   line: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderColor: '#D2D2D2',
     marginBottom: 10,
+    margin: 10,
   },
   userLogo: {
     width: appImageSize.sizeCH.width,
