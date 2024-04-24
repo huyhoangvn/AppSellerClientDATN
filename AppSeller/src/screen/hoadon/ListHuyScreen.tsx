@@ -179,7 +179,7 @@ const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
                 {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
                 Trạng thái mua: {getStatusText(item.trangThaiMua ?? 0)}
               </Text>
-              <Text style={{fontWeight: 'bold', color: 'black'}}>
+              <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
                 Thanh toán:
                 {item.trangThaiThanhToan === 0 ? (
                   <Text style={{color: 'red'}}> Chưa thanh toán</Text>
