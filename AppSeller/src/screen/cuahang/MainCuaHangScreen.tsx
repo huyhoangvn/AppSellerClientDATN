@@ -111,50 +111,31 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     return unsubscribe;
   }, [navigation, fetchChiTietCuaHang]);
 
-  const renderItem = ({item}: {item: Mon}) => {
+  const renderItem = ({ item }: { item: Mon }) => {  
     return (
-      <TouchableOpacity onPress={()=>handleDetail(item)}>
-        <View style={styles.item}>
+      <TouchableOpacity onPress={() => handleDetail(item)}>
+      <View style={styles.item}>
           <Image
             source={
-              !item.hinhAnh || item.hinhAnh === 'N/A'
-                ? require('./../../assest/default-image.jpg')
-                : {uri: item.hinhAnh}
-            }
-            style={{
-              width: appImageSize.size100.width,
-              height: appImageSize.size100.height,
-              borderRadius: 10,
-            }}
+            (!item.hinhAnh || item.hinhAnh === "N/A") ?
+              require('./../../assest/default-image.jpg') :
+              { uri: item.hinhAnh }}
+            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 8 }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
-          />
+          />  
           <View style={{paddingHorizontal: 10}}>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 22,
-                color: 'black',
-              }}>
-              Tên món: {item.tenMon}
-            </Text>
-            <Text style={{fontSize: appFontSize.normal}}>
-              Loại món: {item.tenLM}
-            </Text>
-            <Text style={{fontSize: appFontSize.normal}}>
-              Gía tiền: {item.giaTien}đ
-            </Text>
-            <Text
-              style={[
-                {fontSize: appFontSize.normal},
-                {color: item.trangThai ? appColors.green : appColors.red},
-              ]}>
-              {item.trangThai ? 'Hoạt động' : 'Khóa'}
-            </Text>
-          </View>
+          <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>Tên món: {item.tenMon}</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
+          <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
+            {item.trangThai ? 'Hoạt động' : 'Khóa'}
+          </Text>    
         </View>
-      </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
     );
   };
+
 
   return (
     <ScrollView style={styles.container}>

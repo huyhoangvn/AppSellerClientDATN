@@ -22,15 +22,19 @@ import LoadingComponent from '../../component/LoadingComponent';
 import * as ImagePicker from 'expo-image-picker';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePickerComponent from '../../component/ImagePickerComponent';
-
+import {useFocusEffect} from '@react-navigation/native';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const EditMonScreen: React.FC<NavProps> = ({ navigation, route }:any) =>  {
-  const { item } = route.params;
+  const { position, item } = route.params;
 
-  const [tenMon, setTenMon] = useState(item.tenMon);
-  const [trangThai, setTrangThai] = useState(item.trangThai);
+
+  const [tenMon, setTenMon] = useState<any>(item.tenMon);
+  const [trangThai, setTrangThai] = useState<any>(item.trangThai);
+  const [giaTien, setGiaTien] = useState<any>(item.giaTien);
+
+
   const [idLM, setidLM] = useState(item.tenLM);
-  const [giaTien, setGiaTien] = useState(item.giaTien);
 
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
@@ -51,29 +55,26 @@ const loaiMonItem = [
 
   const setSelectedLoaiMon =(item:any)=>{
     setidLM(item.value);
-    
   };
   const setSelectedTrangThai =(item:any)=>{
     setTrangThai(item.value);
   };
   const validateInputs = () => {
-    if (!imagePath) {
-      return ('Hình ảnh không hợp lệ.');
-    }
+  if (!imagePath) {
+    return ('Hình ảnh không hợp lệ.');
+   }
   if (!tenMon.trim()) {
     return 'Vui lòng nhập tên món';
   }
   if(!idLM  && idLM === ''){
     return 'Vui lòng chọn loại món ';
-
-  }
-  if (!giaTien.trim() ) {
-    return 'Vui lòng nhập giá tiền hợp lệ';
   }
   if(!trangThai  && trangThai === ''){
     return 'Vui lòng chọn trạng thái món ';
   }
-  
+   if (!giaTien.trim() || isNaN(parseFloat(giaTien))) {
+    return 'Vui lòng nhập giá tiền hợp lệ';
+  }
   return null;
   };
   const handleShowAlert = () => {
@@ -98,12 +99,18 @@ const handleImageSelect = async (imagePath: string) => {
   }
 };
 const handelUpdate = async (  ) => {
-  
+  const errorMessage = validateInputs();
+  if (errorMessage) {
+    setMsg(errorMessage);
+    handleShowAlert();
+    return;
+  }
   try {
     setLoading(true);
     const data = await getData();
     const idNV = data?.idUser;
-  
+    // const parsedGiaTien = parseFloat(giaTien);
+
     const formData = new FormData();
       if (imagePath) {
         formData.append('hinhAnh', {
@@ -115,8 +122,8 @@ const handelUpdate = async (  ) => {
       formData.append('idNV', idNV);
       formData.append('idLM', idLM);
       formData.append('tenMon', tenMon);
-      formData.append('giaTien', giaTien);
       formData.append('trangThai', trangThai);
+      formData.append('giaTien', giaTien);
     const res:any = await authenticationAPI.HandleAuthentication(
       `/nhanvien/mon/${item._id}`,
        formData,
@@ -170,15 +177,23 @@ const danhSachLoaiMon = async ()=>{
 useEffect(() => {
   danhSachLoaiMon();
 }, []); 
+useFocusEffect(
+  React.useCallback(() => {
+    danhSachLoaiMon();
 
+    return () => {
+      // Cleanup logic nếu cần (không bắt buộc)
+    };
+  }, []),
+);
   return (
   <View style={styles.container}>
     
     <ImagePickerComponent
-              onImageSelect={handleImageSelect}
-              imageUri={item.hinhAnh}
-              style={{borderRadius: wp(30), overflow: 'hidden'}}
-            />   
+      onImageSelect={handleImageSelect}
+      imageUri={item.hinhAnh}
+      style={{borderRadius: wp(30), overflow: 'hidden'}}
+       />   
     <View style={styles.inputContainer}>
         <EditTextComponent
          label="text"
@@ -215,10 +230,10 @@ useEffect(() => {
           /> 
     </View>
     </View>
-    <EditTextComponent
+      <EditTextComponent
           label="text"
           placeholder="20.000"
-          value={giaTien}
+          value={formatCurrency(giaTien)}
           iconColor="gray"
           icon={faCoins}
           onChangeText={setGiaTien}
