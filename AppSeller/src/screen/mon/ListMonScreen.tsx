@@ -218,7 +218,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-image.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 10 }}
+            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 8 }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />  
           <View style={{paddingHorizontal: 10}}>
@@ -247,8 +247,8 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           stylesContainer={{
             backgroundColor: appColors.white,
             borderColor: 'black',
-            borderWidth: 1,
-            elevation: 0,
+            borderWidth: 1.5,
+            elevation: 1,
           }}
           iconColor={appColors.primary}
         /> 

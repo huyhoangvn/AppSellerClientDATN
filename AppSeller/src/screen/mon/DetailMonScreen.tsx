@@ -15,6 +15,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { getData } from '../../utils/storageUtils';
+import AlertComponent from '../../component/AlertComponent';
+import LoadingComponent from '../../component/LoadingComponent';
 
 const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
 
@@ -144,6 +146,12 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
           onPress={() => navigation.navigate('EvaluateScreen',{item: item})}
         />
       </View>
+      <LoadingComponent visible={loading} />
+      {/* <AlertComponent
+        visible={showAlert}
+        message={msg}
+        onClose={handleCloseAlert}
+      /> */}
     </View>
   );
 };
