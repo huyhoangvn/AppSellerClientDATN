@@ -20,8 +20,9 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import EditMonScreen from '../mon/EditMonScreen';
+import NavProps from '../../models/props/NavProps';
 
-const ThongKeMonScreen: React.FC = () => {
+const ThongKeMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [listHienThi, setListHienThi] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [thangChon, setThangChon] = useState(new Date().getMonth() + 1);
@@ -49,7 +50,11 @@ const itemsThang = [
     setYear(selectedYear);
     setIsPickerVisible(false);
   };
-
+//Hiển thị chi tiết
+const handleDetail = ( item: any ) => {
+  navigation.navigate("DetailMonScreen", { item });
+  console.log(item);
+};
 //Tìm tháng
 const timKiemTheoThang = async (item: any) => {
   setThangChon(item.value);
@@ -61,11 +66,12 @@ const timKiemTheoThang = async (item: any) => {
   const handleSearch = async () => {
     try {
       const res:any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/thongke/nam-tenLM?nam=${year}&thang=${thangChon}`,
+        `/nhanvien/thongke/mon-ban-chay?nam=${year}&thang=${thangChon}`,
         'get'
       );
+      console.log(res);
       if (res && res.success) {
-        setListHienThi(res.data);
+        setListHienThi(res.list);
       } else {
         setListHienThi([]);
       }
@@ -81,7 +87,7 @@ const timKiemTheoThang = async (item: any) => {
 
   const renderItem = ({ item }: { item: any }) => {
     return (
-      <TouchableOpacity onPress={()=>{EditMonScreen}}> 
+      <TouchableOpacity onPress={() => handleDetail(item)}>
         <View style={styles.item}>
         
             <Image
@@ -94,10 +100,9 @@ const timKiemTheoThang = async (item: any) => {
           />
           <View style={{ paddingHorizontal: 10 }}>
             <Text style={{ fontSize: appFontSize.normal }}> {item.soLuong}#</Text>
-            <Text style={{ fontWeight: 'bold', fontSize: appFontSize.title, color: 'black' }}>
-              Tên món: {item.tenMon}
-            </Text>
+            <Text style={{ fontWeight: 'bold', fontSize: appFontSize.normal, color: 'black' }}>{item.tenMon}</Text>
             <Text style={{ fontSize: appFontSize.normal }}>Doanh Thu: {item.doanhThu}đ</Text>
+            <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
           </View>
         </View>
       </TouchableOpacity>
