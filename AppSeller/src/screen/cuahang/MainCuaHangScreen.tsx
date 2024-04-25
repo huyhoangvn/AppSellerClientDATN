@@ -124,9 +124,9 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />  
           <View style={{paddingHorizontal: 10}}>
-          <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>Tên món: {item.tenMon}</Text>
+          <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>{item.tenMon}</Text>
           <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
-          <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Giá tiền: {item.giaTien}đ</Text>
           <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
