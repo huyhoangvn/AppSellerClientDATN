@@ -19,11 +19,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import EditMonScreen from '../mon/EditMonScreen';
 
 const ThongKeMonScreen: React.FC = () => {
   const [listHienThi, setListHienThi] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear().toString());
-  const [thangChon, setThangChon] = useState('');
+  const [thangChon, setThangChon] = useState(new Date().getMonth() + 1);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   
 //tháng select input
@@ -80,7 +81,7 @@ const timKiemTheoThang = async (item: any) => {
 
   const renderItem = ({ item }: { item: any }) => {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>{EditMonScreen}}> 
         <View style={styles.item}>
         
             <Image
