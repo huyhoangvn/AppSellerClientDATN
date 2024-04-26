@@ -132,7 +132,6 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         `/nhanvien/thongke/12-thang?nam=${year}`,
         'get',
       );
-      console.log(res);
       if (res && res.success === true && res.data) {
         // Xử lý dữ liệu từ res ở đây nếu cần thiết
         setMonthlyRevenue(res.data);
@@ -140,7 +139,6 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         setMsg('Thất bại hoặc dữ liệu không có sẵn.');
       }
     } catch (err) {
-      console.log(err);
       setMsg('Request timeout. Please try again later.');
     } finally {
       setLoading(false);

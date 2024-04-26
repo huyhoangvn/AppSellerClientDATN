@@ -50,6 +50,7 @@ const itemsThang = [
     setYear(selectedYear);
     setIsPickerVisible(false);
   };
+ 
 //Hiển thị chi tiết
 const handleDetail = ( item: any ) => {
   navigation.navigate("DetailMonScreen", { item });
@@ -69,7 +70,6 @@ const timKiemTheoThang = async (item: any) => {
         `/nhanvien/thongke/mon-ban-chay?nam=${year}&thang=${thangChon}`,
         'get'
       );
-      console.log(res);
       if (res && res.success) {
         setListHienThi(res.list);
       } else {
@@ -89,7 +89,6 @@ const timKiemTheoThang = async (item: any) => {
     return (
       <TouchableOpacity onPress={() => handleDetail(item)}>
         <View style={styles.item}>
-        
             <Image
              source={
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
