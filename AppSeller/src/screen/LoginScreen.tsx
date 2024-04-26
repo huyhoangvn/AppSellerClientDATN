@@ -132,14 +132,16 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleLogin = async () => {
-    try {
+    if (userName.length > 50 && password.length > 15) {
+     return setMsg('tài khoản hoặc mật khâu vợt số ký tự cho phép')
+    } 
+      try {
       setLoading(true); // Bắt đầu hiển thị loading
       const res: any = await authenticationAPI.HandleAuthentication(
         '/nhanvien/auth',
         {taiKhoan: userName, matKhau: password},
         'post',
       );
-
       if (res.success === true) {
         if(res.index.phanQuyen === 2){
           setMsg('Tài khoản đang chờ duyệt. Vui lòng liên hệ quản trị viên để được duyệt tài khoản.');
