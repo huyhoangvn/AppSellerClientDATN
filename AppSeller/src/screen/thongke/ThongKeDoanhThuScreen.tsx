@@ -12,6 +12,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import YearPicker from '../../component/YearPicker';
+import { appFontSize } from '../../constants/appFontSizes';
+import { appColors } from '../../constants/appColors';
 
 const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,9 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [tongDoanhThu, setTongDoanhThu] = useState<any>(0); // New state for yearly revenue
   const [year, setYear] = useState<number | null>(null);
   const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
-  
+  const [ngayBatDau, setngayBatDau] = useState<Date>();
+  const [ngayKetThuc, setngayKetThuc] =useState<Date>();
+  const [tongKhoangNgay, setTongKhoangNgay] = useState ('');
   const datas = [
     {month: 0, earnings: 0},
     {month: 1, earnings: 100},
@@ -40,6 +44,17 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     {month: 11, earnings: 1200}, 
     {month: 12, earnings: 2000}, 
   ];
+
+  const handleDateSelected = async (date: Date | string) => {
+    setngayBatDau(date as Date);
+
+    await thongkeKhoangNgay(ngayBatDau, ngayKetThuc);
+  };
+  const handleDateSelectend = async (date: Date | string) => {
+    setngayKetThuc(date as Date);
+
+    await thongkeKhoangNgay(ngayBatDau, ngayKetThuc);
+  };
   const handleYearSelect = async (item: any) => {
     setYear(item);
     setIsPickerVisible(false);
@@ -117,7 +132,6 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         `/nhanvien/thongke/12-thang?nam=${year}`,
         'get',
       );
-      console.log(res);
       if (res && res.success === true && res.data) {
         // Xử lý dữ liệu từ res ở đây nếu cần thiết
         setMonthlyRevenue(res.data);
@@ -125,8 +139,27 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         setMsg('Thất bại hoặc dữ liệu không có sẵn.');
       }
     } catch (err) {
-      console.log(err);
       setMsg('Request timeout. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const thongkeKhoangNgay = async (ngayBatDau: any, ngayKetThuc: any) => {
+    try {
+      setLoading(true);
+      const res: any = await authenticationAPI.HandleAuthentication(
+        `/nhanvien/thongke/ngay-to-ngay?ngayBatDau=${ngayBatDau}&ngayKetThuc=${ngayKetThuc}`,
+        'get',
+      );
+  
+      if (res && res.success === true ) {
+        setTongKhoangNgay(res.index);
+      } else {
+        throw new Error('Thất bại hoặc dữ liệu không có sẵn.');
+      }
+    } catch (err) {
+      console.log(err);
+      setMsg('Có lỗi xảy ra. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -139,12 +172,46 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     if (year !== null) {
       thongkeNam(year);
       thongkeThang(year);
-    }
+    };
+    thongkeKhoangNgay('','');
   }, [year]); 
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
+ <ScrollView>
+  <View style={styles.container}>
+  <Text style={styles.text}>Doanh thu theo khoảng ngày </Text>
+  <View style={styles.dateInputContainer}>
+   <EditTextComponent
+    label="date"
+    placeholder="Chọn ngày"
+    value={ngayBatDau ? ngayBatDau.toString() : ''}
+    stylesEdit={{backgroundColor: 'white', width: 100}} // Set a fixed width
+    stylesContainer={{
+      backgroundColor: appColors.white,
+      borderColor: 'black',
+      
+    }}
+    onDateSelected={item => handleDateSelected(item)}
+    iconColor={appColors.primary}
+  />
+   <EditTextComponent
+    label="date"
+    placeholder="Chọn ngày"
+    value={ngayKetThuc ? ngayKetThuc.toString() : ''}
+    stylesEdit={{backgroundColor: 'white', width: 100}} // Set a fixed width
+    stylesContainer={{
+      backgroundColor: appColors.white,
+      borderColor: 'black',
+      
+    }}
+    onDateSelected={item => handleDateSelectend(item)}
+    iconColor={appColors.primary}
+  />
+</View>
+    <View style={styles.totalContainer}>
+          <Text style={styles.totalText}>Tổng doanh thu khoảng ngày:</Text>
+          <Text style={styles.totalValue}>{tongKhoangNgay}</Text>
+        </View>
         <Text style={styles.text}>Doanh thu gần đây </Text>
         <View style={[styles.itemContainer, styles.marginTop]}>
           <View style={styles.row}>
@@ -206,9 +273,7 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
     paddingHorizontal: 10,
-    flexDirection: 'column', // Chỉnh sửa để cách hàng
   },
   text: {
     fontSize: 18,
@@ -244,6 +309,12 @@ const styles = StyleSheet.create({
   },
   totalText: {
     fontSize: 20,
+    fontWeight: 'bold',
+    flexDirection: 'row', // Hi'
+    justifyContent: 'space-between'
+  },
+  totalTextKhoangNgay:{
+   fontSize: 20,
     fontWeight: 'bold',
   },
   totalValue: {
@@ -286,6 +357,9 @@ const styles = StyleSheet.create({
   icon: {
     marginLeft: 10, // Adjust the spacing between input and icon as needed
     alignSelf: 'center', // Align the icon vertically center with the text input
+  },
+  dateInputContainer:{
+    
   }
 });
 

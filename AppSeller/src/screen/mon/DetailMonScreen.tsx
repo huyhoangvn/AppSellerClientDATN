@@ -164,18 +164,16 @@ const styles = StyleSheet.create({
   imgContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
   image: {
     width: 200,
     height: 200,
     borderRadius: 10,
     backgroundColor:'red',
-    marginTop: 10,
   },
   infoContainer: {
-    justifyContent: 'flex-end', // Align content to the end (right) of the container
-    flex: 1, // Occupy remaining space
+    justifyContent: 'space-between',
+    height: hp(35),
   },
   viewText: {
     flexDirection: 'row',
@@ -183,10 +181,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 5,
     justifyContent: 'space-between',
-    flex: 1, // Evenly distribute space
   },
   header: {
-    height: hp(20),
     justifyContent: 'center',
     alignItems: 'center',
   },
