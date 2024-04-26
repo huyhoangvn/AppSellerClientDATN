@@ -68,9 +68,6 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     await getDanhGia(tenKH, thoiGianTao, soSao, trang+1);
   };
   const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
-  
-     
-
     const res: any = await authenticationAPI.HandleAuthentication(
       `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}?trangThai=1`,
       'get',
@@ -150,9 +147,11 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
           keyExtractor={(item) => item._id}
           style={{ width: '100%' }}
           ListFooterComponent={
+            <View style={{alignItems: 'center', paddingVertical: 10}}>
             <TouchableOpacity onPress={xemThemMon}>
-            <Text style={{fontSize: appFontSize.normal}}>{textXemThem}</Text>
-          </TouchableOpacity>
+              <Text style={{fontSize: appFontSize.normal}}>{textXemThem}</Text>
+             </TouchableOpacity>
+          </View>
           }
         />
      

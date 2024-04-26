@@ -100,7 +100,7 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
     const idStore = data?.idStore;
     try {
       setLoading(true);
-      const res = await authenticationAPI.HandleAuthentication(
+      const res:any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/nhanvienquanly/them-nhanvien-ban/${id}`,
         {
           idCH: idStore,

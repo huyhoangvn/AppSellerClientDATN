@@ -66,7 +66,7 @@ const UpdatePasswordScreen: React.FC<NavProps> = ({navigation}) => {
       const user = await getData();
       const id = user?.idUser;
 
-      const res = await authenticationAPI.HandleAuthentication(
+      const res:any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/nhanvienquanly/doi-mat-khau/${id}`,
         {matKhauCu: oldPass, matKhauMoi: newPass},
         'post',
