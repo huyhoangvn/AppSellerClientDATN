@@ -42,6 +42,7 @@ import {appColors} from '../../constants/appColors';
 import {Mon} from '../../models/Mon';
 import ImagePickerComponent from '../../component/ImagePickerComponent';
 import {DefaultAvatar} from '../../assest/svgs';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
@@ -112,6 +113,11 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   }, [navigation, fetchChiTietCuaHang]);
 
   const renderItem = ({ item }: { item: Mon }) => {  
+    if (!item.trangThai) {
+      // Nếu món không ở trạng thái hoạt động, không render gì cả
+      return null;
+    }
+
     return (
       <TouchableOpacity onPress={() => handleDetail(item)}>
       <View style={styles.item}>
@@ -126,7 +132,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           <View style={{paddingHorizontal: 10}}>
           <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>{item.tenMon}</Text>
           <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
-          <Text style={{fontSize: appFontSize.normal}}>Giá tiền: {item.giaTien}đ</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Giá tiền: {formatCurrency(item.giaTien)}</Text>
           <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
@@ -156,7 +162,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           <Text style={styles.line} />
 
           {/* thời gian mở */}
-          <View style={styles.textContainer}>
+          <View style={styles.textTimeO}>
             <TextComponent
               size={15}
               color="#000000"
@@ -201,7 +207,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
               text=" Địa chỉ : "
               icon={faLocationDot}
               iconColor="gray"
-              marginLeft={5}
+              marginLeft={6}
             />
             <Text style={styles.textContent}>{cuaHang.diaChi}</Text>
             
@@ -233,11 +239,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     marginLeft: 5,
+    marginTop:5
   },
   textContent: {
     fontSize: 15,
     color: '#2D4912',
     marginLeft: 5,
+  },
+  textTimeO:{
+    paddingHorizontal: 10,
+    flexDirection: 'row', // Sắp xếp các thành phần ngang hàng
+    alignItems: 'center', // Căn chỉnh các thành phần theo chiều dọc
+    marginBottom: 10,
+    marginTop:12
   },
 
   textContainer: {
@@ -253,8 +267,8 @@ const styles = StyleSheet.create({
   line: {
     borderBottomWidth: 1,
     borderColor: '#D2D2D2',
-    marginBottom: 10,
-    margin: 10,
+    // marginBottom: 10,
+    // margin: 5,
   },
   userLogo: {
     width: appImageSize.sizeCH.width,

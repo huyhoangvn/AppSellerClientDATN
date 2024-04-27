@@ -30,16 +30,14 @@ const EditMonScreen: React.FC<NavProps> = ({ navigation, route }:any) =>  {
 
 
   const [tenMon, setTenMon] = useState<any>(item.tenMon);
-  const [trangThai, setTrangThai] = useState<any>(item.trangThai);
-  const [giaTien, setGiaTien] = useState<any>(item.giaTien);
-
-
-  const [idLM, setidLM] = useState(item.tenLM);
+  const [trangThai, setTrangThai] = useState(item.trangThai);
+  const [giaTien, setGiaTien] = useState<any>(item.giaTien.toString());
+  const [idLM, setidLM] = useState<any>(item.tenLM);
 
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const [loaMon, setLoaiMon] = useState<{ label: string; value: string; }[]>([]);
+  const [loaiMon, setLoaiMon] = useState<{ label: string; value: string; }[]>([]);
   const [loading, setLoading] = useState(false);
   const [imagePath, setImagePath] = useState('');
 
@@ -129,7 +127,6 @@ const handelUpdate = async (  ) => {
        formData,
        'put', // 
     );
-    console.log(res);
     if (res.success === true) {
       setMsg(res.msg);
       handleShowAlert();
@@ -207,18 +204,19 @@ useFocusEffect(
    <View style={styles.main}>
     <View style={styles.viewDropDow}>
       <DropDownComponent
-            label="Select Item" // Nhãn cho DropDownComponent
-            value={idLM}
-            items={loaMon.map(item => ({
+          label="Chọn loại món"
+          value={idLM}
+            items={loaiMon.map(item => ({
               label: item.label,
               value: item.value.toString(),
             }))} // Danh sách các mục
             containerStyle={{width: wp(55)}}    
             onChangeItem={(item) => setSelectedLoaiMon(item)}
             placeholder="Chọn loại món"
+            
           /> 
          <DropDownComponent
-            label="Select Item" // Nhãn cho DropDownComponent
+            label="Trạng thái" // Nhãn cho DropDownComponent
             value={trangThai}
             items={itemsStatus.map(item => ({
               label: item.label,
@@ -229,11 +227,12 @@ useFocusEffect(
             placeholder="Trạng thái"
           /> 
     </View>
+    
     </View>
       <EditTextComponent
           label="text"
           placeholder="20.000"
-          value={formatCurrency(giaTien)}
+          value={giaTien}
           iconColor="gray"
           icon={faCoins}
           onChangeText={setGiaTien}
@@ -247,7 +246,6 @@ useFocusEffect(
        text="Lưu"
        textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
        onPress={handelUpdate}
-
       />
     </View>
     <LoadingComponent visible={loading ?? false} />
