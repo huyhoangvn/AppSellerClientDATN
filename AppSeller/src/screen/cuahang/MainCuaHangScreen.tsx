@@ -112,6 +112,11 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   }, [navigation, fetchChiTietCuaHang]);
 
   const renderItem = ({ item }: { item: Mon }) => {  
+    if (!item.trangThai) {
+      // Nếu món không ở trạng thái hoạt động, không render gì cả
+      return null;
+    }
+
     return (
       <TouchableOpacity onPress={() => handleDetail(item)}>
       <View style={styles.item}>
@@ -156,7 +161,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           <Text style={styles.line} />
 
           {/* thời gian mở */}
-          <View style={styles.textContainer}>
+          <View style={styles.textTimeO}>
             <TextComponent
               size={15}
               color="#000000"
@@ -201,7 +206,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
               text=" Địa chỉ : "
               icon={faLocationDot}
               iconColor="gray"
-              marginLeft={5}
+              marginLeft={6}
             />
             <Text style={styles.textContent}>{cuaHang.diaChi}</Text>
             
@@ -233,11 +238,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     marginLeft: 5,
+    marginTop:5
   },
   textContent: {
     fontSize: 15,
     color: '#2D4912',
     marginLeft: 5,
+  },
+  textTimeO:{
+    paddingHorizontal: 10,
+    flexDirection: 'row', // Sắp xếp các thành phần ngang hàng
+    alignItems: 'center', // Căn chỉnh các thành phần theo chiều dọc
+    marginBottom: 10,
+    marginTop:12
   },
 
   textContainer: {
@@ -253,8 +266,8 @@ const styles = StyleSheet.create({
   line: {
     borderBottomWidth: 1,
     borderColor: '#D2D2D2',
-    marginBottom: 10,
-    margin: 10,
+    // marginBottom: 10,
+    // margin: 5,
   },
   userLogo: {
     width: appImageSize.sizeCH.width,
