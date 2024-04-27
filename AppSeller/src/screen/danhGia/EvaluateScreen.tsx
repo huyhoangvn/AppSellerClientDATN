@@ -68,11 +68,8 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     await getDanhGia(tenKH, thoiGianTao, soSao, trang+1);
   };
   const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
-  
-     
-
     const res: any = await authenticationAPI.HandleAuthentication(
-      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}?trangThai=1`,
+      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}?trangThai=1&trang=${trang}`,
       'get',
     );
     if (res.success === false) {
@@ -89,16 +86,16 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     }
     //Lưu lại dữ liệu tìm kiếm 
     if (res.list.length > 0) {
-      setTrang(trang);
+      console.log(res)
+      setTrang(res.currentPage);
       setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
     } else {
       setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
     }
-   
     setTenKH(tenKH);
     setThoiGianTao(thoiGianTao);
     setSoSao(soSao);
-    setSoLuong(res.count);
+    setSoLuong(res.soLuong);
   };
   useEffect(() => {
     getDanhGia(tenKH, thoiGianTao, soSao, trang);
@@ -147,13 +144,15 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
         <FlatList
           data={danhGiaList}
           renderItem={renderItem}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.idDG}
           style={{ width: '100%' }}
-          ListFooterComponent={
-            <TouchableOpacity onPress={xemThemMon}>
-            <Text style={{fontSize: appFontSize.normal}}>{textXemThem}</Text>
-          </TouchableOpacity>
-          }
+          ListFooterComponent={() => (
+            <View style={{alignItems: 'center', paddingVertical: 10}}>
+              <TouchableOpacity onPress={xemThemMon}>
+                <Text style={{fontSize: appFontSize.normal}}>{textXemThem}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         />
      
     </View>

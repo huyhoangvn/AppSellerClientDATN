@@ -42,6 +42,7 @@ import {appColors} from '../../constants/appColors';
 import {Mon} from '../../models/Mon';
 import ImagePickerComponent from '../../component/ImagePickerComponent';
 import {DefaultAvatar} from '../../assest/svgs';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const [loading, setLoading] = useState(false);
@@ -126,7 +127,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
           <View style={{paddingHorizontal: 10}}>
           <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>{item.tenMon}</Text>
           <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
-          <Text style={{fontSize: appFontSize.normal}}>Giá tiền: {item.giaTien}đ</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Giá tiền: {formatCurrency(item.giaTien)}</Text>
           <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
