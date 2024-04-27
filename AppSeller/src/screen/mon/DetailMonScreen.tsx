@@ -17,15 +17,23 @@ import {
 import { getData } from '../../utils/storageUtils';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
 
-  const {item, position} = route.params;
+  const {item} = route.params;
   const [data, setData] = useState<any>();
   const [danhGia, setDanhGia] = useState<any>();
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
+  const [position, setPosition] = useState<any>();
+  const getPosison = async () => {
+    const storedData = await getData();
+    const storedPosison = storedData?.position;
+    setPosition(storedPosison);
+  };
+
   const handleShowAlert = () => {
     setShowAlert(true);
   };
@@ -81,6 +89,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
   useEffect(() => {
     getDetail();
     getDanhGiaTrungBinh();
+    getPosison();
   }, []);
   useFocusEffect(
     React.useCallback(() => {
@@ -120,12 +129,12 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
         </View>
         <View style={styles.viewText}>
           <Text>Giá tiền</Text>
-          <Text style={styles.textPrimary}>{item?.giaTien}</Text>
+          <Text style={styles.textPrimary}>{formatCurrency(item?.giaTien)}</Text>
         </View>
         <View style={styles.viewText}>
           <Text>Đánh giá</Text>
           <Text style={styles.textPrimaryDanhGia}>{danhGia}</Text>
-          <FontAwesomeIcon icon={faStar} size={24} color="#feb800" style={styles.icon} />
+          <FontAwesomeIcon icon={faStar} size={24} color="#feb800" style={styles.icon}/>
         </View>
         <View style={styles.viewText}>
         <Text>Trạng thái</Text>
@@ -133,18 +142,21 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
         </View> 
       </View>
       <View style={styles.buttonContainer}>
+      {position === 0 ? (
         <ButtonComponent
           type="primary"
           text="Sửa thông tin"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
           onPress={() =>  navigation.navigate('EditMonScreen', {position:position ,item:item})}
         />
+      ) : null}
         <ButtonComponent
           type="primary"
           text="Đánh giá"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
           onPress={() => navigation.navigate('EvaluateScreen',{item: item})}
         />
+   
       </View>
       <LoadingComponent visible={loading} />
       {/* <AlertComponent

@@ -33,6 +33,7 @@ import { DefaultImage } from '../../assest/svgs';
 import { appImageSize } from '../../constants/appImageSize';
 import { appFontSize } from '../../constants/appFontSizes';
 import {useFocusEffect} from '@react-navigation/native';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
@@ -224,7 +225,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           <View style={{paddingHorizontal: 10}}>
           <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>{item.tenMon}</Text>
           <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
-          <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Giá tiền:{formatCurrency(item.giaTien)}</Text>
           <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
