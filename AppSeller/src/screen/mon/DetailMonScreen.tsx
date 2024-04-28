@@ -18,16 +18,23 @@ import { getData } from '../../utils/storageUtils';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import { formatCurrency } from '../../utils/currencyFormatUtils';
+import { Mon } from '../../models/Mon';
 
-const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
+const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
 
-  const {item} = route.params;
-  const [data, setData] = useState<any>();
+  const {idMon} = route.params;
+  const [item, setItem] = useState<any>();
+  const [data, setData] = useState<Mon>();
   const [danhGia, setDanhGia] = useState<any>();
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
   const [position, setPosition] = useState<any>();
+  const [tenMon, setTenMon] = useState<any>();
+  const [tenLM, setTenLM] = useState<any>();
+  const [giaTien, setGiaTien] = useState<any>();
+  const [trangThai, setTrangThai] = useState('');
+
   const getPosison = async () => {
     const storedData = await getData();
     const storedPosison = storedData?.position;
@@ -40,18 +47,28 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
   const handleCloseAlert = () => {
     setShowAlert(false);
   };
+   //Hiển thị chi tiết
+ const handleUpdateMon = ( ) => {
+  navigation.navigate("EditMonScreen", { item: item });
+  console.log(item);
+};
   const getDetail = async () => {
-    const reslt = await getData();
-    const idMon = reslt?.idMon;
+
     try {
       setLoading(true);
       const res:any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/mon/${idMon}`,
         'get',
       );
-      if (!res && res.success === true) {
-        setData(res.index);
-        setMsg(res.msg);
+      if (res.success === true) {
+        if (res.success === true) {
+          setItem(res.index);
+        } else {
+          // Xử lý khi có lỗi từ API
+          setMsg('Request failed. Please try again.');
+          handleShowAlert();
+        }
+         setMsg(res.msg);
       } else {
         // Xử lý khi có lỗi từ API
         setMsg('Request failed. Please try again.');
@@ -66,12 +83,11 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
     }
   };
   const getDanhGiaTrungBinh = async () => {
-    const reslt = await getData();
-    const idMon = reslt?.idMon;
+   
     try {
       setLoading(true);
       const res:any = await authenticationAPI.HandleAuthentication(
-        `/khachhang/danhgia/get-trung-binh/${item._id}`
+        `/khachhang/danhgia/get-trung-binh/${idMon}`
       );
       if (res.success === true) {
         setDanhGia(res.index);
@@ -109,7 +125,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
             style={{
               width: wp(40),
               height: hp(20),
-              borderRadius: wp(20),
+              borderRadius: wp(50),
               overflow: 'hidden',
             }}
             source={{uri: item.hinhAnh}}
@@ -138,7 +154,9 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
         </View>
         <View style={styles.viewText}>
         <Text>Trạng thái</Text>
-          <Text style={[styles.textPrimary, item?.trangThai ? styles.activeStatus : styles.inactiveStatus]}>{item?.trangThai? 'Hoạt động' : 'Khóa'}</Text>
+          <Text style={[styles.textPrimary, item?.trangThai ? styles.activeStatus : styles.inactiveStatus]}>
+            {item?.trangThai? 'Hoạt động' : 'Khóa'}
+          </Text>
         </View> 
       </View>
       <View style={styles.buttonContainer}>
@@ -147,14 +165,15 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation,route} : any) => {
           type="primary"
           text="Sửa thông tin"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
-          onPress={() =>  navigation.navigate('EditMonScreen', {position:position ,item:item})}
+          onPress={handleUpdateMon}
+          
         />
       ) : null}
         <ButtonComponent
           type="primary"
           text="Đánh giá"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
-          onPress={() => navigation.navigate('EvaluateScreen',{item: item})}
+          onPress={() => navigation.navigate('EvaluateScreen',{ idMon})}
         />
    
       </View>

@@ -14,7 +14,7 @@ import {CuaHang} from '../../models/CuaHang';
 import { Mon } from '../../models/Mon';
 
 const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
-  const { item } = route.params;
+  const { idMon } = route.params;
   const [soLuongDanhGia, setSoLuongDanhGia] = useState('');
   const [soLuong, setSoLuong] = useState('');
   const [danhGiaList, setDanhGiaList] = useState<any[]>([]);
@@ -69,7 +69,7 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
   };
   const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
     const res: any = await authenticationAPI.HandleAuthentication(
-      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}?trangThai=1&trang=${trang}`,
+      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${idMon}?trangThai=1&trang=${trang}`,
       'get',
     );
     if (res.success === false) {
@@ -86,7 +86,6 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     }
     //Lưu lại dữ liệu tìm kiếm 
     if (res.list.length > 0) {
-      console.log(res)
       setTrang(res.currentPage);
       setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
     } else {
