@@ -50,6 +50,10 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
    //Hiển thị chi tiết
  const handleUpdateMon = ( ) => {
   navigation.navigate("EditMonScreen", { item: item });
+};
+// hien thi đánh giá 
+const handleDanhGia = ( ) => {
+  navigation.navigate("EvaluateScreen", { item: item });
   console.log(item);
 };
   const getDetail = async () => {
@@ -173,7 +177,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
           type="primary"
           text="Đánh giá"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
-          onPress={() => navigation.navigate('EvaluateScreen',{ idMon})}
+          onPress={handleDanhGia}
         />
    
       </View>
