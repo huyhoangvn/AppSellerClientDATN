@@ -79,8 +79,8 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   //Hiển thị chi tiết
   const handleDetail = ( item: any ) => {
-    navigation.navigate("DetailMonScreen", { item });
-    console.log(item);
+    navigation.navigate("DetailMonScreen", { idMon: item._id });
+    console.log(item.idMon);
   };
   
   //Tìm kiếm theo tên

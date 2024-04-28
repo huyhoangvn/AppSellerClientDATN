@@ -27,8 +27,6 @@ import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const EditMonScreen: React.FC<NavProps> = ({ navigation, route }:any) =>  {
   const { position, item } = route.params;
-
-
   const [tenMon, setTenMon] = useState<any>(item.tenMon);
   const [trangThai, setTrangThai] = useState(item.trangThai);
   const [giaTien, setGiaTien] = useState<any>(item.giaTien.toString());
@@ -50,6 +48,7 @@ const itemsStatus = [
 const loaiMonItem = [
   {label: 'Trạng thái', value: 0},
 ];
+
 
   const setSelectedLoaiMon =(item:any)=>{
     setidLM(item.value);
@@ -123,7 +122,7 @@ const handelUpdate = async (  ) => {
       formData.append('trangThai', trangThai);
       formData.append('giaTien', giaTien);
     const res:any = await authenticationAPI.HandleAuthentication(
-      `/nhanvien/mon/${item._id}`,
+      `/nhanvien/mon/${item.idMon}`,
        formData,
        'put', // 
     );

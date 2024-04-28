@@ -21,13 +21,27 @@ import {
 } from 'react-native-responsive-screen';
 import EditMonScreen from '../mon/EditMonScreen';
 import NavProps from '../../models/props/NavProps';
+import {getData} from '../../utils/storageUtils';
+import { appColors } from '../../constants/appColors';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
+import {Mon} from '../../models/Mon';
 
-const ThongKeMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
-  const [listHienThi, setListHienThi] = useState([]);
+const ThongKeMonScreen: React.FC<NavProps> = ({ navigation, route }:any) =>  {
+  const [listHienThi, setListHienThi] = useState<any[]>([]);
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [thangChon, setThangChon] = useState(new Date().getMonth() + 1);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
-  
+  const [trang, setTrang] = useState(1);
+  const [tenMon, setTenMon] = useState("");
+  const [soLuong, setSoLuong] = useState("");
+
+  const [giaTien, setGiaTien] = useState("");
+
+  const [doanhThu, setDoanhThu] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [textXemThem, setTextXemThem] = useState('Xem thêm');
+
 //tháng select input
 const itemsThang = [
   {label: 'Tháng', value: -1},
@@ -53,39 +67,71 @@ const itemsThang = [
  
 //Hiển thị chi tiết
 const handleDetail = ( item: any ) => {
-  navigation.navigate("DetailMonScreen", { item });
-  console.log(item);
+  navigation.navigate("DetailMonScreen", { idMon:  item._id });
 };
 //Tìm tháng
 const timKiemTheoThang = async (item: any) => {
   setThangChon(item.value);
-  console.log(item.value);
 };
 
 
-
-  const handleSearch = async () => {
-    try {
-      const res:any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/thongke/mon-ban-chay?nam=${year}&thang=${thangChon}`,
-        'get'
-      );
-      if (res && res.success) {
-        setListHienThi(res.list);
-      } else {
-        setListHienThi([]);
+  // const handleSearch = async () => {
+  //   try {
+  //     const res:any = await authenticationAPI.HandleAuthentication(
+  //       `/nhanvien/thongke/mon-ban-chay?nam=${year}&thang=${thangChon}`,
+  //       'get'
+  //     );
+  //     if (res && res.success) {
+  //       setListHienThi(res.list);
+  //     } else {
+  //       setListHienThi([]);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error while fetching data:', error);
+  //     setListHienThi([]);
+  //   }
+  // };
+    //Xem thêm
+    const xemThemMon = async () => {
+      await getThongKeMon(tenMon, soLuong, giaTien,doanhThu, trang+1);
+    };
+  const getThongKeMon = async (tenMon: any, soLuong: any, giaTien: any, doanhThu:any, trang: any) => {
+    const data = await getData();
+    const idMon = data?.idMon;
+    const res: any = await authenticationAPI.HandleAuthentication(
+      `/nhanvien/thongke/mon-ban-chay/?nam=${year}&thang=${thangChon}&trang=${trang}`,
+      'get',
+    );
+    if (res.success === false) {
+      if (!res.list) {
+        return;
       }
-    } catch (error) {
-      console.error('Error while fetching data:', error);
-      setListHienThi([]);
+      return;
     }
+   console.log(res);
+    if (trang === 1) {
+      setListHienThi(res.list);
+    } else {
+      setListHienThi(prevListHienThi => [...prevListHienThi, ...res.list]);
+    }
+    //Lưu lại dữ liệu tìm kiếm 
+    if (res.list.length > 0) {
+      setTrang(res.currentPage);
+      setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
+    } else {
+      setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
+    }
+    setTenMon(tenMon);
+    setSoLuong(soLuong);
+    setGiaTien(giaTien);
+    setDoanhThu(doanhThu);
   };
-
   useEffect(() => {
-    handleSearch();
+    // handleSearch();
+    getThongKeMon(tenMon, soLuong, giaTien,doanhThu, trang);
   }, [year, thangChon]);
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = ({ item, index }: { item: any, index: any }) => {
     return (
       <TouchableOpacity onPress={() => handleDetail(item)}>
         <View style={styles.item}>
@@ -94,14 +140,14 @@ const timKiemTheoThang = async (item: any) => {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-avatar.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: 65, height: 65 }}
-            defaultSource={require('./../../assest/default-avatar.jpg')}
+              style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 8, }}
+              defaultSource={require('./../../assest/default-avatar.jpg')}
           />
           <View style={{ paddingHorizontal: 10 }}>
-            <Text style={{ fontSize: appFontSize.normal }}> {item.soLuong}#</Text>
-            <Text style={{ fontWeight: 'bold', fontSize: appFontSize.normal, color: 'black' }}>{item.tenMon}</Text>
-            <Text style={{ fontSize: appFontSize.normal }}>Doanh Thu: {item.doanhThu}đ</Text>
-            <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
+          <Text style={{fontWeight: 'bold', fontSize: appFontSize.title }}># {index + 1}</Text>
+            <Text style={{ fontSize: appFontSize.normal, color: appColors.text }}>{item.tenMon}</Text>
+            <Text style={{ fontSize: appFontSize.normal,color: appColors.text }}>Doanh Thu: {formatCurrency(item.doanhThu)}</Text>
+            <Text style={{fontSize: appFontSize.normal,color: appColors.text}}>Gía tiền: {formatCurrency(item.giaTien)}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -147,7 +193,15 @@ const timKiemTheoThang = async (item: any) => {
           <FlatList
             data={listHienThi}
             renderItem={renderItem}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item, index) => item._id}
+            style={{ width: '100%' }}
+            ListFooterComponent={() => (
+            <View style={{alignItems: 'center', paddingVertical: 10}}>
+              <TouchableOpacity onPress={xemThemMon}>
+                <Text style={{fontSize: appFontSize.normal}}>{textXemThem}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           />
         )}
       </View>
