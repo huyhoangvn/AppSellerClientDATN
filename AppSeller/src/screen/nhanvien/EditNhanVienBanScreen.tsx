@@ -151,7 +151,13 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
             <ImagePickerComponent
               onImageSelect={handleImageSelect}
               imageUri={item.hinhAnh}
-              style={{borderRadius: wp(30), overflow: 'hidden'}}
+              style={{
+                borderRadius: wp(30),
+                overflow: 'hidden',
+                backgroundColor: 'white',
+                borderColor: appColors.primary,
+                borderWidth: 1,
+              }}
             />
 
             {/* <Image
@@ -168,7 +174,7 @@ const EditNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
               value={name}
               iconColor="gray"
               onChangeText={setName}
-              icon={faShop}
+              icon={faUser}
             />
 
             <EditTextComponent
