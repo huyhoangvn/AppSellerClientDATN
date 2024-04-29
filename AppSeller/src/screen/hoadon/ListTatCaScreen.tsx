@@ -18,7 +18,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
 import DropDownComponent from '../../component/DropDownComponent';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -30,9 +29,9 @@ import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
-import EditText from '../../component/edittext/EditText';
-import { appFontSize } from '../../constants/appFontSizes';
-import { useIsFocused } from '@react-navigation/native';
+import {appFontSize} from '../../constants/appFontSizes';
+import {useIsFocused} from '@react-navigation/native';
+import ListHoaDonComponent from '../../component/ListHoaDonComponent';
 const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
@@ -46,6 +45,8 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   const [payment, setPayment] = useState('');
   const [code, setCode] = useState('');
   const [date, setDate] = useState<any>();
+  const [startDate, setStartDate] = useState<Date>();
+  const [andDate, setAndDate] = useState<Date>();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [position, setPosition] = useState<any>();
 
@@ -88,25 +89,30 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleSelectItemPurchase = async (item: any) => {
-    await getListInvoice(code, date, item.value, payment, page);
+    await getListInvoice(code, item.value, payment, startDate, andDate, page);
   };
   const handleSelectItemPayment = async (item: any) => {
-    await getListInvoice(code, date, purchase, item.value, page);
-
-    // await getListInvoice(page,code,item.value,payment);
+    await getListInvoice(code, purchase, item.value, startDate, andDate, page);
   };
   const actionSearch = async (item: string) => {
-    await getListInvoice(item, date, purchase, payment, page);
+    await getListInvoice(item, purchase, payment, startDate, andDate, page);
   };
 
-  const searchDate = (item: Date | string) => {
-    setSelectedDate(item as Date);
+  const searchStartDate = (item: Date | string) => {
+    setStartDate(item as Date);
   };
 
-  const handleDateSelected = async (date: Date | string) => {
-    setSelectedDate(date as Date);
+  const handleSelectStartDate = async (dateStart: Date | string) => {
+    setStartDate(dateStart as Date);
+    await getListInvoice(code, purchase, payment, dateStart, andDate, page);
+  };
+  const searchEndDate = (item: Date | string) => {
+    setAndDate(item as Date);
+  };
 
-    await getListInvoice(code, date, purchase, payment, page);
+  const handleSelectEndDate = async (dateEnd: Date | string) => {
+    setAndDate(dateEnd as Date);
+    await getListInvoice(code, purchase, payment, startDate, dateEnd, page);
   };
 
   const handelDetail = (item: any) => {
@@ -116,30 +122,31 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleGetAll = async () => {
-      await getListInvoice(code, date, purchase, payment, page + 1);
+    await getListInvoice(code, purchase, payment, startDate, andDate, page + 1);
   };
 
   const getListInvoice = async (
     code?: any,
-    date?: any,
     purchaseStatus?: any,
     paymentStatus?: any,
+    startDate?: any,
+    endDate?: any,
     page?: any,
   ) => {
-
     try {
-      setLoading(true); // Set loading to true before making the API call
+      // setLoading(true); // Set loading to true before making the API call
       const item = await getData();
       if (!item) {
         return;
       }
       const idStore = item?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/hoaDon/cuahang/${idStore}?maHD=${code}&thoiGianTao=${date}&trangThaiMua=${purchaseStatus}&trangThaiThanhToan=${paymentStatus}&trang=${page}`,
-         'get',
+        `/nhanvien/hoaDon/cuahang/${idStore}?maHD=${code}&trangThaiMua=${purchaseStatus}&trangThaiThanhToan=${paymentStatus}&ngayBatDau=${startDate}&ngayKetThuc=${endDate}&trang=${page}`,
+        'get',
       );
 
       if (res.success === false) {
+        console.log('🚀 ~ res:', res);
         if (!res.list) {
           return;
         }
@@ -149,8 +156,8 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
       if (page === 1) {
         setData([...res.list]);
       } else {
-          setData(prevData => [...prevData, ...res.list]);
-       }
+        setData(prevData => [...prevData, ...res.list]);
+      }
       if (res.list.length > 0) {
         setPage(page);
         setText(res.list.length === 10 ? 'Xem Thêm' : 'Hết');
@@ -158,66 +165,33 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
         setText('Hết');
       }
       setCode(code);
-      setDate(date);
       setPurchase(purchaseStatus);
       setPayment(paymentStatus);
+      setStartDate(startDate);
+      setAndDate(endDate);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if(isFocused){
-      getListInvoice('', '', '', '', page);
+    if (isFocused) {
+      getListInvoice('', '', '', '', '', page);
     }
   }, [isFocused]);
 
-  const renderItem = ({item}: {item: HoaDon}) => {
-    return (
-      <TouchableOpacity onPress={() => handelDetail(item)}>
-        <View style={styles.item}>
-          <View style={{paddingHorizontal: 10}}>
-            <Text style={{fontWeight: 'bold', color: 'black', fontSize: appFontSize.normal}}>
-              MHD:{item.maHD}
-            </Text>
-            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-              Tổng tiền:{' '}
-              {parseInt(item.tongTien || '').toLocaleString('vi-VN', {
-                style: 'currency',
-                currency: 'VND',
-              })}
-            </Text>
-            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-              {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
-              Trạng thái mua: {getStatusText(item.trangThaiMua ?? 0)}
-            </Text>
-            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-              Thanh toán:
-              {item.trangThaiThanhToan === 0 ? (
-                <Text style={{color: 'red'}}> Chưa thanh toán</Text>
-              ) : (
-                <Text style={{color: 'green'}}> Đã thanh toán</Text>
-              )}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   return (
-      <KeyboardAvoidingView
-      style={{ flex: 1,backgroundColor: 'white' }}
-      contentContainerStyle={{ flexGrow: 1 }}
+    <KeyboardAvoidingView
+      style={{flex: 1, backgroundColor: 'white'}}
+      contentContainerStyle={{flexGrow: 1}}
       // Tùy chỉnh khoảng cách cuộn thêm khi bàn phím hiển thị
     >
       <View style={styles.container}>
-      {/* <ScrollView> */}
+        {/* <ScrollView> */}
         <View style={styles.header}>
           <EditTextComponent
             label="iconRight"
@@ -234,21 +208,40 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
             iconColor={appColors.primary}
           />
 
-          <EditTextComponent
-            label="date"
-            placeholder="Chọn ngày"
-            value={selectedDate ? selectedDate.toString() : ''} // Convert
-            stylesEdit={{backgroundColor: 'white'}}
-            onChangeText={(text: string) => searchDate(text)}
-            stylesContainer={{
-              backgroundColor: appColors.white,
-              borderColor: 'black',
-              borderWidth: 1.5,
-              elevation: 0,
-            }}
-            onDateSelected={item => handleDateSelected(item)}
-            iconColor={appColors.primary}
-          />
+          <View style={styles.selectDate}>
+            <EditTextComponent
+              label="date"
+              placeholder="Ngày bắt đầu"
+              value={startDate ? startDate.toString() : ''} // Convert
+              stylesEdit={{backgroundColor: 'white'}}
+              onChangeText={(text: string) => searchStartDate(text)}
+              stylesContainer={{
+                borderColor: 'black',
+                borderWidth: 1.5,
+                elevation: 0,
+                width: '45%',
+              }}
+              onDateSelected={item => handleSelectStartDate(item)}
+              iconColor={appColors.primary}
+            />
+
+            <EditTextComponent
+              label="date"
+              placeholder="Ngày kết thúc"
+              value={andDate ? andDate.toString() : ''} // Convert
+              stylesEdit={{backgroundColor: 'white'}}
+              onChangeText={(text: string) => searchEndDate(text)}
+              stylesContainer={{
+                backgroundColor: appColors.white,
+                borderColor: 'black',
+                borderWidth: 1.5,
+                elevation: 0,
+                width: '45%',
+              }}
+              onDateSelected={item => handleSelectEndDate(item)}
+              iconColor={appColors.primary}
+            />
+          </View>
           <View style={styles.viewDropDow}>
             <DropDownComponent
               label="Select Item" // Nhãn cho DropDownComponent
@@ -267,7 +260,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
               }}
               placeholder="Trạng thanh toán"
             />
-        
+
             <DropDownComponent
               label="Select Item" // Nhãn cho DropDownComponent
               value={selectedItem} // Giá trị được chọn
@@ -284,7 +277,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
             />
           </View>
         </View>
-   
+
         <View style={styles.main}>
           {data.length === 0 ? (
             <View style={{height: hp(100)}}>
@@ -293,7 +286,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
               </Text>
               <TouchableOpacity
                 onPress={async () => {
-                  await getListInvoice('', '', '', '', 1), setPage(1);
+                  await getListInvoice('', '', '', '', '', 1), setPage(1);
                 }}>
                 <Text
                   style={{
@@ -301,32 +294,18 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
                     marginTop: 20,
                     color: appColors.primary,
                     textDecorationLine: 'underline',
-                  }}>
-                </Text>
+                  }}></Text>
               </TouchableOpacity>
             </View>
           ) : (
-  
-            <FlatList
+            <ListHoaDonComponent
               data={data}
-              renderItem={renderItem}
-              keyExtractor={item => item._id || ''}
-              scrollEnabled={true}
-              style={{height: hp(80)}}
-              // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
-              // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
-              // onEndReachedThreshold={.1}
-              ListFooterComponent={() => (
-                <View style={{alignItems: 'center', paddingVertical: 10}}>
-                  <TouchableOpacity onPress={handleGetAll}>
-                    <Text style={{fontSize: appFontSize.normal}}>{text}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              handleDetail={handelDetail}
+              handleGetAll={handleGetAll}
+              text={text}
             />
           )}
         </View>
-        
 
         <View>
           <LoadingComponent visible={loading} />
@@ -338,8 +317,7 @@ const ListTatCaScreen: React.FC<NavProps> = ({navigation}) => {
         </View>
         {/* </ScrollView> */}
       </View>
-      
-   </KeyboardAvoidingView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -367,6 +345,10 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderRadius: 10,
     flexDirection: 'row',
+  },
+  selectDate: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 

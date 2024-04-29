@@ -31,7 +31,8 @@ import LoadingComponent from '../../component/LoadingComponent';
 import {getData} from '../../utils/storageUtils';
 import EditText from '../../component/edittext/EditText';
 import {appFontSize} from '../../constants/appFontSizes';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
+import ListHoaDonComponent from '../../component/ListHoaDonComponent';
 const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [text, setText] = useState('Xem thêm');
@@ -86,11 +87,7 @@ const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
     await getListInvoice(code, 4, page + 1);
   };
 
-  const getListInvoice = async (
-    code?: any,
-    status?: any,
-    page?: any,
-  ) => {
+  const getListInvoice = async (code?: any, status?: any, page?: any) => {
     try {
       const item = await getData();
       if (!item) {
@@ -153,48 +150,10 @@ const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if(isFocused){
+    if (isFocused) {
       getListInvoice('', 0, page);
     }
   }, [isFocused]);
-
-  const renderItem = ({item}: {item: HoaDon}) => {
-    const {formattedDate, formattedTime} = formatDate(item.thoiGianTao);
-    return (
-        <TouchableOpacity // Màu sắc khi chạm vào
-        onPress={() => handelDetail(item)}>
-          <View style={styles.item}>
-            <View style={{paddingHorizontal: 10}}>
-            <Text style={{ color: 'black', fontSize: appFontSize.normal, fontWeight: 'bold'}}>
-                MHD:{item.maHD}
-              </Text>
-              <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-                Tổng tiền:{' '}
-                {parseInt(item.tongTien || '').toLocaleString('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                })}
-              </Text>
-              <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-                {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
-                Trạng thái mua: {getStatusText(item.trangThaiMua ?? 0)}
-              </Text>
-              <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-                Thanh toán:
-                {item.trangThaiThanhToan === 0 ? (
-                  <Text style={{color: 'red'}}> Chưa thanh toán</Text>
-                ) : (
-                  <Text style={{color: 'green'}}> Đã thanh toán</Text>
-                )}
-              </Text>
-              <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
-                Ngày tạo: {formattedDate || ''} - {formattedTime || ''}
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-    );
-  };
 
   return (
     <KeyboardAvoidingView
@@ -225,7 +184,7 @@ const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
           {data.length === 0 ? (
             <View style={{height: hp(100)}}>
               <Text style={{textAlign: 'center', fontSize: 20}}>
-              không tìm thấy hoá đơn
+                không tìm thấy hoá đơn
               </Text>
               <TouchableOpacity
                 onPress={async () => {
@@ -237,27 +196,15 @@ const ListHuyScreen: React.FC<NavProps> = ({navigation}) => {
                     marginTop: 20,
                     color: appColors.primary,
                     textDecorationLine: 'underline',
-                  }}>
-                </Text>
+                  }}></Text>
               </TouchableOpacity>
             </View>
           ) : (
-            <FlatList
+            <ListHoaDonComponent
               data={data}
-              renderItem={renderItem}
-              keyExtractor={item => item._id || ''}
-              scrollEnabled={true}
-              style={{height: hp(80)}}
-              // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
-              // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
-              // onEndReachedThreshold={.1}
-              ListFooterComponent={() => (
-                <View style={{alignItems: 'center', paddingVertical: 10}}>
-                  <TouchableOpacity onPress={handleGetAll}>
-                    <Text style={{fontSize: appFontSize.normal}}>{text}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              handleDetail={handelDetail}
+              handleGetAll={handleGetAll}
+              text={text}
             />
           )}
         </View>
@@ -292,25 +239,23 @@ const styles = StyleSheet.create({
     flex: 2,
   },
 
-//   item: {
-//     borderColor: 'black',
-//     borderWidth: 0.5,
-//     marginTop: 15,
-//     borderRadius: 10,
-//     flexDirection: 'row',
-//   },
-  
-item: {
-  marginHorizontal: 10,
-  padding: 10,
-  borderColor: 'black',
-  borderWidth: 0.5,
-  marginTop: 15,
-  borderRadius: 10,
-  flexDirection: 'row',
-},
+  //   item: {
+  //     borderColor: 'black',
+  //     borderWidth: 0.5,
+  //     marginTop: 15,
+  //     borderRadius: 10,
+  //     flexDirection: 'row',
+  //   },
+
+  item: {
+    marginHorizontal: 10,
+    padding: 10,
+    borderColor: 'black',
+    borderWidth: 0.5,
+    marginTop: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+  },
 });
 
 export default ListHuyScreen;
-
-

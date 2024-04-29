@@ -17,6 +17,9 @@ const initialState: NhanVien = {
 const initialStateStore: CuaHang = {
     _id:'',
     tenCH:'',
+    tenTaiKhoan:'',
+    taiKhoanThanhToan:'',
+    nganHangThuHuong: '',
     email:'',
     sdt: '',
     diaChi: '',
