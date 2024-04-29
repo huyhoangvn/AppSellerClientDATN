@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import { getData } from '../../utils/storageUtils';
+import { deleteToken, getData } from '../../utils/storageUtils';
 
 const HeaderRightComponent: React.FC<NavProps> = ({ navigation }: any) =>  {
     
@@ -28,7 +28,8 @@ const HeaderRightComponent: React.FC<NavProps> = ({ navigation }: any) =>  {
       });
     };
 
-    const logout = () => {
+    const logout = async () => {
+        await deleteToken()
         setShowOptionsMenu(false); // Close the menu when an option is clicked
         navigation.reset({
             index: 0,

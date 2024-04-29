@@ -55,17 +55,17 @@ const ListHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
       <Tab.Screen 
         name="ListDangGiaoScreen" 
         component={ListDangGiaoScreen} 
-        options={renderTabScreenOptions('Đang giao')}
+        options={renderTabScreenOptions('Đang giao hàng')}
       />
       <Tab.Screen 
         name="ListThanhCongScreen" 
         component={ListThanhCongScreen} 
-        options={renderTabScreenOptions('Thành công')}
+        options={renderTabScreenOptions('Giao thành công')}
       />
       <Tab.Screen 
         name="ListThatBaiScreen" 
         component={ListThatBaiScreen} 
-        options={renderTabScreenOptions('Thất bại')}
+        options={renderTabScreenOptions('Giao Thất bại')}
       />
       <Tab.Screen 
         name="ListHuyScreen" 

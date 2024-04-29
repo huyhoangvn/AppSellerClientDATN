@@ -30,6 +30,7 @@ import EvaluateScreen from './src/screen/danhGia/EvaluateScreen';
 import EditHoaDonScreen from './src/screen/hoadon/EditHoaDonScreen';
 import DetailDatMonScreen from './src/screen/hoadon/DetailDatMonScreen';
 import { appColors } from './src/constants/appColors';
+import TermsServiceScreen from './src/screen/TermsServiceScreen';
 
 const Stack = createStackNavigator();
 
@@ -76,6 +77,12 @@ const App: React.FC<AppProps> = () => {
                 name="RegisterStoreScreen"
                 component={RegisterStoreScreen}
                 options={{headerShown: true, headerTitle: ""}}
+              />
+               <Stack.Screen
+                name="TermsServiceScreen"
+                component={TermsServiceScreen}
+                options={{headerShown: true, title: ''}}
+                // options={{title: 'Đăng ký'}}
               />
               {/* Trang chủ với nav bar */}
               <Stack.Screen

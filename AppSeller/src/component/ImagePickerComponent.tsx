@@ -67,6 +67,8 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderRadius: 20,
+        borderColor: appColors.primary,
+        borderWidth: 1,
     },
     placeholderImage: {
         width: 200,

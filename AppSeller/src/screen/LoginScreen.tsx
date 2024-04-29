@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import NavProps from '../models/props/NavProps';
 
-import {faLock, faUser} from '@fortawesome/free-solid-svg-icons';
+import {faEnvelope, faLock, faUser} from '@fortawesome/free-solid-svg-icons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -132,14 +132,16 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
   };
 
   const handleLogin = async () => {
-    try {
+    if (userName.length > 50 && password.length > 15) {
+     return setMsg('tài khoản hoặc mật khâu vợt số ký tự cho phép')
+    } 
+      try {
       setLoading(true); // Bắt đầu hiển thị loading
       const res: any = await authenticationAPI.HandleAuthentication(
         '/nhanvien/auth',
         {taiKhoan: userName, matKhau: password},
         'post',
       );
-
       if (res.success === true) {
         if(res.index.phanQuyen === 2){
           setMsg('Tài khoản đang chờ duyệt. Vui lòng liên hệ quản trị viên để được duyệt tài khoản.');
@@ -176,22 +178,6 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
     getRemembered();
     // setRememberedChecked(true);
   }, []);
-
-  const handleGet = async () => {
-    try {
-      const res = await authenticationAPI.HandleAuthentication(
-        '/nhanvien/nhanvienquanly',
-        'get',
-      );
-
-      // console.log(res.data);
-      // dispatch(addAuth(res.index));
-      // navigation.navigate('HomeScreen')
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   return (
     <KeyboardAvoidingView 
     style={{flex: 1}} 
@@ -202,16 +188,17 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
       <View style={styles.header}>
         <LogoNoText />
         <Text style={styles.logoText}>Food Center</Text>
+        <Text style={[styles.logoText,{fontSize: 15}]}>Merchant</Text>
       </View>
 
       <View style={styles.main}>
         <EditTextComponent
           label="text"
-          placeholder="Nhập tài khoản"
+          placeholder="Nhập tài khoản email"
           value={userName}
           iconColor="gray"
           onChangeText={handleUserNameChange}
-          icon={faUser}
+          icon={faEnvelope}
         />
 
         <EditTextComponent
@@ -244,12 +231,12 @@ const LoginScreen: React.FC<NavProps> = ({navigation}) => {
               size={14}
             />
           </View>
-          <ButtonComponent
+          {/* <ButtonComponent
             type="link"
             text="Quên mật khẩu ?"
             onPress={() => navigation.navigate('SignUpScreen')}
             textStyles={{fontWeight: 'bold'}} // Cập nhật style ở đây
-          />
+          /> */}
         </View>
         <ButtonComponent
           type="primary"
@@ -325,21 +312,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    flex: 1.5,
+    flex: 2,
     alignItems: 'center', // Căn giữa theo chiều ngang
-    justifyContent: 'center', // Căn giữa theo chiều dọc
+    justifyContent: 'center', 
   },
   main: {
     flex: 2,
     justifyContent: 'space-evenly', // Màu cho phần main
   },
   footer: {
-    flex: 1,
+    flex: 1.5,
   },
   logoText: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     color: appColors.primary,
     textAlign: 'center', // Căn giữa văn bản theo chiều ngang
   },
