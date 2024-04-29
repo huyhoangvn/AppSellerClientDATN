@@ -23,6 +23,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePickerComponent from '../../component/ImagePickerComponent';
 const AddMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
+  
   const route = useRoute(); // Using useRoute hook to get route object
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');

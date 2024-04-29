@@ -22,20 +22,20 @@ import LoadingComponent from '../../component/LoadingComponent';
 import * as ImagePicker from 'expo-image-picker';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePickerComponent from '../../component/ImagePickerComponent';
-
+import {useFocusEffect} from '@react-navigation/native';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const EditMonScreen: React.FC<NavProps> = ({ navigation, route }:any) =>  {
-  const { item } = route.params;
-
-  const [tenMon, setTenMon] = useState(item.tenMon);
+  const { position, item } = route.params;
+  const [tenMon, setTenMon] = useState<any>(item.tenMon);
   const [trangThai, setTrangThai] = useState(item.trangThai);
-  const [idLM, setidLM] = useState(item.tenLM);
-  const [giaTien, setGiaTien] = useState(item.giaTien);
+  const [giaTien, setGiaTien] = useState<any>(item.giaTien.toString());
+  const [idLM, setidLM] = useState<any>(item.tenLM);
 
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const [loaMon, setLoaiMon] = useState<{ label: string; value: string; }[]>([]);
+  const [loaiMon, setLoaiMon] = useState<{ label: string; value: string; }[]>([]);
   const [loading, setLoading] = useState(false);
   const [imagePath, setImagePath] = useState('');
 
@@ -49,31 +49,29 @@ const loaiMonItem = [
   {label: 'Trạng thái', value: 0},
 ];
 
+
   const setSelectedLoaiMon =(item:any)=>{
     setidLM(item.value);
-    
   };
   const setSelectedTrangThai =(item:any)=>{
     setTrangThai(item.value);
   };
   const validateInputs = () => {
-    if (!imagePath) {
-      return ('Hình ảnh không hợp lệ.');
-    }
+  if (!imagePath) {
+    return ('Hình ảnh không hợp lệ.');
+   }
   if (!tenMon.trim()) {
     return 'Vui lòng nhập tên món';
   }
   if(!idLM  && idLM === ''){
     return 'Vui lòng chọn loại món ';
-
-  }
-  if (!giaTien.trim() ) {
-    return 'Vui lòng nhập giá tiền hợp lệ';
   }
   if(!trangThai  && trangThai === ''){
     return 'Vui lòng chọn trạng thái món ';
   }
-  
+   if (!giaTien.trim() || isNaN(parseFloat(giaTien))) {
+    return 'Vui lòng nhập giá tiền hợp lệ';
+  }
   return null;
   };
   const handleShowAlert = () => {
@@ -98,12 +96,18 @@ const handleImageSelect = async (imagePath: string) => {
   }
 };
 const handelUpdate = async (  ) => {
-  
+  const errorMessage = validateInputs();
+  if (errorMessage) {
+    setMsg(errorMessage);
+    handleShowAlert();
+    return;
+  }
   try {
     setLoading(true);
     const data = await getData();
     const idNV = data?.idUser;
-  
+    // const parsedGiaTien = parseFloat(giaTien);
+
     const formData = new FormData();
       if (imagePath) {
         formData.append('hinhAnh', {
@@ -115,14 +119,13 @@ const handelUpdate = async (  ) => {
       formData.append('idNV', idNV);
       formData.append('idLM', idLM);
       formData.append('tenMon', tenMon);
-      formData.append('giaTien', giaTien);
       formData.append('trangThai', trangThai);
+      formData.append('giaTien', giaTien);
     const res:any = await authenticationAPI.HandleAuthentication(
-      `/nhanvien/mon/${item._id}`,
+      `/nhanvien/mon/${item.idMon}`,
        formData,
        'put', // 
     );
-    console.log(res);
     if (res.success === true) {
       setMsg(res.msg);
       handleShowAlert();
@@ -170,15 +173,23 @@ const danhSachLoaiMon = async ()=>{
 useEffect(() => {
   danhSachLoaiMon();
 }, []); 
+useFocusEffect(
+  React.useCallback(() => {
+    danhSachLoaiMon();
 
+    return () => {
+      // Cleanup logic nếu cần (không bắt buộc)
+    };
+  }, []),
+);
   return (
   <View style={styles.container}>
     
     <ImagePickerComponent
-              onImageSelect={handleImageSelect}
-              imageUri={item.hinhAnh}
-              style={{borderRadius: wp(30), overflow: 'hidden'}}
-            />   
+      onImageSelect={handleImageSelect}
+      imageUri={item.hinhAnh}
+      style={{borderRadius: wp(30), overflow: 'hidden'}}
+       />   
     <View style={styles.inputContainer}>
         <EditTextComponent
          label="text"
@@ -192,18 +203,19 @@ useEffect(() => {
    <View style={styles.main}>
     <View style={styles.viewDropDow}>
       <DropDownComponent
-            label="Select Item" // Nhãn cho DropDownComponent
-            value={idLM}
-            items={loaMon.map(item => ({
+          label="Chọn loại món"
+          value={idLM}
+            items={loaiMon.map(item => ({
               label: item.label,
               value: item.value.toString(),
             }))} // Danh sách các mục
             containerStyle={{width: wp(55)}}    
             onChangeItem={(item) => setSelectedLoaiMon(item)}
             placeholder="Chọn loại món"
+            
           /> 
          <DropDownComponent
-            label="Select Item" // Nhãn cho DropDownComponent
+            label="Trạng thái" // Nhãn cho DropDownComponent
             value={trangThai}
             items={itemsStatus.map(item => ({
               label: item.label,
@@ -214,8 +226,9 @@ useEffect(() => {
             placeholder="Trạng thái"
           /> 
     </View>
+    
     </View>
-    <EditTextComponent
+      <EditTextComponent
           label="text"
           placeholder="20.000"
           value={giaTien}
@@ -232,7 +245,6 @@ useEffect(() => {
        text="Lưu"
        textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
        onPress={handelUpdate}
-
       />
     </View>
     <LoadingComponent visible={loading ?? false} />

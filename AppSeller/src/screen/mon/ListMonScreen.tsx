@@ -33,6 +33,7 @@ import { DefaultImage } from '../../assest/svgs';
 import { appImageSize } from '../../constants/appImageSize';
 import { appFontSize } from '../../constants/appFontSizes';
 import {useFocusEffect} from '@react-navigation/native';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const titles = ['Tất cả', 'Tráng miệng', 'Đồ chiên', 'Đồ nấu', 'Đồ uống']; // Add your titles here
 
@@ -78,8 +79,8 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
 
   //Hiển thị chi tiết
   const handleDetail = ( item: any ) => {
-    navigation.navigate("DetailMonScreen", { item });
-    console.log(item);
+    navigation.navigate("DetailMonScreen", { idMon: item._id });
+    console.log(item.idMon);
   };
   
   //Tìm kiếm theo tên
@@ -218,13 +219,13 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-image.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 10 }}
+            style={{ width: appImageSize.size100.width, height: appImageSize.size100.height, borderRadius: 8 }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />  
           <View style={{paddingHorizontal: 10}}>
-          <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>Tên món: {item.tenMon}</Text>
+          <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>{item.tenMon}</Text>
           <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
-          <Text style={{fontSize: appFontSize.normal}}>Gía tiền: {item.giaTien}đ</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Giá tiền:{formatCurrency(item.giaTien)}</Text>
           <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
@@ -247,8 +248,8 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           stylesContainer={{
             backgroundColor: appColors.white,
             borderColor: 'black',
-            borderWidth: 1,
-            elevation: 0,
+            borderWidth: 1.5,
+            elevation: 1,
           }}
           iconColor={appColors.primary}
         /> 

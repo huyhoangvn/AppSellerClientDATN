@@ -10,10 +10,11 @@ import { DanhGia } from '../../models/DanhGia';
 import { appImageSize } from '../../constants/appImageSize';
 import { appFontSize } from '../../constants/appFontSizes';
 import { appColors } from '../../constants/appColors';
+import {CuaHang} from '../../models/CuaHang';
+import { Mon } from '../../models/Mon';
 
 const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
-  const { item } = route.params;
-  console.log(item);
+  const { idMon } = route.params;
   const [soLuongDanhGia, setSoLuongDanhGia] = useState('');
   const [soLuong, setSoLuong] = useState('');
   const [danhGiaList, setDanhGiaList] = useState<any[]>([]);
@@ -21,29 +22,83 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
   const [textXemThem, setTextXemThem] = useState('Xem thêm');
   const [trang, setTrang] = useState(1);
 
-  const getDanhGia = async () => {
-    try {
-      
 
-      const res: any = await authenticationAPI.HandleAuthentication(
-        `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item._id}?trangThai=1`,
-        'get',
-      );
-      if (res && res.success === true) {
-        setDanhGiaList(res.list);
-        setTrang(trang+1);
+ const [tenKH, setTenKH] = useState('');
+ const [thoiGianTao, setThoiGianTao] = useState('');
+ const [soSao, setSoSao] = useState('');
 
-        setSoLuong(res.count);
-      } else {
-        setMsg(res.msg);
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-      setMsg(msg);
+ const [mon, setMon] = useState<Mon>();
+ const [cuaHang, setCuaHang] = useState<CuaHang>();
+ const [loading, setLoading] = useState(false);
+
+
+ const fetchChiTietCuaHang = async () => {
+  const result = await getData();
+  try {
+    setLoading(true);
+    const res:any = await authenticationAPI.HandleAuthentication(
+      `/nhanvien/cuahang/chi-tiet/${result?.idStore}`,
+      'get',
+    );
+    if (res.success === true) {
+      const {hinhAnh, tenCH, thoiGianMo, thoiGianDong, email, sdt, diaChi} =
+        res.data;
+      // Cập nhật mảng cuaHang bằng cách thêm một đối tượng mới
+      setCuaHang({
+        hinhAnh,
+        tenCH,
+        thoiGianMo,
+        thoiGianDong,
+        email,
+        sdt,
+        diaChi,
+      });
+    } else {
+      setMsg(res.msg);
     }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  //Xem thêm
+  const xemThemMon = async () => {
+    await getDanhGia(tenKH, thoiGianTao, soSao, trang+1);
+  };
+  const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
+    const res: any = await authenticationAPI.HandleAuthentication(
+      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${idMon}?trangThai=1&trang=${trang}`,
+      'get',
+    );
+    if (res.success === false) {
+      if (!res.list) {
+        return;
+      }
+      return;
+    }
+
+    if (trang === 1) {
+      setDanhGiaList([...res.list]);
+    } else {
+      setDanhGiaList(prevListHienThi => [...prevListHienThi, ...res.list]);
+    }
+    //Lưu lại dữ liệu tìm kiếm 
+    if (res.list.length > 0) {
+      setTrang(res.currentPage);
+      setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
+    } else {
+      setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
+    }
+    setTenKH(tenKH);
+    setThoiGianTao(thoiGianTao);
+    setSoSao(soSao);
+    setSoLuong(res.soLuong);
   };
   useEffect(() => {
-    getDanhGia();
+    getDanhGia(tenKH, thoiGianTao, soSao, trang);
+    fetchChiTietCuaHang();
   }, []);
 
 
@@ -75,7 +130,7 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     <View style={styles.container}>
         <View style={styles.containerHeader}>
           <TextComponent
-            text='Gà rán FIVESTAR'
+            text={`Gà rán (${cuaHang?.tenCH})`}
             color='#000000'
             size={19}
           />
@@ -84,15 +139,21 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
             size={18}
           />
         </View>
+        
         <FlatList
           data={danhGiaList}
           renderItem={renderItem}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.idDG}
           style={{ width: '100%' }}
+          ListFooterComponent={() => (
+            <View style={{alignItems: 'center', paddingVertical: 10}}>
+              <TouchableOpacity onPress={xemThemMon}>
+                <Text style={{fontSize: appFontSize.normal}}>{textXemThem}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         />
-        <TouchableOpacity onPress={() => getDanhGia()} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: appColors.primary, fontSize: appFontSize.normal}}>Xem thêm</Text>
-          </TouchableOpacity>
+     
     </View>
   );
 };

@@ -24,6 +24,7 @@ import {getData} from '../../utils/storageUtils';
 import LoadingComponent from '../../component/LoadingComponent';
 import {useFocusEffect} from '@react-navigation/native';
 import AlertComponent from '../../component/AlertComponent';
+import { appFontSize } from '../../constants/appFontSizes';
 
 const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   // const [lastList, setLastList] = useState(false);
@@ -165,17 +166,17 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-avatar.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: 65, height: 65 }}
+            style={{ width: 100, height: 100, borderRadius:8 }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />
           <View style={{paddingHorizontal: 10}}>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
+            <Text style={{fontWeight: 'bold', color: 'black', fontSize: appFontSize.normal}}>
               {item.tenNV}
             </Text>
-            <Text style={{color: 'black'}}>
+            <Text style={{color: 'black', fontSize: appFontSize.normal}}>
               Chức vụ: {item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}{' '}
             </Text>
-            <Text style={{color: item.trangThai ? 'green' : 'red'}}>
+            <Text style={{color: item.trangThai ? 'green' : 'red', fontSize: appFontSize.normal}}>
               {item.trangThai ? 'Hoạt động' : 'Không hoạt động'}
             </Text>
           </View>

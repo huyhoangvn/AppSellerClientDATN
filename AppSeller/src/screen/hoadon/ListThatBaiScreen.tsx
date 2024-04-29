@@ -18,7 +18,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
 import DropDownComponent from '../../component/DropDownComponent';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -165,21 +164,21 @@ const ListThatBaiScreen: React.FC<NavProps> = ({navigation}) => {
       <TouchableOpacity onPress={() => handelDetail(item)}>
         <View style={styles.item}>
           <View style={{paddingHorizontal: 10}}>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
+          <Text style={{ color: 'black', fontSize: appFontSize.normal, fontWeight: 'bold' }}>
               MHD:{item.maHD}
             </Text>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
+            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
               Tổng tiền:{' '}
               {parseInt(item.tongTien || '').toLocaleString('vi-VN', {
                 style: 'currency',
                 currency: 'VND',
               })}
             </Text>
-            <Text style={{color: 'black', fontWeight: 'bold'}}>
+            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
               {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
               Trạng thái mua: {getStatusText(item.trangThaiMua ?? 0)}
             </Text>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>
+            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
               Thanh toán:
               {item.trangThaiThanhToan === 0 ? (
                 <Text style={{color: 'red'}}> Chưa thanh toán</Text>
@@ -187,7 +186,7 @@ const ListThatBaiScreen: React.FC<NavProps> = ({navigation}) => {
                 <Text style={{color: 'green'}}> Đã thanh toán</Text>
               )}
             </Text>
-            <Text style={{color: 'black', fontWeight: 'bold'}}>
+            <Text style={{ color: 'black', fontSize: appFontSize.normal }}>
               Ngày tạo: {formattedDate || ''} - {formattedTime || ''}
             </Text>
           </View>

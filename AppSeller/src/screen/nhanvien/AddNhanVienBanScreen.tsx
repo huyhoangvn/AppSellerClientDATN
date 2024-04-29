@@ -100,7 +100,7 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
     const idStore = data?.idStore;
     try {
       setLoading(true);
-      const res = await authenticationAPI.HandleAuthentication(
+      const res:any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/nhanvienquanly/them-nhanvien-ban/${id}`,
         {
           idCH: idStore,
@@ -137,7 +137,8 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
     <ScrollView style={styles.container} >
     <View style={styles.main}>
       <TouchableOpacity onPress={getImageFromGallery}>
-        <Image style={{width: wp(40),height: hp(20),borderRadius:5}} source={{uri: imgPathGallery,}} />
+        <Image style={{width: wp(40),height: hp(20),borderRadius:5}} 
+        source={{uri: imgPathGallery,}} />
       </TouchableOpacity>
     </View>
     <View style={styles.footer}>
