@@ -98,6 +98,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
         `/nhanvien/nhanvienquanly?tenNV=${name}&phanQuyen=${phanQuyen}&trangThai=${trangThai}&page=${page}`,
         'get',
       );
+      console.log(res);
 
       if (res.success === false) {
         if (!res.list) {

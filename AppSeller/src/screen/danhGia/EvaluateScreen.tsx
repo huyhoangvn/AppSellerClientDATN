@@ -15,12 +15,14 @@ import { Mon } from '../../models/Mon';
 
 const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
   const { item } = route.params;
+ 
   const [data, setData] = useState('');
   const [soLuong, setSoLuong] = useState('');
-  const [danhGiaList, setDanhGiaList] = useState<any[]>([]);
+  const [danhGiaList, setDanhGiaList] = useState<DanhGia[]>([]);
   const [msg, setMsg] = useState<string>('');
   const [textXemThem, setTextXemThem] = useState('Xem thêm');
   const [trang, setTrang] = useState(1);
+  const [showAlert, setShowAlert] = useState(false);
 
 
  const [tenKH, setTenKH] = useState('');
@@ -62,41 +64,52 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     setLoading(false);
   }
 };
-
+const handleShowAlert = () => {
+  setShowAlert(true);
+};
   //Xem thêm
   const xemThemMon = async () => {
     await getDanhGia(tenKH, thoiGianTao, soSao, trang+1);
   };
   const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
-
-    const res: any = await authenticationAPI.HandleAuthentication(
-      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item.idMon}?trangThai=1&trang=${trang}`,
-      'get',
-    );
-    console.log(res);
-    if (res.success === false) {
-      if (!res.list) {
+    try {
+      const res: any = await authenticationAPI.HandleAuthentication(
+        `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item.idMon}?trangThai=true&trang=${trang}`,
+        'get',
+      );
+      if (res.success === false) {
+        if (!res.list) {
+          return;
+        }
         return;
       }
-      return;
+      if (trang === 1) {
+        setDanhGiaList([...res.list]);
+      } else {
+        setDanhGiaList(prevListHienThi => [...prevListHienThi, ...res.list]);
+      }
+      //Lưu lại dữ liệu tìm kiếm 
+      if (res.list.length > 0) {
+        setTrang(res.currentPage);
+        setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
+      } else {
+        setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
+      }
+      setTenKH(tenKH);
+      setThoiGianTao(thoiGianTao);
+      setSoSao(soSao);
+      setSoLuong(res.soLuong);
+    } catch (error) {
+      setMsg('Lỗi kết nối');
+      handleShowAlert();
+      console.error(error);
     }
-    if (trang === 1) {
-      setDanhGiaList([...res.list]);
-    } else {
-      setDanhGiaList(prevListHienThi => [...prevListHienThi, ...res.list]);
+    finally {
+      setLoading(false);
     }
-    //Lưu lại dữ liệu tìm kiếm 
-    if (res.list.length > 0) {
-      setTrang(res.currentPage);
-      setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
-    } else {
-      setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
-    }
-    setTenKH(tenKH);
-    setThoiGianTao(thoiGianTao);
-    setSoSao(soSao);
-    setSoLuong(res.soLuong);
+   
   };
+
   useEffect(() => {
     getDanhGia(tenKH, thoiGianTao, soSao, trang);
     fetchChiTietCuaHang();
@@ -104,7 +117,8 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
 
 
 
-  const renderItem = ({ item }: { item: any }) => (
+  const renderItem = ({ item }: { item: any }) => {
+    return (
     <TouchableOpacity>
       <View style={styles.itemContainer}>
       <Image
@@ -112,7 +126,12 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
             (!item.hinhAnh || item.hinhAnh === "N/A") ?
               require('./../../assest/default-image.jpg') :
               { uri: item.hinhAnh }}
-            style={{ width: appImageSize.size75.width, height: appImageSize.size75.height, margin: 10 }}
+            style={{ 
+               width: appImageSize.size100.width,
+               height: appImageSize.size100.height,
+               borderRadius: 8,
+               margin: 8,
+               }}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />  
         <View style={styles.infoContainer}>
@@ -125,7 +144,8 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
         </View>
       </View>
     </TouchableOpacity>
-  );
+    );
+};
 
   return (
     <View style={styles.container}>
@@ -144,7 +164,7 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
         <FlatList
           data={danhGiaList}
           renderItem={renderItem}
-          keyExtractor={(item) => item.idDG}
+          keyExtractor={(item) => item._id}
           style={{ width: '100%' }}
           ListFooterComponent={() => (
             <View style={{alignItems: 'center', paddingVertical: 10}}>
@@ -164,7 +184,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   containerHeader: {
-    padding: 8,
+    padding: 6,
     borderRadius: 5,
     marginTop: 10,
     position: 'relative',
@@ -173,11 +193,9 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    marginBottom: 10,
     marginHorizontal: 10,
-    marginTop: 10,
+    marginTop: 8,
     borderWidth: 0.5,
-    padding: 10,
     borderRadius: 10,
     alignItems: 'center',
   },
