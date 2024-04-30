@@ -108,7 +108,6 @@ const timKiemTheoThang = async (item: any) => {
       }
       return;
     }
-   console.log(res);
     if (trang === 1) {
       setListHienThi(res.list);
     } else {

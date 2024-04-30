@@ -19,6 +19,7 @@ import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import { formatCurrency } from '../../utils/currencyFormatUtils';
 import { Mon } from '../../models/Mon';
+import {appColors} from '../../constants/appColors';
 
 const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
 
@@ -129,8 +130,11 @@ const handleDanhGia = ( ) => {
             style={{
               width: wp(40),
               height: hp(20),
-              borderRadius: wp(50),
+              borderRadius: wp(20),
               overflow: 'hidden',
+              backgroundColor: 'white',
+              borderColor: appColors.primary,
+              borderWidth: 1,
             }}
             source={{uri: item.hinhAnh}}
           />
