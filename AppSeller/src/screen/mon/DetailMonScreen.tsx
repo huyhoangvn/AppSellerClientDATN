@@ -50,11 +50,11 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
    //Hiển thị chi tiết
  const handleUpdateMon = ( ) => {
   navigation.navigate("EditMonScreen", { item: item });
+
 };
 // hien thi đánh giá 
 const handleDanhGia = ( ) => {
   navigation.navigate("EvaluateScreen", { item: item });
-  console.log(item);
 };
   const getDetail = async () => {
 
