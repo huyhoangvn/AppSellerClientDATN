@@ -1,27 +1,33 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Modal, StyleSheet,Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { appColors } from '../../constants/appColors';
 import { appFontSize } from '../../constants/appFontSizes';
 import MyButtonComponent from '../button/MyButtonComponent';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faQrcode, faImage } from '@fortawesome/free-solid-svg-icons'; // Import the QrCode icon from the free-solid-svg-icons
+import { appIcon } from '../../constants/appIcon';
 
 interface Option {
   key: string;
   value: string | number;
 }
 
-interface OptionPickerProps {
-  onSelect: (selected: { option1: string | number; option2: string | number }) => void;
+interface ListOptionPickerProps {
+  onSelect: (selected: { option1: string | number; option2: string | number, uri: string }) => void;
   visible: boolean;
   onClose: () => void;
   options?: Option[]; // Make options array optional
   options2?: Option[]; // Make options2 array optional
   optionalTitle?: string;
   optionalDesc?: string;
-  optionTrigger?: number;
+  onPickImage: () => void
+  imgUri: string,
+  handleQR: () => void,
+  initOption: number
 }
 
-const OptionPicker: React.FC<OptionPickerProps> = ({
+const ListOptionPicker: React.FC<ListOptionPickerProps> = ({
   onSelect,
   visible,
   onClose,
@@ -29,17 +35,28 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
   options2 = [],
   optionalTitle,
   optionalDesc,
-  optionTrigger = 0
+  onPickImage,
+  imgUri = "",
+  handleQR,
+  initOption
 }) => {
-  const initialSelectedOption = options.length > 0 ? options[0].value : '';
+  const initialSelectedOption = initOption;
   const initialSelectedOption2 = options2.length > 0 ? options2[0].value : '';
 
   const [selectedOption, setSelectedOption] = useState<string | number>(initialSelectedOption);
   const [selectedOption2, setSelectedOption2] = useState<string | number>(initialSelectedOption2);
+  const [uri, setUri] = useState(imgUri);
+
+  useEffect(() => {
+    setUri(imgUri);
+  }, [imgUri]);
+
+  useEffect(() => {
+    setSelectedOption(initOption);
+  }, [initOption]);
 
   // Handle option selection
   const handleOptionSelect = (value: string | number) => {
-    console.log(selectedOption)
     setSelectedOption(value);
   };
 
@@ -49,10 +66,14 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
 
   // Handle confirm button press
   const handleConfirm = () => {
-    const selected = { option1: selectedOption, option2: selectedOption2 };
+    const selected = { option1: selectedOption, option2: selectedOption2, uri: uri };
     onSelect(selected);
     onClose();
   };
+  
+  const handleOpenImagePicker = () => {
+    onPickImage();
+  }
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
@@ -75,18 +96,30 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
             </Picker>
           </View>
           )}
-          {options2.length > 0 && selectedOption !== optionTrigger && (
-            <View style={styles.pickerWrapper}>
-                <Picker
-                selectedValue={selectedOption2}
-                onValueChange={(itemValue) => handleOption2Select(itemValue)}
-                style={styles.picker}
-                >
-                {options2.map((option) => (
-                    <Picker.Item key={option.key} label={option.key} value={option.value} />
-                ))}
-                </Picker>
-            </View>
+          {selectedOption === 1 && (
+          <View style={styles.pickerImage}>
+              <TouchableOpacity
+                  onPress={() => handleOpenImagePicker()}
+                  style={styles.pickerImageButton}
+              >
+                  <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                    {uri ? (
+                        <Text style={{width: "90%"}}>{uri}</Text>
+                    ) : (
+                        <Text style={styles.normal}>Chọn ảnh xác nhận</Text>
+                    )}
+                    <FontAwesomeIcon icon={faImage} color={appColors.primary} size={appIcon.normal}></FontAwesomeIcon>
+                  </View>
+              </TouchableOpacity>
+          </View>
+          )}
+          {selectedOption === 1 && (
+            <TouchableOpacity onPress={handleQR}>
+              <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                <FontAwesomeIcon icon={faQrcode} color={appColors.warmOrange} size={appIcon.normal}/>
+                <Text style={styles.linkQr}>Hiển thị QR chuyển khoản</Text>
+              </View>
+            </TouchableOpacity>          
           )}
           <View style={styles.buttonContainer}>
             <MyButtonComponent text="Xác nhận" color={appColors.primary} onPress={handleConfirm}/>
@@ -132,9 +165,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
   },
+  pickerImage: {
+    borderWidth: 1,
+    borderColor: appColors.boderColor,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
   picker: {
     height: 50,
     width: '100%',
+    justifyContent: "center"
+  },
+  pickerImageButton: {
+    height: 50,
+    width: '100%',
+    justifyContent: "center",
+    padding: 15
   },
   buttonContainer: {
     gap: 10,
@@ -153,7 +199,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  normal: {
+    color: appColors.text,
+    fontSize: appFontSize.normal
+  },
+  linkQr: {
+    color: appColors.warmOrange,
+    marginVertical: 10,
+    fontSize: appFontSize.normal
+  }
 });
 
-export default OptionPicker;
+export default ListOptionPicker;
 

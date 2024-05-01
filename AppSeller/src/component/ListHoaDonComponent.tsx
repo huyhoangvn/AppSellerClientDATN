@@ -71,17 +71,20 @@ const ListHoaDonComponent: React.FC<Props> = ({
           <View style={{paddingHorizontal: 10}}>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{color: 'black', fontSize: appFontSize.normal}}>
-                Thành tiền:{' '}
-                {parseInt(item.thanhTien || '').toLocaleString('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                })}
+              <Text style={{color: 'black', fontSize: appFontSize.normal, fontWeight: 'bold'}}>
+                {item.maHD}
               </Text>
               <Text>
                 {formattedDate || ''} - {formattedTime || ''}
               </Text>
             </View>
+            <Text style={{color: 'black', fontSize: appFontSize.normal}}>
+              Thành tiền:{' '}
+              {parseInt(item.thanhTien || '').toLocaleString('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+              })}
+            </Text>
             <Text style={{color: 'black', fontSize: appFontSize.normal}}>
               {/* {item.trangThaiMua === 1 ? "ok" : "Chưa mua"} */}
               Trạng thái giao: {getStatusText(item.trangThaiMua ?? 0)}
