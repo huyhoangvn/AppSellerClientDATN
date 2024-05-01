@@ -8,6 +8,7 @@ import {
   faEnvelope,
   faLock,
   faUser,
+  faU,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   widthPercentageToDP as wp,
@@ -149,7 +150,7 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
             value={name}
             iconColor="gray"
             onChangeText={setName}
-            icon={faShop}
+            icon={faUser}
           />
           
 
@@ -177,7 +178,7 @@ const AddNhanVienBanScreen: React.FC<NavProps> = ({ navigation }) =>  {
             value={userName}
             iconColor="gray"
             onChangeText={setUserName}
-            icon={  faUser }
+            icon={  faEnvelope }
           />
 
           <EditTextComponent

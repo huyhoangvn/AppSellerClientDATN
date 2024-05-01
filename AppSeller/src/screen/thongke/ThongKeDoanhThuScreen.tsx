@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import YearPicker from '../../component/YearPicker';
 import { appFontSize } from '../../constants/appFontSizes';
 import { appColors } from '../../constants/appColors';
+import { formatCurrency } from '../../utils/currencyFormatUtils';
 
 const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
   const [ngayBatDau, setngayBatDau] = useState<Date>();
   const [ngayKetThuc, setngayKetThuc] =useState<Date>();
-  const [tongKhoangNgay, setTongKhoangNgay] = useState ('');
+  const [tongKhoangNgay, setTongKhoangNgay] = useState<number>(0);;
   const datas = [
     {month: 0, earnings: 0},
     {month: 1, earnings: 100},
@@ -189,7 +190,7 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     stylesContainer={{
       backgroundColor: appColors.white,
       borderColor: 'black',
-      
+      width: 170,
     }}
     onDateSelected={item => handleDateSelected(item)}
     iconColor={appColors.primary}
@@ -202,33 +203,33 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     stylesContainer={{
       backgroundColor: appColors.white,
       borderColor: 'black',
-      
+      width: 170,
     }}
     onDateSelected={item => handleDateSelectend(item)}
     iconColor={appColors.primary}
   />
 </View>
     <View style={styles.totalContainer}>
-          <Text style={styles.totalText}>Tổng doanh thu khoảng ngày:</Text>
-          <Text style={styles.totalValue}>{tongKhoangNgay}</Text>
+          <Text style={styles.totalText}>Tổng doanh thu:</Text>
+          <Text style={styles.totalValue}>{formatCurrency(tongKhoangNgay)}</Text>
         </View>
         <Text style={styles.text}>Doanh thu gần đây </Text>
         <View style={[styles.itemContainer, styles.marginTop]}>
           <View style={styles.row}>
             <Text style={styles.label}>1 Ngày:</Text>
-            <Text style={styles.value}>{tongTienNgay}</Text>
+            <Text style={styles.value}>{formatCurrency(tongTienNgay)}</Text>
           </View>
         </View>
         <View style={[styles.itemContainer, styles.marginTop]}>
           <View style={styles.row}>
             <Text style={styles.label}>10 Ngày:</Text>
-            <Text style={styles.value}>{tongTien10Ngay}</Text>
+            <Text style={styles.value}>{formatCurrency(tongTien10Ngay)}</Text>
           </View>
         </View>
         <View style={[styles.itemContainer, styles.marginTop]}>
           <View style={styles.row}>
             <Text style={styles.label}>30 Ngày:</Text>
-            <Text style={styles.value}>{tongTien30Ngay}</Text>
+            <Text style={styles.value}>{formatCurrency(tongTien30Ngay)}</Text>
           </View>
         </View>
         <Text style={styles.text}>Doanh thu tháng trong năm </Text>
@@ -248,12 +249,11 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
          onSelect={handleYearSelect}
          onClose={() => setIsPickerVisible(false)}
          />
-        
        
     </View>
         <View style={styles.totalContainer}>
           <Text style={styles.totalText}>Tổng doanh thu {year}:</Text>
-          <Text style={styles.totalValue}>{tongDoanhThu}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(tongDoanhThu)}</Text>
         </View>
         
         <View style={styles.chartContainer}>
@@ -261,8 +261,6 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
             <VictoryBar animate data={monthlyRevenue} x='month' y='tong'/>
           </VictoryChart>
         </View>
-
-
         <LoadingComponent visible={loading} />
 
       </View>
@@ -276,9 +274,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   text: {
+    marginTop: 10,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color : 'black'
   },
   itemContainer:{
     padding: 10,
@@ -300,18 +300,17 @@ const styles = StyleSheet.create({
     marginTop: 10, // Thêm khoảng cách giữa các hàng trừ hàng đầu tiên
   },
   inputDropdown: {
-    marginTop: 10, // Khoảng cách giữa dropdown và phần trên
+    marginTop: 8, // Khoảng cách giữa dropdown và phần trên
   },
   totalContainer: {
     flexDirection: 'row', // Hiển thị các thành phần trong hàng ngang
     justifyContent: 'space-between', // Các thành phần được căn giữa
-    marginTop: 20, // Khoảng cách với phần trên
+    marginTop: 8, // Khoảng cách với phần trên
   },
   totalText: {
     fontSize: 20,
-    fontWeight: 'bold',
     flexDirection: 'row', // Hi'
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   totalTextKhoangNgay:{
    fontSize: 20,
@@ -319,11 +318,15 @@ const styles = StyleSheet.create({
   },
   totalValue: {
     fontSize: 20,
+    color : appColors.warmOrange,
+    fontWeight: 'bold',
+
   },
   chartContainer: {
-    marginTop: 20,
-  },viewDropDow: {
-    padding: 10,
+    padding: 8
+  },
+  viewDropDow: {
+    padding: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     
@@ -340,7 +343,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     borderWidth: 1,
     borderColor: '#000000',
-    marginBottom: 10,
     paddingHorizontal: 10,
     flexDirection: 'row',
     borderRadius: 20,
@@ -359,7 +361,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center', // Align the icon vertically center with the text input
   },
   dateInputContainer:{
-    
+    flexDirection: 'row',
+    justifyContent: 'center',
   }
 });
 

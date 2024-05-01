@@ -10,9 +10,7 @@ import {
 import NavProps from '../../models/props/NavProps';
 import {faAdd} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import EditTextComponent from '../../component/EditTextComponent';
 import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import {appColors} from '../../constants/appColors';
@@ -24,7 +22,7 @@ import {getData} from '../../utils/storageUtils';
 import LoadingComponent from '../../component/LoadingComponent';
 import {useFocusEffect} from '@react-navigation/native';
 import AlertComponent from '../../component/AlertComponent';
-import { appFontSize } from '../../constants/appFontSizes';
+import {appFontSize} from '../../constants/appFontSizes';
 
 const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   // const [lastList, setLastList] = useState(false);
@@ -41,8 +39,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [phanQuyen, setPhanQuyen] = useState('');
   const [name, setName] = useState('');
   const [page, setPage] = useState(1);
-
-  
 
   const itemsPosition = [
     {label: 'Tất cả', value: ''},
@@ -89,23 +85,20 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     getListUser(name, phanQuyen, status, page + 1);
   };
 
-  
-
-
   const getListUser = async (
     name?: any,
     phanQuyen?: any,
     trangThai?: any,
     page?: any,
   ) => {
-
     try {
-      setLoading(true); // Set loading to true before making the API call
+      // setLoading(true); // Set loading to true before making the API call
 
       const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/nhanvienquanly?tenNV=${name}&phanQuyen=${phanQuyen}&trangThai=${trangThai}&page=${page}`,
-          'get',
+        'get',
       );
+      console.log(res);
 
       if (res.success === false) {
         if (!res.list) {
@@ -133,10 +126,9 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
       handleShowAlert();
       console.error(error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-
 
   useEffect(() => {
     getListUser('', '', '', 1);
@@ -153,30 +145,39 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
     }, []),
   );
 
-  
-
-
-
   const renderItem = ({item}: {item: NhanVien}) => {
     return (
       <TouchableOpacity onPress={() => handelDetail(item)}>
         <View style={styles.item}>
           <Image
-          source={
-            (!item.hinhAnh || item.hinhAnh === "N/A") ?
-              require('./../../assest/default-avatar.jpg') :
-              { uri: item.hinhAnh }}
-            style={{ width: 100, height: 100, borderRadius:8 }}
+            source={
+              !item.hinhAnh || item.hinhAnh === 'N/A'
+                ? require('./../../assest/default-avatar.jpg')
+                : {uri: item.hinhAnh}
+            }
+            style={{width: 100, height: 100, borderRadius: 8}}
             defaultSource={require('./../../assest/default-avatar.jpg')}
           />
-          <View style={{paddingHorizontal: 10}}>
-            <Text style={{fontWeight: 'bold', color: 'black', fontSize: appFontSize.normal}}>
+          <View style={{paddingHorizontal: 10, justifyContent: 'center'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                color: 'black',
+                fontSize: appFontSize.normal,
+              }}>
               {item.tenNV}
             </Text>
             <Text style={{color: 'black', fontSize: appFontSize.normal}}>
-              Chức vụ: {item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên'}{' '}
+              Sdt: {item.sdt}
             </Text>
-            <Text style={{color: item.trangThai ? 'green' : 'red', fontSize: appFontSize.normal}}>
+            <Text style={{color: 'black', fontSize: appFontSize.normal}}>
+              Chức vụ: {item.phanQuyen === 0 ? 'Quản lý' : 'Nhân viên bán'}{' '}
+            </Text>
+            <Text
+              style={{
+                color: item.trangThai ? 'green' : 'red',
+                fontSize: appFontSize.normal,
+              }}>
               {item.trangThai ? 'Hoạt động' : 'Không hoạt động'}
             </Text>
           </View>
@@ -226,7 +227,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             containerStyle={{width: wp(35)}}
             placeholder="Trạng thái"
             onChangeItem={item => {
-              handleSelectItemStatus(item)
+              handleSelectItemStatus(item);
             }}
           />
         </View>
@@ -237,7 +238,10 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             <Text style={{textAlign: 'center', fontSize: 20}}>
               không tìm thấy nhân viên
             </Text>
-            <TouchableOpacity onPress={() => {getListUser('', '', '', 1),setPage(1)}}>
+            <TouchableOpacity
+              onPress={() => {
+                getListUser('', '', '', 1), setPage(1);
+              }}>
               <Text
                 style={{
                   textAlign: 'center',
@@ -312,6 +316,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderRadius: 10,
     flexDirection: 'row',
+    alignContent: 'center',
   },
 });
 

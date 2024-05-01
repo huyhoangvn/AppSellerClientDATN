@@ -19,6 +19,7 @@ import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
 import { formatCurrency } from '../../utils/currencyFormatUtils';
 import { Mon } from '../../models/Mon';
+import {appColors} from '../../constants/appColors';
 
 const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
 
@@ -50,7 +51,11 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
    //Hiển thị chi tiết
  const handleUpdateMon = ( ) => {
   navigation.navigate("EditMonScreen", { item: item });
-  console.log(item);
+
+};
+// hien thi đánh giá 
+const handleDanhGia = ( ) => {
+  navigation.navigate("EvaluateScreen", { item: item });
 };
   const getDetail = async () => {
 
@@ -87,7 +92,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
     try {
       setLoading(true);
       const res:any = await authenticationAPI.HandleAuthentication(
-        `/khachhang/danhgia/get-trung-binh/${idMon}`
+        `/nhanvien/danhgia/get-trung-binh/${idMon}`
       );
       if (res.success === true) {
         setDanhGia(res.index);
@@ -125,8 +130,11 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
             style={{
               width: wp(40),
               height: hp(20),
-              borderRadius: wp(50),
+              borderRadius: wp(20),
               overflow: 'hidden',
+              backgroundColor: 'white',
+              borderColor: appColors.primary,
+              borderWidth: 1,
             }}
             source={{uri: item.hinhAnh}}
           />
@@ -173,7 +181,7 @@ const DetailMonScreen: React.FC<NavProps> = ({navigation, route} : any) => {
           type="primary"
           text="Đánh giá"
           textStyles={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
-          onPress={() => navigation.navigate('EvaluateScreen',{ idMon})}
+          onPress={handleDanhGia}
         />
    
       </View>

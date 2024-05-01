@@ -80,7 +80,6 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   //Hiển thị chi tiết
   const handleDetail = ( item: any ) => {
     navigation.navigate("DetailMonScreen", { idMon: item._id });
-    console.log(item.idMon);
   };
   
   //Tìm kiếm theo tên
@@ -140,7 +139,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   }
   
   await handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, categoryName);
-  console.log(item.value, item.label, categoryName); // Log the selected value, label, and category name
+
 };
 
   //Tìm kiếm theo trạng thái

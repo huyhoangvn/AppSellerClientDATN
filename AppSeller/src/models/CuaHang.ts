@@ -1,6 +1,9 @@
 export interface CuaHang{
     _id?:string
     tenCH?:string
+    tenTaiKhoan?:string,
+    taiKhoanThanhToan?:string,
+    nganHangThuHuong?:string,
     email?:string
     sdt?: string
     diaChi?: string

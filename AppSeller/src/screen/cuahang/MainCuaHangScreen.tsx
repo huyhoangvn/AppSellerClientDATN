@@ -52,7 +52,7 @@ const MainCuaHangScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
   //Hiển thị chi tiết
   const handleDetail = ( item: any ) => {
-    navigation.navigate("DetailMonScreen", { item });
+    navigation.navigate("DetailMonScreen", { idMon: item._id });
   };
   
   const fetchChiTietCuaHang = async () => {

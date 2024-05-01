@@ -2,26 +2,16 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import NavProps from '../../models/props/NavProps';
 import {
-  faShop,
-  faPhone,
-  faLocationDot,
-  faEnvelope,
-  faLock,
-  faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {appColors} from '../../constants/appColors';
 import ButtonComponent from '../../component/ButtonComponent';
-import EditTextComponent from '../../component/EditTextComponent';
 import authenticationAPI from '../../apis/authApi';
 import AlertComponent from '../../component/AlertComponent';
 import LoadingComponent from '../../component/LoadingComponent';
-import ImagePickerComponent from '../../component/ImagePickerComponent';
-import {getData} from '../../utils/storageUtils';
 import {DefaultAvatar} from '../../assest/svgs';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 const DetailNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   const {idUser, position} = route.params;
 
@@ -40,7 +30,10 @@ const DetailNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
   };
 
   const hahandelUpdate = () => {
-    navigation.navigate('EditNhanVienBanScreen', {position:position ,item:item});
+    navigation.navigate('EditNhanVienBanScreen', {
+      position: position,
+      item: item,
+    });
   };
   const hahandelUpdatePass = () => {
     navigation.navigate('UpdatePasswordScreen');
@@ -70,9 +63,13 @@ const DetailNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
     }
   };
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    getDetail();
-  }, []);
+    if (isFocused) {
+      getDetail();
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -84,6 +81,9 @@ const DetailNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
               height: hp(20),
               borderRadius: wp(20),
               overflow: 'hidden',
+              backgroundColor: 'white',
+              borderColor: appColors.primary,
+              borderWidth: 1,
             }}
             source={{uri: item.hinhAnh}}
           />
@@ -131,16 +131,20 @@ const DetailNhanVienScreen: React.FC<NavProps> = ({navigation, route}: any) => {
 
         <View style={styles.viewText}>
           <Text>Trạng thái</Text>
-          <Text style={{fontWeight:'bold',color: item?.trangThai ? 'green' : 'red'}}>
-              {item?.trangThai ? 'Hoạt động' : 'Không hoạt động'}
-            </Text>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: item?.trangThai ? 'green' : 'red',
+            }}>
+            {item?.trangThai ? 'Hoạt động' : 'Không hoạt động'}
+          </Text>
         </View>
       </View>
       <View style={styles.footer}>
         {position === 0 ? (
           <ButtonComponent
             type="primary"
-            text="Sửa nhân viên"
+            text="Sửa thông tin"
             textStyles={{color: 'white', fontSize: 20, fontWeight: 'bold'}}
             onPress={hahandelUpdate}
           />

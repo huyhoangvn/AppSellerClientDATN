@@ -18,6 +18,7 @@ interface OptionPickerProps {
   options2?: Option[]; // Make options2 array optional
   optionalTitle?: string;
   optionalDesc?: string;
+  optionTrigger?: number;
 }
 
 const OptionPicker: React.FC<OptionPickerProps> = ({
@@ -28,6 +29,7 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
   options2 = [],
   optionalTitle,
   optionalDesc,
+  optionTrigger = 0
 }) => {
   const initialSelectedOption = options.length > 0 ? options[0].value : '';
   const initialSelectedOption2 = options2.length > 0 ? options2[0].value : '';
@@ -37,6 +39,7 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
 
   // Handle option selection
   const handleOptionSelect = (value: string | number) => {
+    console.log(selectedOption)
     setSelectedOption(value);
   };
 
@@ -72,7 +75,7 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
             </Picker>
           </View>
           )}
-          {options2.length > 0 && (
+          {options2.length > 0 && selectedOption !== optionTrigger && (
             <View style={styles.pickerWrapper}>
                 <Picker
                 selectedValue={selectedOption2}
