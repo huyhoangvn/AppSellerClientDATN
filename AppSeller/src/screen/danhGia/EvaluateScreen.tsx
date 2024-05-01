@@ -74,7 +74,7 @@ const handleShowAlert = () => {
   const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
     try {
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item.idMon}?trangThai=true&trang=${trang}`,
+        `/nhanvien/danhgia/get-danh-sach-theo-mon-filter/${item.idMon}?trangThai=true&trang=${trang}`,
         'get',
       );
       if (res.success === false) {
