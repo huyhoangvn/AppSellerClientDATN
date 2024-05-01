@@ -104,9 +104,9 @@ const ListHoaDonComponent: React.FC<Props> = ({
   };
   return (
     <FlatList
-      data={data}
+    data={data.map((item, index) => ({ ...item, key: index.toString() }))}
       renderItem={renderItem}
-      keyExtractor={item => item._id || ''}
+      keyExtractor={(item, index) => index.toString()}
       scrollEnabled={true}
       // onScroll={() => { setScroll(true), setLastList(false) }} // Khi cuộn, đánh dấu là đã cuộn
       // onEndReached={() => { setLastList(true), setScroll(false) }} // Kích hoạt khi đạt đến cuối danh sách
