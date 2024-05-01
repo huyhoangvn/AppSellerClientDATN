@@ -14,8 +14,8 @@ import {CuaHang} from '../../models/CuaHang';
 import { Mon } from '../../models/Mon';
 
 const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
-  const { idMon } = route.params;
-  const [soLuongDanhGia, setSoLuongDanhGia] = useState('');
+  const { item } = route.params;
+  const [data, setData] = useState('');
   const [soLuong, setSoLuong] = useState('');
   const [danhGiaList, setDanhGiaList] = useState<any[]>([]);
   const [msg, setMsg] = useState<string>('');
@@ -68,17 +68,18 @@ const EvaluateScreen: React.FC<NavProps> = ({ navigation, route }: any) => {
     await getDanhGia(tenKH, thoiGianTao, soSao, trang+1);
   };
   const getDanhGia = async (tenKH: any, thoiGianTao: any, soSao: any, trang: any) => {
+
     const res: any = await authenticationAPI.HandleAuthentication(
-      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${idMon}?trangThai=1&trang=${trang}`,
+      `/khachhang/danhgia/get-danh-sach-theo-mon-filter/${item.idMon}?trangThai=1&trang=${trang}`,
       'get',
     );
+    console.log(res);
     if (res.success === false) {
       if (!res.list) {
         return;
       }
       return;
     }
-
     if (trang === 1) {
       setDanhGiaList([...res.list]);
     } else {
