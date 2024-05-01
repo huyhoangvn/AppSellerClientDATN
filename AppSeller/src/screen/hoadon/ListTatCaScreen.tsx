@@ -336,16 +336,6 @@ const styles = StyleSheet.create({
   main: {
     flex: 2,
   },
-
-  item: {
-    marginHorizontal: 10,
-    padding: 10,
-    borderColor: 'black',
-    borderWidth: 0.5,
-    marginTop: 15,
-    borderRadius: 10,
-    flexDirection: 'row',
-  },
   selectDate: {
     flexDirection: 'row',
     justifyContent: 'space-between',
