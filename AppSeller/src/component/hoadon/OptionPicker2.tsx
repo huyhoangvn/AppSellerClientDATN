@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { appColors } from '../../constants/appColors';
@@ -14,32 +14,40 @@ interface OptionPickerProps {
   onSelect: (selected: { option1: string | number; option2: string | number }) => void;
   visible: boolean;
   onClose: () => void;
+  options0?: Option[]; // Make options array optional
   options?: Option[]; // Make options array optional
   options2?: Option[]; // Make options2 array optional
   optionalTitle?: string;
   optionalDesc?: string;
   optionTrigger?: number;
+  initOption: number
 }
 
-const OptionPicker: React.FC<OptionPickerProps> = ({
+const OptionPicker2: React.FC<OptionPickerProps> = ({
   onSelect,
   visible,
   onClose,
+  options0 = [],
   options = [],
   options2 = [],
   optionalTitle,
   optionalDesc,
-  optionTrigger = 0
+  optionTrigger = 0,
+  initOption
 }) => {
+  const initialSelectedOption0 = initOption;
   const initialSelectedOption = options.length > 0 ? options[0].value : '';
   const initialSelectedOption2 = options2.length > 0 ? options2[0].value : '';
-
+  const [selectedOption0, setSelectedOption0] = useState<string | number>(initialSelectedOption0);
   const [selectedOption, setSelectedOption] = useState<string | number>(initialSelectedOption);
   const [selectedOption2, setSelectedOption2] = useState<string | number>(initialSelectedOption2);
 
   // Handle option selection
+  const handleOption0Select = (value: string | number) => {
+    setSelectedOption0(value);
+  };
+
   const handleOptionSelect = (value: string | number) => {
-    console.log(selectedOption)
     setSelectedOption(value);
   };
 
@@ -49,10 +57,14 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
 
   // Handle confirm button press
   const handleConfirm = () => {
-    const selected = { option1: selectedOption, option2: selectedOption2 };
+    const selected = { option0: selectedOption0, option1: selectedOption, option2: selectedOption2 };
     onSelect(selected);
     onClose();
   };
+
+  useEffect(() => {
+    setSelectedOption0(initOption);
+  }, [initOption]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
@@ -62,6 +74,19 @@ const OptionPicker: React.FC<OptionPickerProps> = ({
             {optionalTitle && <Text style={styles.instructions}>{optionalTitle}</Text>}
             {optionalDesc && <Text style={styles.text}>{optionalDesc}</Text>}
           </View>
+          {options0.length > 0 && (
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={selectedOption0}
+              onValueChange={(itemValue) => handleOption0Select(itemValue)}
+              style={styles.picker}
+            >
+              {options0.map((option) => (
+                <Picker.Item key={option.key} label={option.key} value={option.value} />
+              ))}
+            </Picker>
+          </View>
+          )}
           {options.length > 0 && (
           <View style={styles.pickerWrapper}>
             <Picker
@@ -155,5 +180,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OptionPicker;
+export default OptionPicker2;
 

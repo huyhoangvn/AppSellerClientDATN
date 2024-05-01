@@ -16,6 +16,8 @@ import { formatTrangThaiColor, formatTrangThaiGiaoHangColor, formatTrangThaiThan
 import OptionPicker from '../../component/hoadon/OptionPicker';
 import { formatBtn, formatTrangThaiMuaBtn, formatTrangThaiMuaBtnColor } from '../../utils/trangThaiBtnFormat';
 import { Tree } from 'iconsax-react-native';
+import ImageVerificationOption from '../../component/hoadon/ImageVerificationOption';
+import OptionPicker2 from '../../component/hoadon/OptionPicker2';
 
 const HoaDonResExample = {
   index: {
@@ -106,13 +108,28 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [modalGiaoHangVisible, setModalGiaoHangVisible] = useState(false);
   const [modalHuyVisible, setModalHuyVisible] = useState(false);
   const [modalThanhToanVisible, setModalThanhToanVisible] = useState(false);
+  const [phuongThucThanhToan, setPhuongThucThanhToan] = useState(0)
+  const [uri, setUri] = useState("")
+  const [sdt, setSdt] = useState("")
+  const [modalImageVisible, setModalImageVisible] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true)
+
+  const optionsPhuongThucThanhToan = [
+    { key: 'Thanh toán tiền mặt', value: 0 },
+    { key: 'Thanh toán chuyển khoản', value: 1},
+  ]
 
   const optionsGiaoHang = [
     { key: 'Giao hàng thành công', value: 3 },
     { key: 'Giao hàng thất bại', value: 4 },
   ];
+
+  const optionsThanhToan = [
+    { key: 'Thanh toán thành công', value: 1 },
+    { key: 'Thanh toán thất bại', value: 0 },
+  ];
+
 
   const optionsThoiGianGiao = [
     { key: '5 phút', value: 5 },
@@ -133,7 +150,6 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     { key: 'Hủy do hóa đơn bị lỗi', value: "Hủy do hóa đơn bị lỗi" },
     { key: 'Hủy do vị trí quá xa', value: "Hủy do vị trí quá xa" },
     { key: 'Hủy do hết hàng', value: "Hủy do hết hàng"},
-    { key: 'Hủy do thái độ khách hàng', value: "Hủy do thái độ khách hàng" },
     { key: 'Hủy do khách hàng yêu cầu', value: "Hủy do khách hàng yêu cầu"},
   ];
 
@@ -142,6 +158,12 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     { key: 'Giao thất bại do đơn vị giao hàng', value: "Giao thất bại do đơn vị giao hàng"},
     { key: 'Giao thất bại do khách không nhận hàng', value: "Giao thất bại do khách không nhận hàng" },
     { key: 'Giao thất bại do lỗi cửa hàng', value: "Giao thất bại do lỗi cửa hàng"},
+  ];
+
+  const optionsLyDoThanhToanThatBai = [
+    { key: 'Không có ghi chú', value: ""},
+    { key: 'Không nhận được tiền', value: "Không nhận được tiền"},
+    { key: 'Hình ảnh xác nhận chưa hợp lệ', value: "Hình ảnh xác nhận chưa hợp lệ" },
   ];
 
   const getThongTinHD = async (id: string)=>{
@@ -169,10 +191,13 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         setTrangThai(index.trangThai)
         setTrangThaiMua(index.trangThaiMua)
         setTrangThaiThanhToan(index.trangThaiThanhToan)
-        setIsActiveThanhToan((index.trangThaiMua == 3 && index.trangThai === true)?true:false)
+        setIsActiveThanhToan((index.trangThaiMua !== 0 && index.trangThai === true && index.trangThaiThanhToan !== 1)?true:false)
         setIsActiveHuy((((index.trangThaiMua === 0 || index.trangThaiMua === 1)  && index.trangThai === true))?true:false)
         setPhiVanChuyen(formatCurrency(index.phiGiaoHang))
         setGhiChu(index.ghiChu)
+        setPhuongThucThanhToan(index.phuongThucThanhToan)
+        setSdt(index.sdt)
+        setUri(index.hinhAnhXacNhan)
         setDanhSachMonDat(list)
       }
     } catch (e) {
@@ -184,12 +209,14 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     getThongTinHD(idHD)
   }, [])
 
+  const hienAnhThanhToan = () => {
+    setModalImageVisible(true);
+  }
+
   const thanhToan = () => {
     if(isActiveThanhToan){
-      setModalThanhToanVisible(true)
-    } else {
-      showAlert("Chưa thể xác nhận thanh toán", "Chỉ có thể xác nhận thanh toán cho đơn hàng đã được giao thành công")
-    }
+      setModalThanhToanVisible(true);
+    }      
   }
 
   const huyHoaDon = () => {
@@ -231,8 +258,8 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         />
         <View style={styles.itemDetails}>
           <Text style={styles.itemName}>{item.tenMon}</Text>
-          <Text style={styles.normal}>{formatCurrency(item.giaTienDat)}</Text>
-          <Text style={styles.normal}>{item.soLuong}</Text>
+          <Text style={styles.normal}>{"Giá tiền: " + formatCurrency(item.giaTienDat)}</Text>
+          <Text style={styles.normal}>{"Số lượng: " + item.soLuong}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -241,7 +268,6 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const handleDuyetSelect = async (selected : any) => {
     try{
       const thoiGianGiao = selected.option1
-      console.log(selected)
       const res : any = await authenticationAPI.HandleAuthentication(
         '/nhanvien/hoadon/dang-chuan-bi' + "/" + idHD,
         {soPhutGiaoHang: thoiGianGiao},
@@ -309,7 +335,6 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         );
       }
       // const res : any = DeleteResExample
-      console.log
       if(res.success === true){
         showAlert("Xác nhận giao hàng", "Xác nhận giao hàng thành công", false)
         getThongTinHD(idHD)
@@ -359,25 +384,45 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     return
   };
 
-  const handleThanhToanSelect = (selected: any) => {
+  const handleThanhToanSelect = async (selected: any) => {
+    if(selected.option2 === "" && selected.option1 === 0){
+      showAlert("Xác nhận thanh toán", "Mời bạn nhập lý do thanh toán thất bại")
+      return 
+    }
     try{
-      // const res : any = await authenticationAPI.HandleAuthentication(
-      //   '/nhanvien/hoadon/delete' + "/" + idHD,
-      //   {},
-      //   'delete',
-      // );
-      const res : any = DeleteResExample
+      const phuongThucThanhToan = selected.option0
+      const trangThaiThanhToan = selected.option1
+      const ghiChu = selected.option2
+      let res : any = {
+        success: false,
+        msg: "Xác nhận thanh toán thất bại do không nhận được phản hồi"
+      }
+      if(trangThaiThanhToan === 0){
+        res = await authenticationAPI.HandleAuthentication(
+          '/nhanvien/hoadon/that-bai' + "/" + idHD,
+          {ghiChu: ghiChu},
+          'post',
+        );
+      }
+      else if(trangThaiThanhToan === 1){
+        res = await authenticationAPI.HandleAuthentication(
+          '/nhanvien/hoadon/thanh-cong' + "/" + idHD,
+          {ghiChu: ghiChu, phuongThucThanhToan: phuongThucThanhToan},
+          'post',
+        );
+      }
+      // const res : any = DeleteResExample
       if(res.success === true){
-        showAlert("Xác nhận thanh toán", "Xác nhận thanh toán thành công", false)
+        showAlert("Xác nhận thanh toán", "Đã xác nhận thanh toán", false)
         getThongTinHD(idHD)
         return;
       }
-      showAlert("Xác nhận thanh toán", "Xác nhận thanh toán thất bại", false)
+      showAlert("Xác nhận thanh toán", res.msg, false)
       return;
     }
     catch(e){
       showAlert("Xác nhận thanh toán", "Xác nhận thanh toán thất bại do đường truyền", false)
-    }
+    }  
   };
 
   const setModal = (trangThaiMua: number) => {
@@ -399,11 +444,11 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         break;
   
       case 3:
-        showAlert("Hóa đơn giao thất bại", "Liên hệ cửa hàng để cập nhật trạng thái giao hàng" )
+        showAlert("Hóa đơn giao thành công", "Quý khách hàng có thể thực hiện giao dịch thanh toán" )
         break;
   
       case 4:
-        showAlert("Hóa đơn giao thành công", "Quý khách hàng có thể thực hiện giao dịch thanh toán" )
+        showAlert("Hóa đơn giao thất bại", "Liên hệ cửa hàng để cập nhật trạng thái giao hàng" )
         break;
 
       default:
@@ -414,7 +459,7 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     <ScrollView>
 
     <View style={styles.wrapper}>
-        <TextViewComponent
+    <TextViewComponent
             leftText="Mã hóa đơn"
             rightText={maHD}
             rightBold={true}
@@ -432,27 +477,9 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           rightText={diaChi}
         />
         <TextViewComponent
-          leftText="Thời gian tạo"
-          rightText={thoiGianTao}
+          leftText="Số điện thoại"
+          rightText={sdt}
         />
-        <TextViewComponent
-          leftText="Thời gian duyệt"
-          rightText={thoiGianDuyet}
-        />
-        <TextViewComponent
-          leftText="Thời gian giao"
-          rightText={thoiGianGiaoHangDuKien}
-        />
-        <TextViewComponent
-          leftText="Giao hàng"
-          rightText={formatTrangThaiGiaoHang(trangThaiMua)}
-          rightColor={formatTrangThaiGiaoHangColor(trangThaiMua)}
-        />
-        <TextViewComponent
-          leftText="Thanh toán"
-          rightText={formatTrangThaiThanhToan(trangThaiThanhToan)}
-          rightColor={formatTrangThaiThanhToanColor(trangThaiThanhToan)}
-        />   
         <TextViewComponent
           leftText="Khuyến mãi"
           rightText={phanTramKhuyenMai + "%"}
@@ -460,14 +487,14 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         <TextViewComponent
           leftText="Phí giao hàng"
           rightText={phiVanChuyen}
-        />  
+        /> 
         <TextViewComponent
           leftText="Thành tiền"
           rightText={formatCurrency(thanhTien)}
           leftBold={true}
           backgroundColor={appColors.secondary}
           showBorderBottom={false}
-        /> 
+        />
         <FlatList
           scrollEnabled={false}
           data={danhSachMonDat}
@@ -475,8 +502,40 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           keyExtractor={(item : any) => item.idMD}
           />
         <TextViewComponent
-          leftText="Ghi chú"
-          rightText={ghiChu}
+          leftText="Thanh toán"
+          rightText={formatTrangThaiThanhToan(trangThaiThanhToan)}
+          rightColor={formatTrangThaiThanhToanColor(trangThaiThanhToan)}
+        /> 
+        <TextViewComponent
+          leftText="Phương thức"
+          rightText={phuongThucThanhToan===0?"Tiền mặt":"Chuyển khoản"}
+        /> 
+        {ghiChu !== "" && (
+          <TextViewComponent
+            leftText="Ghi chú"
+            rightText={ghiChu}
+          />
+        )}
+        <TextViewComponent
+          leftText="Thời gian tạo"
+          rightText={thoiGianTao}
+        />
+        {thoiGianDuyet !== "00:00:00 00:00" && (
+        <TextViewComponent
+          leftText="Thời gian duyệt"
+          rightText={thoiGianDuyet}
+        />
+        )}
+        {thoiGianGiaoHangDuKien !== "00:00:00 00:00" && (
+          <TextViewComponent
+            leftText="Dự kiến giao"
+            rightText={thoiGianGiaoHangDuKien}
+          />
+        )}
+        <TextViewComponent
+          leftText="Giao hàng"
+          rightText={formatTrangThaiGiaoHang(trangThaiMua)}
+          rightColor={formatTrangThaiGiaoHangColor(trangThaiMua)}
         />
         <TextViewComponent
           leftText="Trạng thái"
@@ -484,7 +543,6 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           rightColor={formatTrangThaiColor(trangThai)}
         /> 
 
-        <MyButtonComponent text={formatTrangThaiMuaBtn(trangThaiMua)} onPress={() => setModal(trangThaiMua)} color={formatTrangThaiMuaBtnColor(trangThaiMua, trangThai)}/>
         <OptionPicker
           visible={modalDuyetVisible}
           optionalTitle={"Nhập thời gian giao hàng dự kiến"}
@@ -503,11 +561,24 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
         <OptionPicker
           visible={modalGiaoHangVisible}
           optionalTitle={"Xác nhận giao hàng"}
-          optionalDesc={"Xác nhận đơn hàng giao thất bại phải có ghi chú"}
+          optionalDesc={"Xác nhận đơn hàng giao thất bại có ghi chú"}
           onSelect={handleGiaoHangSelect}
           onClose={() => setModalGiaoHangVisible(false)}
           options={optionsGiaoHang}
           options2={optionsLyDoGiaoThatBai}
+          optionTrigger={3}
+        />
+        <OptionPicker2
+          visible={modalThanhToanVisible}
+          optionalTitle={"Xác nhận thanh toán"}
+          optionalDesc={"Xác nhận thanh toán thất bại có ghi chú"}
+          onSelect={handleThanhToanSelect}
+          onClose={() => setModalThanhToanVisible(false)}
+          options0={optionsPhuongThucThanhToan}
+          options={optionsThanhToan}
+          options2={optionsLyDoThanhToanThatBai}
+          optionTrigger={1}
+          initOption={phuongThucThanhToan}
         />
         <OptionPicker
           visible={modalHuyVisible}
@@ -517,15 +588,25 @@ const DetailHoaDonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           onClose={() => setModalHuyVisible(false)}
           options={optionsLyDoHuy}
         />
-        <OptionPicker
-          visible={modalThanhToanVisible}
-          optionalTitle={"Tiến hành xác nhận thanh toán"}
-          optionalDesc={"Đơn hàng sẽ được xác nhận thanh toán và không thể thay đổi"}
-          onSelect={handleThanhToanSelect}
-          onClose={() => setModalThanhToanVisible(false)}
+        <ImageVerificationOption
+          visible={modalImageVisible}
+          onClose={() => setModalImageVisible(false)}
+          optionalTitle="Hình ảnh xác nhận chuyển khoản"
+          optionalDesc="Hiển thị khi khách hàng yêu cầu xác nhận thanh toán chuyển khoản"
+          imgUrl={uri}
         />
-        <MyButtonComponent text="Thanh toán" onPress={thanhToan} color={formatBtn(isActiveThanhToan)}/>
+        {trangThaiMua !== 3 && (
+        <MyButtonComponent text={formatTrangThaiMuaBtn(trangThaiMua)} onPress={() => setModal(trangThaiMua)} color={formatTrangThaiMuaBtnColor(trangThaiMua, trangThai)}/>
+        )}
+        {phuongThucThanhToan === 1 && (
+          <MyButtonComponent text="Hiện ảnh chuyển khoản" onPress={hienAnhThanhToan} color={appColors.primary}/>
+        )}
+        {isActiveThanhToan && (
+        <MyButtonComponent text="Xác nhận thanh toán" onPress={thanhToan} color={formatBtn(isActiveThanhToan)}/>
+        )}
+        {isActiveHuy && (
         <MyButtonComponent text="Hủy hóa đơn" onPress={huyHoaDon} color={formatBtn(isActiveHuy)}/>
+        )}
     </View>
     </ScrollView>
   );
