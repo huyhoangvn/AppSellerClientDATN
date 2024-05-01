@@ -92,7 +92,7 @@ const handleDanhGia = ( ) => {
     try {
       setLoading(true);
       const res:any = await authenticationAPI.HandleAuthentication(
-        `/khachhang/danhgia/get-trung-binh/${idMon}`
+        `/nhanvien/danhgia/get-trung-binh/${idMon}`
       );
       if (res.success === true) {
         setDanhGia(res.index);
