@@ -92,7 +92,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
   const saveUser = async (idStore: string) => {
     try {
       const res = await authenticationAPI.HandleAuthentication(
-        '/nhanvien/nhanvienquanly',
+        '/nhanvien/dangky/nhanvien',
         {
           idCH: idStore,
           taiKhoan: userName,
@@ -133,7 +133,7 @@ const RegisterUserScreen: React.FC<NavProps> = ({navigation}) => {
       const storedMail = storeData.diaChi;
 
       const res = await authenticationAPI.HandleAuthentication(
-        '/nhanvien/cuahang',
+        '/nhanvien/dangky/cuahang',
         {
           tenCH: storedName,
           tenTaiKhoan: tenTaiKhoan,
