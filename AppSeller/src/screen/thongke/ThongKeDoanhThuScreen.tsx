@@ -8,16 +8,16 @@ import { HoaDon } from '../../models/HoaDon';
 import LoadingComponent from '../../component/LoadingComponent';
 import EditTextComponent from '../../component/EditTextComponent';
 import {
-  faCalendarDay,faCaretDown
+  faCalendarDay, faCaretDown
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import YearPicker from '../../component/YearPicker';
 import { appFontSize } from '../../constants/appFontSizes';
 import { appColors } from '../../constants/appColors';
 import { formatCurrency } from '../../utils/currencyFormatUtils';
-import {getData} from '../../utils/storageUtils';
+import { getData } from '../../utils/storageUtils';
 
-const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
+const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
   const [data, setData] = useState<HoaDon[]>([]);
@@ -29,24 +29,8 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [year, setYear] = useState<number | null>(null);
   const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
   const [ngayBatDau, setngayBatDau] = useState<Date>();
-  const [ngayKetThuc, setngayKetThuc] =useState<Date>();
+  const [ngayKetThuc, setngayKetThuc] = useState<Date>();
   const [tongKhoangNgay, setTongKhoangNgay] = useState<number>(0);;
-  const datas = [
-    {month: 0, earnings: 0},
-    {month: 1, earnings: 100},
-    {month: 2, earnings: 999}, 
-    {month: 3, earnings: 541}, 
-    {month: 4, earnings: 200}, 
-    {month: 5, earnings: 2100}, 
-    {month: 6, earnings: 2010}, 
-    {month: 7, earnings: 2020}, 
-    {month: 8, earnings: 2040}, 
-    {month: 9, earnings: 2300}, 
-    {month: 10, earnings: 2200}, 
-    {month: 11, earnings: 1200}, 
-    {month: 12, earnings: 2000}, 
-  ];
-
   const handleDateSelected = async (date: Date | string) => {
     setngayBatDau(date as Date);
 
@@ -64,7 +48,7 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   };
   const thongKeNgay = async (type: string) => {
     const reslt = await getData();
-      const idCH = reslt?.idStore;
+    const idCH = reslt?.idStore;
     try {
       setLoading(true);
 
@@ -86,7 +70,7 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
       if (res && res.success === true) {
         setMsg(res.msg);
         setData(res.index);
-        
+
         // Tính tổng tiền của ngày đó
         if (type === '1-ngay') {
           setTongTienNgay(res.tongTien);
@@ -111,7 +95,7 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
       setLoading(true);
       const reslt = await getData();
       const idCH = reslt?.idStore;
-      const res: any = await authenticationAPI.HandleAuthentication (
+      const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/thongke/nam/${idCH}?nam=${year}`,
         'get',
       );
@@ -157,13 +141,13 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     try {
       setLoading(true);
       const reslt = await getData();
-       const idCH = reslt?.idStore;
+      const idCH = reslt?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
         `/nhanvien/thongke/ngay-to-ngay/${idCH}?ngayBatDau=${ngayBatDau}&ngayKetThuc=${ngayKetThuc}`,
         'get',
       );
-  
-      if (res && res.success === true ) {
+
+      if (res && res.success === true) {
         setTongKhoangNgay(res.index);
       } else {
         throw new Error('Thất bại hoặc dữ liệu không có sẵn.');
@@ -184,42 +168,42 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
       thongkeNam(year);
       thongkeThang(year);
     };
-    thongkeKhoangNgay('','');
-  }, [year]); 
+    thongkeKhoangNgay('', '');
+  }, [year]);
 
   return (
- <ScrollView>
-  <View style={styles.container}>
-  <Text style={styles.text}>Doanh thu theo khoảng ngày </Text>
-  <View style={styles.dateInputContainer}>
-   <EditTextComponent
-    label="date"
-    placeholder="Chọn ngày"
-    value={ngayBatDau ? ngayBatDau.toString() : ''}
-    stylesEdit={{backgroundColor: 'white', width: 100}} // Set a fixed width
-    stylesContainer={{
-      backgroundColor: appColors.white,
-      borderColor: 'black',
-      width: 170,
-    }}
-    onDateSelected={item => handleDateSelected(item)}
-    iconColor={appColors.primary}
-  />
-   <EditTextComponent
-    label="date"
-    placeholder="Chọn ngày"
-    value={ngayKetThuc ? ngayKetThuc.toString() : ''}
-    stylesEdit={{backgroundColor: 'white', width: 100}} // Set a fixed width
-    stylesContainer={{
-      backgroundColor: appColors.white,
-      borderColor: 'black',
-      width: 170,
-    }}
-    onDateSelected={item => handleDateSelectend(item)}
-    iconColor={appColors.primary}
-  />
-</View>
-    <View style={styles.totalContainer}>
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.text}>Doanh thu theo khoảng ngày </Text>
+        <View style={styles.dateInputContainer}>
+          <EditTextComponent
+            label="date"
+            placeholder="Chọn ngày"
+            value={ngayBatDau ? ngayBatDau.toString() : ''}
+            stylesEdit={{ backgroundColor: 'white', width: 100 }} // Set a fixed width
+            stylesContainer={{
+              backgroundColor: appColors.white,
+              borderColor: 'black',
+              width: 170,
+            }}
+            onDateSelected={item => handleDateSelected(item)}
+            iconColor={appColors.primary}
+          />
+          <EditTextComponent
+            label="date"
+            placeholder="Chọn ngày"
+            value={ngayKetThuc ? ngayKetThuc.toString() : ''}
+            stylesEdit={{ backgroundColor: 'white', width: 100 }} // Set a fixed width
+            stylesContainer={{
+              backgroundColor: appColors.white,
+              borderColor: 'black',
+              width: 170,
+            }}
+            onDateSelected={item => handleDateSelectend(item)}
+            iconColor={appColors.primary}
+          />
+        </View>
+        <View style={styles.totalContainer}>
           <Text style={styles.totalText}>Tổng doanh thu:</Text>
           <Text style={styles.totalValue}>{formatCurrency(tongKhoangNgay)}</Text>
         </View>
@@ -244,31 +228,31 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         </View>
         <Text style={styles.text}>Doanh thu tháng trong năm </Text>
 
-      <View style={styles.viewDropDow}>
-         <TouchableOpacity style={styles.inputContainer} onPress={() => setIsPickerVisible(true)}>
-         <TextInput
-          style={styles.input}
-          placeholder="Năm"
-          value={year ? year.toString() : ''}
-          editable={false}
-        />
-         <FontAwesomeIcon icon={faCaretDown} style={styles.icon} />
-         </TouchableOpacity>
-        <YearPicker
-         visible={isPickerVisible}
-         onSelect={handleYearSelect}
-         onClose={() => setIsPickerVisible(false)}
-         />
-       
-    </View>
+        <View style={styles.viewDropDow}>
+          <TouchableOpacity style={styles.inputContainer} onPress={() => setIsPickerVisible(true)}>
+            <TextInput
+              style={styles.input}
+              placeholder="Năm"
+              value={year ? year.toString() : ''}
+              editable={false}
+            />
+            <FontAwesomeIcon icon={faCaretDown} style={styles.icon} />
+          </TouchableOpacity>
+          <YearPicker
+            visible={isPickerVisible}
+            onSelect={handleYearSelect}
+            onClose={() => setIsPickerVisible(false)}
+          />
+
+        </View>
         <View style={styles.totalContainer}>
           <Text style={styles.totalText}>Tổng doanh thu {year}:</Text>
           <Text style={styles.totalValue}>{formatCurrency(tongDoanhThu)}</Text>
         </View>
-        
+
         <View style={styles.chartContainer}>
           <VictoryChart theme={VictoryTheme.material}>
-            <VictoryBar animate data={monthlyRevenue} x='month' y='tong'/>
+            <VictoryBar animate data={monthlyRevenue} x='month' y='tong' />
           </VictoryChart>
         </View>
         <LoadingComponent visible={loading} />
@@ -288,9 +272,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color : 'black'
+    color: 'black'
   },
-  itemContainer:{
+  itemContainer: {
     padding: 10,
     backgroundColor: '#d0e7b9',
     borderRadius: 10
@@ -322,13 +306,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Hi'
     justifyContent: 'space-between',
   },
-  totalTextKhoangNgay:{
-   fontSize: 20,
+  totalTextKhoangNgay: {
+    fontSize: 20,
     fontWeight: 'bold',
   },
   totalValue: {
     fontSize: 20,
-    color : appColors.warmOrange,
+    color: appColors.warmOrange,
     fontWeight: 'bold',
 
   },
@@ -339,7 +323,7 @@ const styles = StyleSheet.create({
     padding: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    
+
   },
   item: {
     padding: 10,
@@ -370,7 +354,7 @@ const styles = StyleSheet.create({
     marginLeft: 10, // Adjust the spacing between input and icon as needed
     alignSelf: 'center', // Align the icon vertically center with the text input
   },
-  dateInputContainer:{
+  dateInputContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
   }
