@@ -65,10 +65,16 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   ];
   const itemsTenLM = [
     {label: 'Tất cả', value: ''},
-    {label: 'Cơm ', value: 0},
-    {label: 'Đồ chiên', value:1},
-    {label: 'Đồ rán', value: 2},
-    {label: 'Gà', value: 3},
+    {label: 'Món mặn ', value: 0},
+    {label: 'Món chay', value:1},
+    {label: 'Món ăn sáng', value: 2},
+    {label: 'Món khai vị', value: 3},
+    {label: 'Món tráng miệng', value: 4},
+    {label: 'Món bánh', value: 5},
+    {label: 'Món luộc', value: 6},
+    {label: 'Ngọt', value: 7},
+
+
   ];
   //Trạng thái select input
   const itemsStatus = [
@@ -87,33 +93,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
     handleSearch(item, giaTienMin, giaTienMax, trangThai, 1, tenLM);
   }; 
 
-  //Tìm kiếm theo giá
-  const timKiemTheoGiaTien = async (item: any) => {
-    let minPrice;
-    let maxPrice;
-    switch (item.value) {
-      case '0':
-        minPrice = 0;
-        maxPrice = 9999;
-        break;
-      case '1':
-        minPrice = 0;
-        maxPrice = 49999;
-        break;
-      case '2':
-        minPrice = 0;
-        maxPrice = 99999;
-        break;
-      case '3':
-        minPrice = 100000;
-        maxPrice = Number.MAX_SAFE_INTEGER;
-        break;
-      default:
-        minPrice = 0;
-        maxPrice = Number.MAX_SAFE_INTEGER;
-    }
-    await handleSearch(tenMon, minPrice, maxPrice, trangThai, 1, tenLM);
-  };
+ 
  //Tìm kiếm theo trạng thái
  const timKiemTheoTenLM = async (item: any) => {
   let categoryName = ''; // Initialize an empty string to store the category name
@@ -123,17 +103,29 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
       categoryName = '';
       break;
     case '0':
-      categoryName = 'Cơm';
+      categoryName = 'Món mặn';
       break;
     case '1':
-      categoryName = 'Đồ chiên';
+      categoryName = 'Món chay';
       break;
     case '2':
-      categoryName = 'Đồ rán';
+      categoryName = 'Món ăn sáng';
       break;
     case '3':
-      categoryName = 'Gà';
+      categoryName = 'Món khai vị';
       break;
+    case '4':
+       categoryName = 'Món tráng miệng';
+      break;
+      case '5':
+       categoryName = 'Món bánh';
+      break;
+      case '6':
+        categoryName = 'Món luộc';
+       break;
+       case '7':
+        categoryName = 'Ngọt';
+       break;
     default:
       categoryName = 'Trạng thái không xác định';
   }
