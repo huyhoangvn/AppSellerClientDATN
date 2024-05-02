@@ -72,6 +72,8 @@ const RegisterStoreScreen: React.FC<NavProps> = ({navigation}) => {
 
 
   const handelSelectBank = (item: any) => {
+    console.log("🚀 ~ handelSelectBank ~ item:", item)
+    
     setNameBank(item)
   };
 
@@ -186,7 +188,7 @@ const RegisterStoreScreen: React.FC<NavProps> = ({navigation}) => {
             icon={faUser}
           />
           <NganHangPicker
-            option={"BIDV"}
+            option={nameBank}
             onOptionChange={handelSelectBank}
             options={danhSachNganHang}
             icon={faBank}
