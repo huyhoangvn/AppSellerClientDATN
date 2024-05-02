@@ -47,32 +47,16 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [listHienThi, setListHienThi] = useState<Mon[]>([]);
   const [position, setPosition] = useState<any>();
   const [textXemThem, setTextXemThem] = useState('Xem thêm');
-
-  //Lưu tìm kiếm
-  const [giaTienMin, setGiaTienMin] = useState(0);
-  const [giaTienMax, setGiaTienMax] = useState(99999999);
   const [tenMon, setTenMon] = useState("");
-  const [trangThai, setTrangThai] = useState(-1);
+  const [trangThai, setTrangThai] = useState('');
+  const [nameType, setNameType] = useState('');
   const [trang, setTrang] = useState(1);
-  const [tenLM, setTenLM] = useState('');
-  //Giá tiền select input
-  const itemsPosition = [
-    {label: 'Tất cả', value: -1},
-    {label: 'Dưới 10.000 đ', value: 0},
-    {label: 'Dưới 50.000 đ', value: 1},
-    {label: 'Dưới 100.000 đ', value: 2},
-    {label: 'Trên 100.000 đ', value: 3},
-  ];
-  const itemsTenLM = [
-    {label: 'Tất cả', value: ''},
-    {label: 'Cơm ', value: 0},
-    {label: 'Đồ chiên', value:1},
-    {label: 'Đồ rán', value: 2},
-    {label: 'Gà', value: 3},
-  ];
+  const [type, setType] = useState<any[]>([]); 
+  
+  
   //Trạng thái select input
   const itemsStatus = [
-    {label: 'Tất cả', value: -1},
+    {label: 'Tất cả', value: ''},
     {label: 'Hoạt động', value: 1},
     {label: 'Khóa', value: 0},
   ];
@@ -84,67 +68,22 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   
   //Tìm kiếm theo tên
   const timKiemTheoTen = (item: string) => {
-    handleSearch(item, giaTienMin, giaTienMax, trangThai, 1, tenLM);
+    getListDish(item,  trangThai, trang, nameType);
   }; 
 
-  //Tìm kiếm theo giá
-  const timKiemTheoGiaTien = async (item: any) => {
-    let minPrice;
-    let maxPrice;
-    switch (item.value) {
-      case '0':
-        minPrice = 0;
-        maxPrice = 9999;
-        break;
-      case '1':
-        minPrice = 0;
-        maxPrice = 49999;
-        break;
-      case '2':
-        minPrice = 0;
-        maxPrice = 99999;
-        break;
-      case '3':
-        minPrice = 100000;
-        maxPrice = Number.MAX_SAFE_INTEGER;
-        break;
-      default:
-        minPrice = 0;
-        maxPrice = Number.MAX_SAFE_INTEGER;
-    }
-    await handleSearch(tenMon, minPrice, maxPrice, trangThai, 1, tenLM);
-  };
+
  //Tìm kiếm theo trạng thái
  const timKiemTheoTenLM = async (item: any) => {
-  let categoryName = ''; // Initialize an empty string to store the category name
   
-  switch (item.value) {
-    case '':
-      categoryName = '';
-      break;
-    case '0':
-      categoryName = 'Cơm';
-      break;
-    case '1':
-      categoryName = 'Đồ chiên';
-      break;
-    case '2':
-      categoryName = 'Đồ rán';
-      break;
-    case '3':
-      categoryName = 'Gà';
-      break;
-    default:
-      categoryName = 'Trạng thái không xác định';
-  }
   
-  await handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, categoryName);
+  await getListDish(tenMon,  trangThai, trang, item.value);
 
 };
 
   //Tìm kiếm theo trạng thái
   const timKiemTheoTrangThai = async (item: any) => {
-    await handleSearch(tenMon, giaTienMin, giaTienMax, parseInt(item.value, 10), 1, tenLM);
+    console.log("🚀 ~ timKiemTheoTrangThai ~ item:", item)
+    await getListDish(tenMon,  parseInt(item.value, 10), 1, nameType);
   };
 
   //Lấy phân quyền
@@ -156,52 +95,80 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
   
 
   //Tìm kiếm
-  const handleSearch = async (tenMon: any, giaTienMin: any, giaTienMax: any, trangThai: any, trang: any, tenLM: any) => {
-    const res : any = await authenticationAPI.HandleAuthentication (
-    `/nhanvien/mon?tenMon=${tenMon}&giaTienMin=${giaTienMin}&giaTienMax=${giaTienMax}&trangThai=${trangThai}&trang=${trang}&tenLM=${tenLM}`,
-      'get',
-    )    
-    if (res.success === false) {
-      if (!res.list) {
+  const getListDish = async (tenMon: any, trangThai: any, trang: any, tenLM: any) => {
+    console.log("🚀 ~ getListDish ~ tenLM:", tenLM)
+    try {
+      const item = await getData();
+      const idStore = item?.idStore;
+      const res : any = await authenticationAPI.HandleAuthentication (
+        `/nhanvien/mon/theo-cua-hang/${idStore}?tenMon=${tenMon}&trangThai=${trangThai}&trang=${trang}&tenLM=${tenLM}`,
+        'get',
+      )    
+      if (res.success === false) {
+        if (!res.list) {
+          return;
+        }
         return;
       }
-      return;
-    }
 
-    if (trang === 1) {
-      setListHienThi([...res.list]);
-    } else {
-      setListHienThi(prevListHienThi => [...prevListHienThi, ...res.list]);
+      if (trang === 1) {
+        setListHienThi([...res.list]);
+      } else {
+        setListHienThi(prevListHienThi => [...prevListHienThi, ...res.list]);
+      }
+      //Lưu lại dữ liệu tìm kiếm 
+      if (res.list.length > 0) {
+        setTrang(trang);
+        setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
+      } else {
+        setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
+      }
+      setTrangThai(trangThai);
+      setTenMon(tenMon);
+      setNameType(tenLM);
+      //Set state sau cùng vì state nó không cập nhật ngay lập tức trong hàm
+    } catch (error) {
+      console.error(error);
     }
-    //Lưu lại dữ liệu tìm kiếm 
-    if (res.list.length > 0) {
-      setTrang(trang);
-      setTextXemThem(res.list.length === 10 ? "Xem Thêm" : "Hết");
-    } else {
-      setTextXemThem("Hết");//Đổi thành "" để khách hàng ko nhấn hoặc ẩn nút cũng đc
-    }
-    setGiaTienMin(giaTienMin);
-    setGiaTienMax(giaTienMax);
-    setTrangThai(trangThai);
-    setTenMon(tenMon);
-    setTenLM(tenLM);
-    //Set state sau cùng vì state nó không cập nhật ngay lập tức trong hàm
   }
+  const getListType = async () => {
+    try {
+      const res: any = await authenticationAPI.HandleAuthentication(
+        `/nhanvien/loaimon`,
+        'get',
+      );
+      if (res.success === true) {
+        let data = res.list.map((item: any) => ({
+          label: item.tenLM,
+          value: item.tenLM,
+        }));
+        data = [{ label: 'Tất cả', value: '' }, ...data];
+        setType(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
 
   //Xem thêm
   const xemThemMon = async () => {
-    await handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, trang+1, tenLM);
+    await getListDish(tenMon,  trangThai, trang + 1, nameType);
   };
  
   useEffect(() => {
-    handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, tenLM);    
+    getListDish('',  '', 1, '');    
     getPhanQuyen();
+    getListType();
   }, []); 
   
   useFocusEffect(
     React.useCallback(() => {
-      handleSearch(tenMon, giaTienMin, giaTienMax, trangThai, 1, tenLM);    
+      getListDish('',  '', 1, '');    
       getPhanQuyen();
+      getListType();
       return () => {
         // Cleanup logic nếu cần (không bắt buộc)
       };
@@ -224,7 +191,7 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           <View style={{paddingHorizontal: 10}}>
           <Text style={{fontWeight: 'bold', fontSize: appFontSize.title, color: 'black'}}>{item.tenMon}</Text>
           <Text style={{fontSize: appFontSize.normal}}>Loại món: {item.tenLM}</Text>
-          <Text style={{fontSize: appFontSize.normal}}>Giá tiền:{formatCurrency(item.giaTien)}</Text>
+          <Text style={{fontSize: appFontSize.normal}}>Giá tiền:{item.giaTien !== undefined ? formatCurrency(item.giaTien) : ''}</Text>
           <Text style={[{fontSize: appFontSize.normal}, {color: item.trangThai ? appColors.green : appColors.red}]}>
             {item.trangThai ? 'Hoạt động' : 'Khóa'}
           </Text>    
@@ -253,16 +220,16 @@ const ListMonScreen: React.FC<NavProps> = ({ navigation }) =>  {
           iconColor={appColors.primary}
         /> 
         <View style={styles.viewDropDow}>
-          <DropDownComponent
-            label="Loại món" // Nhãn cho DropDownComponent
-            items={itemsTenLM.map(item => ({
-              label: item.label,
-              value: item.value.toString(),
-            }))} // Danh sách các mục
-            containerStyle={{width: wp(55), borderRadius: 100}}
-            placeholder="Tất cả"
-            onChangeItem={async item => await timKiemTheoTenLM(item)}
-          />
+        <DropDownComponent
+                label="Loại món"
+                items={type.map((item) => ({
+                  label: item.label,
+                  value: item.value,
+                }))}
+                containerStyle={{ width: wp(55), borderRadius: 100 }}
+                placeholder="Tất cả"
+                onChangeItem={async (item) => await timKiemTheoTenLM(item)}
+              />
           <DropDownComponent
             label="Trạng thái" // Nhãn cho DropDownComponent
             items={itemsStatus.map(item => ({

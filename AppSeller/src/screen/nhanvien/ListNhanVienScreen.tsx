@@ -39,7 +39,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
   const [phanQuyen, setPhanQuyen] = useState('');
   const [name, setName] = useState('');
   const [page, setPage] = useState(1);
-
   const itemsPosition = [
     {label: 'Tất cả', value: ''},
     {label: 'Quản lý', value: 0},
@@ -98,7 +97,6 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
         `/nhanvien/nhanvienquanly?tenNV=${name}&phanQuyen=${phanQuyen}&trangThai=${trangThai}&page=${page}`,
         'get',
       );
-      console.log(res);
 
       if (res.success === false) {
         if (!res.list) {
