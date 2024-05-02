@@ -15,6 +15,7 @@ import YearPicker from '../../component/YearPicker';
 import { appFontSize } from '../../constants/appFontSizes';
 import { appColors } from '../../constants/appColors';
 import { formatCurrency } from '../../utils/currencyFormatUtils';
+import {getData} from '../../utils/storageUtils';
 
 const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const [loading, setLoading] = useState(false);
@@ -62,17 +63,19 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
     await thongkeNam(item); // Gọi hàm thongkeNam với năm mới được chọn
   };
   const thongKeNgay = async (type: string) => {
+    const reslt = await getData();
+      const idCH = reslt?.idStore;
     try {
       setLoading(true);
 
       let apiEndpoint = '';
       if (type === '1-ngay') {
-        apiEndpoint = '/nhanvien/thongke/1-ngay';
+        apiEndpoint = `/nhanvien/thongke/1-ngay/${idCH}`;
       } else if (type === '10-ngay') {
-        apiEndpoint = '/nhanvien/thongke/10-ngay';
+        apiEndpoint = `/nhanvien/thongke/10-ngay/${idCH}`;
       }
       else if (type === '30-ngay') {
-        apiEndpoint = '/nhanvien/thongke/30-ngay';
+        apiEndpoint = `/nhanvien/thongke/30-ngay/${idCH}`;
       }
 
       const res: any = await authenticationAPI.HandleAuthentication(
@@ -106,10 +109,13 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const thongkeNam = async (year: any) => {
     try {
       setLoading(true);
+      const reslt = await getData();
+      const idCH = reslt?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication (
-        `/nhanvien/thongke?nam=${year}`,
+        `/nhanvien/thongke/nam/${idCH}?nam=${year}`,
         'get',
       );
+      console.log('zzzzzzzzzz');
       if (res && res.success === true && res.index) {
         setTongDoanhThu(res.index);
 
@@ -129,8 +135,10 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const thongkeThang = async (year: any) => {
     try {
       setLoading(true);
+      const reslt = await getData();
+      const idCH = reslt?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/thongke/12-thang?nam=${year}`,
+        `/nhanvien/thongke/12-thang/${idCH}?nam=${year}`,
         'get',
       );
       if (res && res.success === true && res.data) {
@@ -148,8 +156,10 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const thongkeKhoangNgay = async (ngayBatDau: any, ngayKetThuc: any) => {
     try {
       setLoading(true);
+      const reslt = await getData();
+       const idCH = reslt?.idStore;
       const res: any = await authenticationAPI.HandleAuthentication(
-        `/nhanvien/thongke/ngay-to-ngay?ngayBatDau=${ngayBatDau}&ngayKetThuc=${ngayKetThuc}`,
+        `/nhanvien/thongke/ngay-to-ngay/${idCH}?ngayBatDau=${ngayBatDau}&ngayKetThuc=${ngayKetThuc}`,
         'get',
       );
   
