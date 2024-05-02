@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import {
   faBuildingColumns,
   faUser,
   faMoneyCheck,
+  faBank,
 } from '@fortawesome/free-solid-svg-icons';
 import TextComponent from '../../component/TextComponent';
 import ButtonComponent from '../../component/ButtonComponent';
@@ -32,6 +33,8 @@ import AlertComponent from '../../component/AlertComponent';
 import {useDispatch} from 'react-redux';
 import {dataStore} from '../../redux/reducers/authReducers';
 import DropDownComponent from '../../component/DropDownComponent';
+import NganHangPicker from '../../component/drowpdown/NganHangPicker';
+import authenticationAPI from '../../apis/authApi';
 
 const RegisterStoreScreen: React.FC<NavProps> = ({navigation}) => {
   const dispatch = useDispatch();
@@ -40,24 +43,36 @@ const RegisterStoreScreen: React.FC<NavProps> = ({navigation}) => {
   const [address, setAddress] = useState('');
   const [mail, setMail] = useState('');
   const [nameUserBank, setNameUserBank] = useState('');
-  const [nameBank, setNameBank] = useState('');
+  const [nameBank, setNameBank] = useState('BIDV');
   const [numberBank, setNumberBank] = useState('');
   const [isChecked, setChecked] = useState<boolean>();
   const [showAlert, setShowAlert] = useState(false);
   const [msg, setMsg] = useState('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [danhSachNganHang, setDanhSachNganHang] = useState<any>([])
 
-  const listBank = [
-    {label: 'Tất cả', value: ''},
-    {label: 'Chờ duyệt', value: 0},
-    {label: 'Đang chuẩn bị', value: 1},
-    {label: 'Đang giao hàng', value: 2},
-    {label: 'Giao hàng thành công', value: 3},
-    {label: 'Giao hàng thất bại', value: 4},
-  ];
+  useEffect(()=>{
+    getDanhSachNganHang()
+  }, [])
+  
+  const getDanhSachNganHang = async ()=>{
+    try {
+      const res : any = await authenticationAPI.HandleAuthentication(
+        '/nhanvien/thanhtoan/nganhang',
+        'get',
+      );
+      if (res.success === true) {
+        const { index } = res;
+        setDanhSachNganHang(index)
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   const handelSelectBank = (item: any) => {
-    console.log('🚀 ~ handelSelectBank ~ item:', item);
+    setNameBank(item)
   };
 
   const handleShowAlert = () => {
@@ -170,13 +185,11 @@ const RegisterStoreScreen: React.FC<NavProps> = ({navigation}) => {
             onChangeText={setNameUserBank}
             icon={faUser}
           />
-          <EditTextComponent
-            label="text"
-            placeholder="Ngân hàng thụ hưởng"
-            value={nameBank}
-            iconColor="gray"
-            onChangeText={setNameBank}
-            icon={faBuildingColumns}
+          <NganHangPicker
+            option={"BIDV"}
+            onOptionChange={handelSelectBank}
+            options={danhSachNganHang}
+            icon={faBank}
           />
           <EditTextComponent
             label="number"
