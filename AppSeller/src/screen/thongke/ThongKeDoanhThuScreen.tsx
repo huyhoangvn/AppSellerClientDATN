@@ -126,9 +126,10 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         `/nhanvien/thongke/12-thang/${idCH}?nam=${year}`,
         'get',
       );
-      if (res && res.success === true && res.data) {
+      console.log(res);
+      if (res.success === true) {
         // Xử lý dữ liệu từ res ở đây nếu cần thiết
-        setMonthlyRevenue(res.data);
+        setMonthlyRevenue(res.data.map((item: any) => ({ month: item.month, tong: item.tong / 1000 })));
       } else {
         setMsg('Thất bại hoặc dữ liệu không có sẵn.');
       }
@@ -253,9 +254,20 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
         
         <View style={styles.chartContainer}>
           <VictoryChart theme={VictoryTheme.material}>
-            <VictoryBar animate data={monthlyRevenue} x='month' y='tong'/>
+            <VictoryBar animate data={monthlyRevenue} x='month' y='tong' 
+            style={{
+            data: {
+             fill: '#3d95ce', // Màu của cột
+           },
+      }}/>
           </VictoryChart>
+           {/* Chú giải */}
+             <View style={styles.legendContainer}>
+             <View style={[styles.legendSquare, { backgroundColor: '#3d95ce' }]} />
+             <Text style={styles.legendText}>Doanh thu (Nghìn đồng)</Text>
+             </View>
         </View>
+        
         <LoadingComponent visible={loading} />
 
       </View>
@@ -318,7 +330,9 @@ const styles = StyleSheet.create({
 
   },
   chartContainer: {
-    padding: 8
+    padding: 6,
+    marginLeft: 8,
+    position: 'relative',
   },
   viewDropDow: {
     padding: 8,
@@ -358,7 +372,22 @@ const styles = StyleSheet.create({
   dateInputContainer:{
     flexDirection: 'row',
     justifyContent: 'center',
-  }
+  },
+  legendContainer: {
+    position: 'absolute', // Đặt vị trí tuyệt đối để có thể đặt vị trí của chú giải
+    top: 10, // Điều chỉnh vị trí của chú giải theo y
+    right: 10, // Điều chỉnh vị trí của chú giải theo x
+    flexDirection: 'row', // Sắp xếp các phần tử trong hàng ngang
+    alignItems: 'center', // Căn giữa theo chiều dọc
+  },
+  legendSquare: {
+    width: 20, // Kích thước của hộp chú giải
+    height: 10,
+    marginRight: 5, // Khoảng cách giữa hộp chú giải và văn bản
+  },
+  legendText: {
+    fontSize: 12,
+  },
 });
 
 export default ThongKeDoanhThuScreen;
