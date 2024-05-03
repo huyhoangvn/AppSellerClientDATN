@@ -151,7 +151,7 @@ const ListNhanVienScreen: React.FC<NavProps> = ({navigation}) => {
             source={
               !item.hinhAnh || item.hinhAnh === 'N/A'
                 ? require('./../../assest/default-avatar.jpg')
-                : {uri: item.hinhAnh}
+                : {uri:'http://10.0.2.2:3000/'+ item.hinhAnh}
             }
             style={{width: 100, height: 100, borderRadius: 8}}
             defaultSource={require('./../../assest/default-avatar.jpg')}
