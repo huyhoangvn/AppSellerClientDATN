@@ -36,12 +36,12 @@ const ThongKeDoanhThuScreen: React.FC<NavProps> = ({ navigation }) =>  {
   const handleDateSelected = async (date: Date | string) => {
     setngayBatDau(date as Date);
 
-    await thongkeKhoangNgay(ngayBatDau, ngayKetThuc);
+    await thongkeKhoangNgay(date, ngayKetThuc);
   };
   const handleDateSelectend = async (date: Date | string) => {
     setngayKetThuc(date as Date);
 
-    await thongkeKhoangNgay(ngayBatDau, ngayKetThuc);
+    await thongkeKhoangNgay(ngayBatDau, date);
   };
   const handleYearSelect = async (item: any) => {
     setYear(item);
